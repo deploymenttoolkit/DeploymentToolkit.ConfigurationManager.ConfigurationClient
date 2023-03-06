@@ -29,10 +29,14 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <NumberBox Grid.Row="0" IsEnabled="{x:Bind ViewModel.EnableContent}" Header="Cache Size:" Value="{x:Bind ViewModel.CacheSize, Mode=TwoWay}" SpinButtonPlacementMode="Inline" SmallChange="1024" LargeChange="10024"/>
+            <NumberBox Grid.Row="0" IsEnabled="{x:Bind ViewModel.EnableContent}" Header="Cache Size:"
+                       Value="{x:Bind ViewModel.CacheSize, Mode=TwoWay}"
+                       SpinButtonPlacementMode="Inline" SmallChange="1024" LargeChange="10024"
+                       Minimum="1024"/>
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
@@ -43,8 +47,9 @@
                     </Style>
                 </Grid.Resources>
 
-                <Button Grid.Column="0" Content="Change Location" Command="{x:Bind ViewModel.ChangeLocationCommand}" IsEnabled="False"/>
-                <Button Grid.Column="1" Content="Delete Files" Command="{x:Bind ViewModel.DeleteFilesCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
+                <Button Grid.Column="0" Content="Apply Cache Size" Command="{x:Bind ViewModel.ApplyCacheSizeCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
+                <Button Grid.Column="1" Content="Change Location" Command="{x:Bind ViewModel.ChangeLocationCommand}" IsEnabled="False"/>
+                <Button Grid.Column="2" Content="Delete Files" Command="{x:Bind ViewModel.DeleteFilesCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
             </Grid>
         </Grid>
 

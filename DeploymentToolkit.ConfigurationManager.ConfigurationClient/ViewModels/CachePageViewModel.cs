@@ -26,7 +26,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private Visibility _errorMessageVisibility = Visibility.Collapsed;
 
         [ObservableProperty]
-        private int _cacheSize;
+        private uint _cacheSize;
 
         private ObservableCollection<CacheElement> _cacheElements = new();
         public ObservableCollection<CacheElement> CacheElements => _cacheElements;
@@ -48,6 +48,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 EnableContent = false;
                 return;
             }
+
+            CacheSize = _clientService.GetCacheSize();
 
             RefreshCache();
         }
@@ -139,6 +141,17 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             {
                 var deletePersistent = (dialog.Content as CacheDeleteDialog).DeletePersistentContent;
             }
+        }
+
+        [RelayCommand]
+        private async void ApplyCacheSize()
+        {
+            if(CacheSize  <= 0)
+            {
+                return;
+            }
+
+            _clientService.SetCacheSize(CacheSize);
         }
     }
 }

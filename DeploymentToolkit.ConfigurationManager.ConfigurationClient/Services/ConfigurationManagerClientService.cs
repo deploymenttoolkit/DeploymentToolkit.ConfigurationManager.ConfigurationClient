@@ -1,6 +1,6 @@
-﻿using System.Management;
+﻿using System;
+using System.Management;
 using UIRESOURCELib;
-using System.Linq;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
@@ -32,6 +32,19 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                 return default;
             }
             return _uiResourceMgr.GetCacheInfo().GetCacheElements();
+        }
+
+        public uint GetCacheSize()
+        {
+            var cacheConfig = GetInstance(@"CacheConfig.ConfigKey=""Cache""", new ManagementScope(@"ROOT\ccm\SoftMgmtAgent"));
+            return (uint)cacheConfig.GetPropertyValue("Size");
+        }
+
+        public void SetCacheSize(uint size)
+        {
+            var cacheConfig = GetInstance(@"CacheConfig.ConfigKey=""Cache""", new ManagementScope(@"ROOT\ccm\SoftMgmtAgent"));
+            cacheConfig.SetPropertyValue("Size", size);
+            cacheConfig.Put();
         }
 
         public void ClearCache(bool includePersistent)
@@ -125,9 +138,15 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return default;
         }
 
-        private ManagementObject GetInstance(string path)
+        private ManagementObject GetInstance(string path, ManagementScope scope = default)
         {
-            var managementPath = new ManagementPath(_clientManagementScope.Path + ":" + path);
+            var selectedScope = scope == default ? _clientManagementScope : scope;
+            if(!selectedScope.IsConnected)
+            {
+                selectedScope.Connect();
+            }
+
+            var managementPath = new ManagementPath(selectedScope.Path + ":" + path);
             var managementObject = new ManagementObject()
             {
                 Path = managementPath
