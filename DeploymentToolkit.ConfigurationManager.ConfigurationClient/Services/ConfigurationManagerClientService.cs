@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CPAPPLETLib;
+using SmsClientLib;
+using System;
 using System.Management;
 using UIRESOURCELib;
 
@@ -11,6 +13,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         private UACService _uacService;
 
         private UIResourceMgr _uiResourceMgr;
+        private SmsClient _smsClient;
+        private CPAppletMgr _cpppletMgr;
 
         public ConfigurationManagerClientService(UACService uacService)
         {
@@ -22,6 +26,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             if(_uacService.IsElevated)
             {
                 _uiResourceMgr = new UIResourceMgr();
+                _smsClient = new SmsClient();
+                _cpppletMgr = new CPAppletMgr();
             }
         }
 
