@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views.CachePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Name="CacheDisplay">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.ErrorMessageVisibility}">
+            <InfoBar IsOpen="True" Severity="Error" Title="Administrator rights required" Message="Please restart as Administrator to manage cache">
+                <Button Content="Restart as Administrator" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
+            </InfoBar>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <NumberBox Grid.Row="0" IsEnabled="{x:Bind ViewModel.EnableContent}" Header="Cache Size:" Value="{x:Bind ViewModel.CacheSize, Mode=TwoWay}" SpinButtonPlacementMode="Inline" SmallChange="1024" LargeChange="10024"/>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="5, 10"/>
+                    </Style>
+                </Grid.Resources>
+
+                <Button Grid.Column="0" Content="Change Location" Command="{x:Bind ViewModel.ChangeLocationCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
+                <Button Grid.Column="1" Content="Delete Files" Command="{x:Bind ViewModel.DeleteFilesCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <controls:DataGrid SelectionMode="Single"
+                               IsEnabled="{x:Bind ViewModel.EnableContent}"
+                               ItemsSource="{x:Bind ViewModel.CacheElements, Mode=OneWay}"
+                               GridLinesVisibility="Horizontal"
+                               IsReadOnly="True"
+                               AutoGenerateColumns="False">
+                <controls:DataGrid.Columns>
+                    <controls:DataGridTextColumn Header="Location" Binding="{Binding Location}"/>
+                    <controls:DataGridTextColumn Header="ContentId" Binding="{Binding ContentId}"/>
+                    <controls:DataGridTextColumn Header="ContentVersion" Binding="{Binding ContentVersion}"/>
+                    <controls:DataGridTextColumn Header="ContentSize" Binding="{Binding ContentSize}"/>
+                    <controls:DataGridTextColumn Header="LastReferenceTime" Binding="{Binding LastReferenceTime}"/>
+                    <controls:DataGridTextColumn Header="ReferenceCount" Binding="{Binding ReferenceCount}"/>
+                    <controls:DataGridTemplateColumn Header="">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Grid.Column="6"
+                                        Background="{StaticResource SystemFillColorCriticalBackground}"
+                                        Foreground="{StaticResource SystemFillColorCritical}"
+                                        Command="{Binding ViewModel.DeleteFromCacheCommand}"
+                                        CommandParameter="{Binding CacheElementId}">
+                                    <SymbolIcon Symbol="Delete"/>
+                                </Button>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+                </controls:DataGrid.Columns>
+            </controls:DataGrid>
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views.Dialogs.CacheDeleteDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" TextWrapping="Wrap" Text="Delete temporary files" />
+
+        <CheckBox Grid.Row="1" IsChecked="{x:Bind DeletePersistentContent, Mode=TwoWay}" Content="Delete persistend cache content" />
+
+        <TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Administrative users can configure content to persinst in the cache to increase performance on the client and reduce network bandwith."/>
+    </Grid>
+</Page>

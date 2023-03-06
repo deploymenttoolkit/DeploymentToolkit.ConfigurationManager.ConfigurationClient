@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DeploymentToolkit.ConfigurationManager.ConfigurationClient (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "DeploymentToolkit.ConfigurationManager.ConfigurationClient (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
