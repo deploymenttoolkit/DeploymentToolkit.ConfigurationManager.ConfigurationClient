@@ -92,31 +92,31 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [RelayCommand]
         private async void ChangeLocation()
         {
-            var openPicker = new FolderPicker()
-            {
-                SuggestedStartLocation = PickerLocationId.ComputerFolder,
-                ViewMode = PickerViewMode.List
-            };
-            // Set options for your folder picker
-            openPicker.FileTypeFilter.Add("*");
+            //var openPicker = new FolderPicker()
+            //{
+            //    SuggestedStartLocation = PickerLocationId.ComputerFolder,
+            //    ViewMode = PickerViewMode.List
+            //};
+            //// Set options for your folder picker
+            //openPicker.FileTypeFilter.Add("*");
 
-            // Retrieve the window handle (HWND) of the current WinUI 3 window.
-            var window = App.Current.GetActiveWindow();
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            //// Retrieve the window handle (HWND) of the current WinUI 3 window.
+            //var window = App.Current.GetActiveWindow();
+            //var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
 
-            // Initialize the folder picker with the window handle (HWND).
-            WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
+            //// Initialize the folder picker with the window handle (HWND).
+            //WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
 
-            // Open the picker for the user to pick a folder
-            var folder = await openPicker.PickSingleFolderAsync();
-            if (folder != null)
-            {
+            //// Open the picker for the user to pick a folder
+            //var folder = await openPicker.PickSingleFolderAsync();
+            //if (folder != null)
+            //{
                 
-            }
-            else
-            {
+            //}
+            //else
+            //{
                 
-            }
+            //}
         }
 
         [RelayCommand]

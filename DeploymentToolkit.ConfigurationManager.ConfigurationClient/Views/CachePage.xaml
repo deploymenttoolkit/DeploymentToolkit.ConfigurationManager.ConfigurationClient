@@ -43,7 +43,7 @@
                     </Style>
                 </Grid.Resources>
 
-                <Button Grid.Column="0" Content="Change Location" Command="{x:Bind ViewModel.ChangeLocationCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
+                <Button Grid.Column="0" Content="Change Location" Command="{x:Bind ViewModel.ChangeLocationCommand}" IsEnabled="False"/>
                 <Button Grid.Column="1" Content="Delete Files" Command="{x:Bind ViewModel.DeleteFilesCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
             </Grid>
         </Grid>
