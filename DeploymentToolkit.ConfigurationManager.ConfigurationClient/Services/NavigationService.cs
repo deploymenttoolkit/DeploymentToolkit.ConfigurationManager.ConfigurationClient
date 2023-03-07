@@ -27,6 +27,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         public void Navigate(NavigationViewItem item)
         {
+            if(item == null)
+            {
+                return;
+            }
+
             var pageName = item.Tag as string;
             if(_windows.ContainsKey(pageName))
             {

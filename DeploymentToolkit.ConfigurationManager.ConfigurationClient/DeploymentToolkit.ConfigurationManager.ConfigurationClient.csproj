@@ -13,6 +13,7 @@
 	<WindowsPackageType>None</WindowsPackageType>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Views\BITSPage.xaml" />
     <None Remove="Views\CachePage.xaml" />
     <None Remove="Views\ComponentsPage.xaml" />
     <None Remove="Views\Dialogs\CacheDeleteDialog.xaml" />
@@ -88,6 +89,11 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\BITSPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\CachePage.xaml">

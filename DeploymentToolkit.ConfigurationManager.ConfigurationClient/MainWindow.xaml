@@ -26,11 +26,12 @@
             <NavigationView.MenuItems>
                 <NavigationViewItem Icon="Home" Tag="GeneralPage" Content="General"/>
                 <NavigationViewItem Icon="Library" Tag="ComponentsPage" Content="Components"/>
-                <NavigationViewItem Icon="Admin"  Tag="ActionsPage" Content="Actions"/>
-                <NavigationViewItem Icon="Setting" Tag="SitePage" Content="Site"/>
+                <!--<NavigationViewItem Icon="Admin"  Tag="ActionsPage" Content="Actions"/>-->
+                <!--<NavigationViewItem Icon="Setting" Tag="SitePage" Content="Site"/>-->
                 <NavigationViewItem Icon="DisconnectDrive" Tag="CachePage" Content="Cache"/>
-                <NavigationViewItem Icon="Setting" Tag="ConfigurationsPage" Content="Configurations"/>
-                <NavigationViewItem Icon="Sync" Tag="NetworkPage" Content="Network"/>
+                <!--<NavigationViewItem Icon="Setting" Tag="ConfigurationsPage" Content="Configurations"/>-->
+                <!--<NavigationViewItem Icon="Sync" Tag="NetworkPage" Content="Network"/>-->
+                <NavigationViewItem Icon="Sync" Tag="BITSPage" Content="BITS"/>
             </NavigationView.MenuItems>
 
             <ScrollViewer>

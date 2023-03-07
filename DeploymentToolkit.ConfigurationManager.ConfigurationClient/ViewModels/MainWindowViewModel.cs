@@ -28,6 +28,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [RelayCommand]
         private void OnSelectionChanged(NavigationViewSelectionChangedEventArgs selectionChangedEvent)
         {
+            if(selectionChangedEvent.SelectedItem == null)
+            {
+                return;
+            }
             _navigationService.Navigate(selectionChangedEvent.SelectedItem as NavigationViewItem);
             PageTitle = (selectionChangedEvent.SelectedItem as NavigationViewItem).Content.ToString();
         }

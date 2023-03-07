@@ -56,6 +56,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<ComponentsPageViewModel>();
             services.AddTransient<CachePageViewModel>();
+            services.AddTransient<BITSPageViewModel>();
 
             services.AddTransient<GeneralPageViewModel>();
 
