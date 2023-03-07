@@ -1,6 +1,5 @@
 ﻿using CPAPPLETLib;
 using SmsClientLib;
-using System;
 using System.Management;
 using UIRESOURCELib;
 
@@ -14,7 +13,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         private UIResourceMgr _uiResourceMgr;
         private SmsClient _smsClient;
-        private CPAppletMgr _cpppletMgr;
+        private CPAppletMgr _cpAppletManager;
 
         public ConfigurationManagerClientService(UACService uacService)
         {
@@ -27,8 +26,18 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             {
                 _uiResourceMgr = new UIResourceMgr();
                 _smsClient = new SmsClient();
-                _cpppletMgr = new CPAppletMgr();
+                _cpAppletManager = new CPAppletMgr();
             }
+        }
+
+        public ClientComponents GetInstalledComponent()
+        {
+            if (!_uacService.IsElevated)
+            {
+                return null;
+            }
+
+            return _cpAppletManager.GetClientComponents();
         }
 
         public CacheElements GetCache()
@@ -120,11 +129,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         public ManagementObject GetClientInfo()
         {
             return GetInstance("ClientInfo=@");
-        }
-
-        public ManagementObjectCollection GetInstalledComponent()
-        {
-            return GetInstances("CCM_InstalledComponent");
         }
 
         private ManagementObjectCollection GetInstances(string className)

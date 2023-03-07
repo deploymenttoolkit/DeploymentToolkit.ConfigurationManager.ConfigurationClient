@@ -9,5 +9,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
 
         [ObservableProperty]
         private string _version;
+
+        [ObservableProperty]
+        private string _state;
     }
 }

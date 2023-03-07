@@ -22,10 +22,12 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" Text="{Binding DisplayName}"/>
                         <TextBlock Grid.Column="1" Text="{Binding Version}"/>
+                        <TextBlock Grid.Column="2" Text="{Binding State}"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

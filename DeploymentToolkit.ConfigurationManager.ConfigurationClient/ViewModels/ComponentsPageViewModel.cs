@@ -12,16 +12,34 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
         private readonly ConfigurationManagerClientService _clientService;
 
+        private string GetStateNameFromState(CPAPPLETLib.EComponentState state)
+        {
+            switch (state)
+            {
+                case CPAPPLETLib.EComponentState.COMPONENT_STATE_DISABLED:
+                    return "Disabled";
+
+                case CPAPPLETLib.EComponentState.COMPONENT_STATE_ENABLED:
+                    return "Enabled";
+
+                case CPAPPLETLib.EComponentState.COMPONENT_STATE_INSTALLED:
+                    return "Installed";
+            }
+
+            return "Unknown";
+        }
+
         public ComponentsPageViewModel(ConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 
-            foreach(var component in _clientService.GetInstalledComponent())
+            foreach(CPAPPLETLib.ClientComponent component in _clientService.GetInstalledComponent())
             {
                 Properties.Add(new ClientComponent()
                 {
-                    DisplayName = component.Properties["DisplayName"].Value.ToString(),
-                    Version = component.Properties["Version"].Value.ToString(),
+                    DisplayName = component.DisplayName,
+                    Version = component.Version,
+                    State = GetStateNameFromState(component.State)
                 });
             }
         }
