@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.UI.Controls.TextToolbarSymbols;
 using CPAPPLETLib;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -19,9 +21,15 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         {
             _clientService = clientService;
 
+            var actions = new List<ClientActionWrapper>();
             foreach (ClientAction action in _clientService.GetClientActions())
             {
-                Actions.Add(new ClientActionWrapper(this, action));
+                actions.Add(new ClientActionWrapper(this, action));
+            }
+
+            foreach(var action in actions.OrderBy(a => a.ActionId))
+            {
+                Actions.Add(action);
             }
         }
 
