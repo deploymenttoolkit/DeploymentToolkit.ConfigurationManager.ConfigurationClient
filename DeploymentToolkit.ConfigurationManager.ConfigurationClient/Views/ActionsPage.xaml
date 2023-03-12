@@ -15,7 +15,8 @@
                            ItemsSource="{x:Bind ViewModel.Actions}"
                            GridLinesVisibility="Horizontal"
                            AutoGenerateColumns="False"
-                           x:DefaultBindMode="OneWay">
+                           x:DefaultBindMode="OneWay"
+                           IsReadOnly="True">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Header="ActionID" Binding="{Binding ActionId}"/>
                 <controls:DataGridTextColumn Header="Name" Binding="{Binding DisplayName}"/>
