@@ -87,7 +87,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                     bitsJob = new BITSJob(this, job);
                     BITSJobs.Add(bitsJob);
 
-                    job.Modified += JobModified;
+                    try
+                    {
+                        job.Modified += JobModified;
+                    }
+                    catch { }
                 }
 
                 bitsJob.DisplayName = job.DisplayName;
