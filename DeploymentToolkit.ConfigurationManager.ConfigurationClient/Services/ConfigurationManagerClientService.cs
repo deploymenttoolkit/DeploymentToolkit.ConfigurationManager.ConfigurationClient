@@ -58,6 +58,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return _cpAppletManager.GetClientComponents();
         }
 
+        public ClientActions GetClientActions()
+        {
+            return _cpAppletManager.GetClientActions();
+        }
+
         public CacheElements GetCache()
         {
             if (!_uacService.IsElevated)
