@@ -1,6 +1,7 @@
 ﻿using CPAPPLETLib;
 using SmsClientLib;
 using System.Management;
+using System.ServiceProcess;
 using UIRESOURCELib;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
@@ -28,6 +29,23 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                 _smsClient = new SmsClient();
                 _cpAppletManager = new CPAppletMgr();
             }
+        }
+
+        public void RestartService()
+        {
+            if (!_uacService.IsElevated)
+            {
+                return;
+            }
+
+            var ccmExecService = new ServiceController("ccmexec");
+            if(ccmExecService.Status == ServiceControllerStatus.Running)
+            {
+                ccmExecService.Stop();
+                ccmExecService.WaitForStatus(ServiceControllerStatus.Stopped);
+            }
+
+            ccmExecService.Start();
         }
 
         public ClientComponents GetInstalledComponent()

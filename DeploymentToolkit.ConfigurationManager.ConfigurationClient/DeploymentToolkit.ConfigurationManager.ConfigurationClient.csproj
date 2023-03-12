@@ -17,6 +17,7 @@
     <None Remove="Views\CachePage.xaml" />
     <None Remove="Views\ComponentsPage.xaml" />
     <None Remove="Views\Dialogs\CacheDeleteDialog.xaml" />
+    <None Remove="Views\Dialogs\RestartServiceDialog.xaml" />
     <None Remove="Views\GeneralPage.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +79,7 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="System.Management" Version="7.0.0" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="7.0.0" />
     <PackageReference Include="Vanara.BITS" Version="3.4.13" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
@@ -89,6 +91,11 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Dialogs\RestartServiceDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\BITSPage.xaml">

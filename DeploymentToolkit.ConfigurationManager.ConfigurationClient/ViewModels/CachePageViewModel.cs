@@ -152,6 +152,24 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             }
 
             _clientService.SetCacheSize(CacheSize);
+
+            var dialog = new ContentDialog
+            {
+                XamlRoot = Page.XamlRoot,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Title = "Restart Service?",
+                PrimaryButtonText = "Restart",
+                CloseButtonText = "Do not restart",
+                DefaultButton = ContentDialogButton.Close,
+                IsSecondaryButtonEnabled = false,
+                Content = new RestartServiceDialog()
+            };
+
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                _clientService.RestartService();
+            }
         }
     }
 }
