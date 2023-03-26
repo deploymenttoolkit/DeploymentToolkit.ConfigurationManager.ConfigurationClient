@@ -17,9 +17,11 @@
     <None Remove="Views\BITSPage.xaml" />
     <None Remove="Views\CachePage.xaml" />
     <None Remove="Views\ComponentsPage.xaml" />
+    <None Remove="Views\ConfigurationsPage.xaml" />
     <None Remove="Views\Dialogs\CacheDeleteDialog.xaml" />
     <None Remove="Views\Dialogs\RestartServiceDialog.xaml" />
     <None Remove="Views\GeneralPage.xaml" />
+    <None Remove="Views\PolicyPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="UIRESOURCELib">
@@ -94,6 +96,11 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Views\ConfigurationsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Views\ActionsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -125,6 +132,14 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\Dialogs\CacheDeleteDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Policy\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\PolicyPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

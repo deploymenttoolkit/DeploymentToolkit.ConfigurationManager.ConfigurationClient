@@ -6,7 +6,7 @@ using UIRESOURCELib;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
-    public class ConfigurationManagerClientService
+    public partial class ConfigurationManagerClientService
     {
         private ManagementScope _clientManagementScope;
 
@@ -154,9 +154,20 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return GetInstance("ClientInfo=@");
         }
 
-        private ManagementObjectCollection GetInstances(string className)
+        public ManagementObjectCollection GetDesiredStateConfiguration()
         {
-            var searcher = new ManagementObjectSearcher(_clientManagementScope, new ObjectQuery($"SELECT * FROM {className}"));
+            return GetInstances("SMS_DesiredConfiguration", new ManagementScope(@"ROOT\ccm\dcm"));
+        }
+
+        private ManagementObjectCollection GetInstances(string className, ManagementScope scope = default)
+        {
+            var selectedScope = scope == default ? _clientManagementScope : scope;
+            if (!selectedScope.IsConnected)
+            {
+                selectedScope.Connect();
+            }
+
+            var searcher = new ManagementObjectSearcher(selectedScope, new ObjectQuery($"SELECT * FROM {className}"));
             return searcher.Get();
         }
 
