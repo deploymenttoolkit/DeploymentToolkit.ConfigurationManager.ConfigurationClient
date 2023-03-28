@@ -1,5 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Policy;
+using System.Collections.Generic;
 using System.Management;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
@@ -8,18 +8,24 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
     {
         private ManagementScope _policyManagementScope = new ManagementScope(@"ROOT\ccm\Policy");
 
-        internal void GetPolicies()
+        internal List<PolicyRequestor> GetPolicyRequestors()
         {
-            if(!_policyManagementScope.IsConnected)
+            if (!_uacService.IsElevated)
+            {
+                return null;
+            }
+            if (!_policyManagementScope.IsConnected)
             {
                 _policyManagementScope.Connect();
             }
 
+            var result = new List<PolicyRequestor>();
             var policyClass = new ManagementClass(_policyManagementScope, new ManagementPath("__namespace"), null);
             foreach (var subClass in policyClass.GetInstances())
             {
-                Debug.WriteLine($"{subClass.Properties["Name"].Value}");
+                result.Add(new PolicyRequestor(null, subClass as ManagementObject));
             }
+            return result;
         }
     }
 }
