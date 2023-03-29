@@ -33,6 +33,7 @@
                 <!--<NavigationViewItem Icon="Sync" Tag="NetworkPage" Content="Network"/>-->
                 <NavigationViewItem Icon="Sync" Tag="BITSPage" Content="BITS"/>
                 <NavigationViewItem Icon="AllApps" Tag="PolicyPage" Content="Policy"/>
+                <NavigationViewItem Icon="Folder" Tag="LogPage" Content="Logs"/>
             </NavigationView.MenuItems>
 
             <ScrollViewer>

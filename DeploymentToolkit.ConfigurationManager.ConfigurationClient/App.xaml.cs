@@ -60,6 +60,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
             services.AddTransient<ActionsPageViewModel>();
             services.AddTransient<ConfigurationsViewModel>();
             services.AddTransient<PolicyPageViewModel>();
+            services.AddTransient<LogPageViewModel>();
 
             services.AddTransient<GeneralPageViewModel>();
 
