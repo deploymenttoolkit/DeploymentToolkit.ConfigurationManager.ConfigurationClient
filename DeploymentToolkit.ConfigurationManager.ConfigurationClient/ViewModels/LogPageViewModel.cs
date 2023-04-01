@@ -9,11 +9,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
     public partial class LogPageViewModel : ObservableObject, IDisposable
     {
+        [ObservableProperty]
+        private bool _isUpdating = true;
+
         private object _logFileLock = new();
         private List<LogFile> _logNames = new();
         public CollectionViewSource LogNames = new();
@@ -45,6 +49,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
         public LogPageViewModel()
         {
+            Task.Run(() => Setup());
+        }
+
+        private void Setup()
+        {
             try
             {
                 var loggingKey = Registry.LocalMachine.OpenSubKey(_registryLogPath, false);
@@ -52,25 +61,29 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
                 _logFiles = new List<LogFile>();
                 var files = Directory.GetFiles(logDirectory, "*.log");
-                foreach(var file in files)
+                foreach (var file in files)
                 {
                     _logFiles.Add(ParseLogFile(file));
                 }
 
                 _groupedLogFiles = _logFiles.GroupBy(f => f.Name);
 
-                foreach(var log in _groupedLogFiles)
+                foreach (var log in _groupedLogFiles)
                 {
                     _logNames.Add(log.OrderByDescending(l => l.LastModified).First());
                 }
-
-                LogNames.Source = _logNames.OrderBy(f => f.Name);
 
                 _watcher = new FileSystemWatcher(logDirectory, "*.log");
                 _watcher.Created += OnFileCreated;
                 _watcher.Deleted += OnFileDeleted;
                 _watcher.Changed += OnFileChanged;
                 _watcher.EnableRaisingEvents = true;
+
+                App.Current.DispatcherQueue.TryEnqueue(() =>
+                {
+                    LogNames.Source = _logNames.OrderBy(f => f.Name);
+                    IsUpdating = false;
+                });
             }
             catch { }
         }

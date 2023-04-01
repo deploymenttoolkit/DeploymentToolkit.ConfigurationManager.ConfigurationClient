@@ -11,6 +11,13 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <controls:Loading x:Name="LoadingControl" IsLoading="{x:Bind ViewModel.IsUpdating, Mode=OneWay}" Grid.RowSpan="3" Grid.ColumnSpan="2">
+            <StackPanel>
+                <ProgressRing IsActive="{x:Bind ViewModel.IsUpdating, Mode=OneWay}" Background="LightGray" Height="100" Width="100"/>
+                <TextBlock Text="Parsing logs" TextAlignment="Center" Padding="0, 10" Style="{StaticResource TitleTextBlockStyle}"/>
+            </StackPanel>
+        </controls:Loading>
+        
         <controls:DataGrid
             Grid.Row="1"
             SelectionMode="Single"
