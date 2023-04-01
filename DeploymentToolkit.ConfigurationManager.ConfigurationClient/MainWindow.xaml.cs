@@ -21,6 +21,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
         public MainWindow()
         {
             this.InitializeComponent();
+            ExtendsContentIntoTitleBar = true;
+            SetTitleBar(AppTitleBar);
 
             App.Current.Services.GetService<NavigationService>().SetNavigationFrame(NavigationFrame);
 
