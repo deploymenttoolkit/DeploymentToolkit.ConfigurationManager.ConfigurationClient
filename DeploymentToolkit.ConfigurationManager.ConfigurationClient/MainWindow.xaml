@@ -43,6 +43,7 @@
                 <NavigationViewItem Icon="Sync" Tag="BITSPage" Content="BITS"/>
                 <NavigationViewItem Icon="AllApps" Tag="PolicyPage" Content="Policy"/>
                 <NavigationViewItem Icon="Folder" Tag="LogPage" Content="Logs"/>
+                <NavigationViewItem Icon="Remote" Tag="DeviceRegistrationPage" Content="Device Registration"/>
             </NavigationView.MenuItems>
 
             <ScrollViewer>

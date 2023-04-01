@@ -18,6 +18,7 @@
     <None Remove="Views\CachePage.xaml" />
     <None Remove="Views\ComponentsPage.xaml" />
     <None Remove="Views\ConfigurationsPage.xaml" />
+    <None Remove="Views\DeviceRegistrationPage.xaml" />
     <None Remove="Views\Dialogs\CacheDeleteDialog.xaml" />
     <None Remove="Views\Dialogs\RestartServiceDialog.xaml" />
     <None Remove="Views\GeneralPage.xaml" />
@@ -95,6 +96,11 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\DeviceRegistrationPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\LogPage.xaml">
