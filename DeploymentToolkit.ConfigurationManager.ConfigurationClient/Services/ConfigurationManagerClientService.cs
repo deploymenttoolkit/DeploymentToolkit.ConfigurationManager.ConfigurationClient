@@ -13,7 +13,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         private UACService _uacService;
 
         private UIResourceMgr _uiResourceMgr;
-        private SmsClient _smsClient;
+        //private SmsClient _smsClient;
         private CPAppletMgr _cpAppletManager;
 
         public ConfigurationManagerClientService(UACService uacService)
@@ -23,11 +23,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             _clientManagementScope = new ManagementScope(@"ROOT\ccm");
             _clientManagementScope.Connect();
 
-            if(_uacService.IsElevated)
+            _cpAppletManager = new CPAppletMgr();
+
+            if (_uacService.IsElevated)
             {
                 _uiResourceMgr = new UIResourceMgr();
-                _smsClient = new SmsClient();
-                _cpAppletManager = new CPAppletMgr();
+                //_smsClient = new SmsClient();
             }
         }
 
@@ -50,11 +51,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         public ClientComponents GetInstalledComponent()
         {
-            if (!_uacService.IsElevated)
-            {
-                return null;
-            }
-
             return _cpAppletManager.GetClientComponents();
         }
 
