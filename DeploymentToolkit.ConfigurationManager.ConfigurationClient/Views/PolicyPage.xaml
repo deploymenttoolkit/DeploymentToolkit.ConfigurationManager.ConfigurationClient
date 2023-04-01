@@ -28,7 +28,8 @@
                     Padding="0"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
-                    BladeMode="Normal">
+                    BladeMode="Normal"
+                    Visibility="{x:Bind ViewModel.ContentVisibility}">
             <controls:BladeView.Resources>
                 <Style TargetType="controls:BladeItem">
                     <Setter Property="TitleBarVisibility" Value="Visible"/>
