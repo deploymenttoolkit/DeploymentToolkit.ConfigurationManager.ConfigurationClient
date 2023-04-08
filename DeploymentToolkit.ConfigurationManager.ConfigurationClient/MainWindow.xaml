@@ -44,6 +44,7 @@
                 <NavigationViewItem Icon="AllApps" Tag="PolicyPage" Content="Policy"/>
                 <NavigationViewItem Icon="Folder" Tag="LogPage" Content="Logs"/>
                 <NavigationViewItem Icon="Remote" Tag="DeviceRegistrationPage" Content="Device Registration"/>
+                <NavigationViewItem Icon="OpenFile" Tag="ClientEventsPage" Content="Events"/>
             </NavigationView.MenuItems>
 
             <ScrollViewer>

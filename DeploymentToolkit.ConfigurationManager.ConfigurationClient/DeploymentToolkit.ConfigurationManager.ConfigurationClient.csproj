@@ -16,6 +16,7 @@
     <None Remove="Views\ActionsPage.xaml" />
     <None Remove="Views\BITSPage.xaml" />
     <None Remove="Views\CachePage.xaml" />
+    <None Remove="Views\ClientEventsPage.xaml" />
     <None Remove="Views\ComponentsPage.xaml" />
     <None Remove="Views\ConfigurationsPage.xaml" />
     <None Remove="Views\DeviceRegistrationPage.xaml" />
@@ -96,6 +97,11 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ClientEventsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\DeviceRegistrationPage.xaml">

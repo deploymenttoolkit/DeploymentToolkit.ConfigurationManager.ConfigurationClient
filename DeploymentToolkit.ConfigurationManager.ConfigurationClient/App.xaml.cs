@@ -62,6 +62,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
             services.AddTransient<PolicyPageViewModel>();
             services.AddTransient<LogPageViewModel>();
             services.AddTransient<DeviceRegistrationViewModel>();
+            services.AddTransient<ClientEventsPageViewModel>();
 
             services.AddTransient<GeneralPageViewModel>();
 
