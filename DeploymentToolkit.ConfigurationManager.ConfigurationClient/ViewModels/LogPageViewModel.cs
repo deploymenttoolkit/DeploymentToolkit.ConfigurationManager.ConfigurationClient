@@ -1,10 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views.Frames;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -38,6 +41,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 return _installPath;
             }
         }
+
+        public TabView LogFilesTabView;
+
+        public ObservableCollection<TabViewItem> Tabs { get; set; } = new();
+        public int SelectedIndex { get; set; }
 
         private static Regex _logFileRegex = new Regex(@"(.*)-(\d*)-(\d*)\.log");
         private static Regex _userLogFileRegex = new Regex(@"(?:_)?(.*)_(.{3})@(.*)_\d\.log");
@@ -82,7 +90,25 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 App.Current.DispatcherQueue.TryEnqueue(() =>
                 {
                     LogNames.Source = _logNames.OrderBy(f => f.Name);
+                    var newTab = new TabViewItem()
+                    {
+                        Header = "Logs",
+                        IconSource = new SymbolIconSource() { Symbol = Symbol.Folder },
+                        Content = new LogFilesFrame(this),
+                        IsClosable = false,
+                        CanDrag = false
+                    };
+                    Tabs.Add(newTab);
                     IsUpdating = false;
+
+                    App.Current.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        SelectedIndex = 0;
+                        // Databinding currently does not work in WinUI3
+                        // https://github.com/microsoft/microsoft-ui-xaml/issues/3907
+                        // So this is the workaround I guess
+                        LogFilesTabView.SelectedIndex = 0;
+                    });
                 });
             }
             catch { }
@@ -185,6 +211,22 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         }
 
         [RelayCommand]
+        private void OpenLogFileInTab(string logName)
+        {
+            var page = new CMTraceFrame(
+                Path.Combine(InstallPath, "CMTrace.exe"),
+                _groupedLogFiles.First(g => g.Key == logName).OrderByDescending(f => f.LastModified).First().Path
+            );
+
+            Tabs.Add(new TabViewItem()
+            {
+                Header = logName,
+                IconSource = new SymbolIconSource() { Symbol = Symbol.Document },
+                Content = page
+            });
+        }
+
+        [RelayCommand]
         private void OpenLogFile(string logName)
         {
             new Process()
@@ -211,6 +253,13 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                     }
                 }.Start();
             }
+        }
+
+
+        [RelayCommand]
+        private void TabCloseRequested(TabViewTabCloseRequestedEventArgs args)
+        {
+            Tabs.Remove(args.Tab);
         }
     }
 }

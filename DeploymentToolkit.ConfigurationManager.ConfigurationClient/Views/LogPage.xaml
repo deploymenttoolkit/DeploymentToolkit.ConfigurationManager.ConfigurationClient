@@ -7,52 +7,28 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <controls:Loading x:Name="LoadingControl" IsLoading="{x:Bind ViewModel.IsUpdating, Mode=OneWay}" Grid.RowSpan="3" Grid.ColumnSpan="2">
+        <controls:Loading x:Name="LoadingControl" IsLoading="{x:Bind ViewModel.IsUpdating, Mode=OneWay}">
             <StackPanel>
                 <ProgressRing IsActive="{x:Bind ViewModel.IsUpdating, Mode=OneWay}" Background="LightGray" Height="100" Width="100"/>
                 <TextBlock Text="Parsing logs" TextAlignment="Center" Padding="0, 10" Style="{StaticResource TitleTextBlockStyle}"/>
             </StackPanel>
         </controls:Loading>
-        
-        <controls:DataGrid
-            Grid.Row="1"
-            SelectionMode="Single"
-            ItemsSource="{x:Bind ViewModel.LogNames.View, Mode=OneWay}"
-            GridLinesVisibility="Horizontal"
-            IsReadOnly="True"
-            AutoGenerateColumns="False"
-            CanUserSortColumns="True">
-            <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <controls:DataGridTextColumn Header="Created" Binding="{Binding Created}"/>
-                <controls:DataGridTextColumn Header="Modified" Binding="{Binding LastModified}"/>
-                <controls:DataGridTemplateColumn Header="">
-                    <controls:DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Margin="2"
-                                            Command="{Binding ViewModel.OpenLogFileCommand}"
-                                            CommandParameter="{Binding Name}">
-                                <TextBlock Text="Open latest"/>
-                            </Button>
-                        </DataTemplate>
-                    </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="">
-                    <controls:DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Margin="2"
-                                            Command="{Binding ViewModel.OpenLogFilesCommand}"
-                                            CommandParameter="{Binding Name}">
-                                <TextBlock Text="Open all"/>
-                            </Button>
-                        </DataTemplate>
-                    </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>
-            </controls:DataGrid.Columns>
-        </controls:DataGrid>
+
+        <TabView IsAddTabButtonVisible="False" CanDrag="False" CanDragTabs="False"
+                 HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                 TabItemsSource="{x:Bind ViewModel.Tabs, Mode=OneWay}" SelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
+                 x:Name="LogFilesTabView">
+            <interactivity:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="TabCloseRequested">
+                    <core:InvokeCommandAction Command="{x:Bind ViewModel.TabCloseRequestedCommand}"/>
+                </core:EventTriggerBehavior>
+            </interactivity:Interaction.Behaviors>
+        </TabView>
     </Grid>
 </Page>

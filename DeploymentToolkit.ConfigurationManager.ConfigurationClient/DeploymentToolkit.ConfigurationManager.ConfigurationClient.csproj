@@ -22,6 +22,8 @@
     <None Remove="Views\DeviceRegistrationPage.xaml" />
     <None Remove="Views\Dialogs\CacheDeleteDialog.xaml" />
     <None Remove="Views\Dialogs\RestartServiceDialog.xaml" />
+    <None Remove="Views\Frames\CMTraceFrame.xaml" />
+    <None Remove="Views\Frames\LogFilesFrame.xaml" />
     <None Remove="Views\GeneralPage.xaml" />
     <None Remove="Views\LogPage.xaml" />
     <None Remove="Views\PolicyPage.xaml" />
@@ -99,6 +101,11 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Views\Frames\LogFilesFrame.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Views\ClientEventsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -155,6 +162,11 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\PolicyPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\Frames\CMTraceFrame.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
