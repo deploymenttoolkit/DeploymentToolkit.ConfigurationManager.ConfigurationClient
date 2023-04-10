@@ -28,7 +28,7 @@
                             <Button Margin="2"
                                     Command="{Binding ViewModel.OpenLogFileInTabCommand}"
                                     CommandParameter="{Binding Name}"
-                                    IsEnabled="False">
+                                    IsEnabled="{Binding ViewModel.EnableTabs}">
                                 <TextBlock Text="Open latest in Tab"/>
                             </Button>
                         </DataTemplate>

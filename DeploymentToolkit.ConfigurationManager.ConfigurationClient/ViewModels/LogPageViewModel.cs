@@ -21,6 +21,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [ObservableProperty]
         private bool _isUpdating = true;
 
+#if DEBUG
+        public bool EnableTabs { get; set; } = true;
+#else
+        public bool EnableTabs { get; set; } = false;
+#endif
+
         private object _logFileLock = new();
         private List<LogFile> _logNames = new();
         public CollectionViewSource LogNames = new();
@@ -176,28 +182,30 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private LogFile ParseLogFile(string filePath, bool includeProperties = true)
         {
             var fileInfo = includeProperties ? new FileInfo(filePath) : null;
+            var fileName = fileInfo?.Name ?? Path.GetFileNameWithoutExtension(filePath);
+            var fullName = fileInfo?.FullName ?? Path.GetFullPath(filePath);
 
-            var fileMatch = _logFileRegex.Match(fileInfo.Name);
+            var fileMatch = _logFileRegex.Match(fileName);
             if (fileMatch.Success)
             {
-                return new LogFile(this, fileMatch.Groups[1].Value, fileInfo.FullName)
+                return new LogFile(this, fileMatch.Groups[1].Value, fullName)
                 {
                     Created = fileInfo?.CreationTime ?? null,
                     LastModified = fileInfo?.LastWriteTime ?? null
                 };
             }
 
-            var userMatch = _userLogFileRegex.Match(fileInfo.Name);
+            var userMatch = _userLogFileRegex.Match(fileName);
             if(userMatch.Success)
             {
-                return new LogFile(this, userMatch.Groups[1].Value, fileInfo.FullName)
+                return new LogFile(this, userMatch.Groups[1].Value, fullName)
                 {
                     Created = fileInfo?.CreationTime ?? null,
                     LastModified = fileInfo?.LastWriteTime ?? null
                 };
             }
 
-            return new LogFile(this, Path.GetFileNameWithoutExtension(fileInfo.Name), fileInfo.FullName)
+            return new LogFile(this, Path.GetFileNameWithoutExtension(fileName), fullName)
             {
                 Created = fileInfo?.CreationTime ?? null,
                 LastModified = fileInfo?.LastWriteTime ?? null
