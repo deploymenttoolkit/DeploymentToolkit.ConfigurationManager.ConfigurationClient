@@ -29,13 +29,16 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Poli
             else
             {
                 Value = value.ToString();
-                if(Value.StartsWith("0x"))
+                if(Value.StartsWith("0x") && Value != "0x00000000")
                 {
                     try
                     {
                         var errorCode = Convert.ToInt32(Value, 16);
                         var exception = Marshal.GetExceptionForHR(errorCode);
-                        Value += $"\n{exception.Message}";
+                        if (exception != null)
+                        {
+                            Value += $"\n{exception.Message}";
+                        }
                     }
                     catch(Exception) { }
                 }
