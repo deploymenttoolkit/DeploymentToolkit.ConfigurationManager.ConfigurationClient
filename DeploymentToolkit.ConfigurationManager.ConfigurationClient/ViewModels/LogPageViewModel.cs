@@ -66,10 +66,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             Task.Run(() => Setup());
         }
 
-        private void Setup()
+        private async void Setup()
         {
             try
             {
+                await Task.Delay(5);
+
                 var loggingKey = Registry.LocalMachine.OpenSubKey(_registryLogPath, false);
                 var logDirectory = loggingKey.GetValue("LogDirectory") as string;
 
@@ -93,7 +95,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 _watcher.Changed += OnFileChanged;
                 _watcher.EnableRaisingEvents = true;
 
-                App.Current.DispatcherQueue.TryEnqueue(() =>
+                App.Current.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
                 {
                     LogNames.Source = _logNames.OrderBy(f => f.Name);
                     var newTab = new TabViewItem()
@@ -105,10 +107,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                         CanDrag = false
                     };
                     Tabs.Add(newTab);
-                    IsUpdating = false;
 
                     App.Current.DispatcherQueue.TryEnqueue(() =>
                     {
+                        IsUpdating = false;
                         SelectedIndex = 0;
                         // Databinding currently does not work in WinUI3
                         // https://github.com/microsoft/microsoft-ui-xaml/issues/3907
