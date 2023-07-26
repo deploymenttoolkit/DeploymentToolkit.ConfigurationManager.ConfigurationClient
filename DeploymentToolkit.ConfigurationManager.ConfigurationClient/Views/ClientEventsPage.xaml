@@ -52,9 +52,9 @@
                     </DataTemplate>
                 </controls:DataGrid.RowDetailsTemplate>
                 <controls:DataGrid.Columns>
+                    <controls:DataGridTextColumn Header="Recevied" Binding="{Binding Received}"/>
                     <controls:DataGridTextColumn Header="Severity" Binding="{Binding Severity}"/>
                     <controls:DataGridTextColumn Header="Event" Binding="{Binding ClassName}"/>
-                    <controls:DataGridTextColumn Header="Recevied" Binding="{Binding Received}"/>
                     <controls:DataGridTextColumn Header="ClientId" Binding="{Binding ClientId}"/>
                     <controls:DataGridTextColumn Header="ProcessId" Binding="{Binding ProcessId}"/>
                     <controls:DataGridTextColumn Header="ThreadId" Binding="{Binding ThreadId}"/>
