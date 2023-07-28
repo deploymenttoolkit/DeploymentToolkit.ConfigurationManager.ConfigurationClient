@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections;
 using System.Linq;
 
@@ -20,7 +21,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
                 return;
             }
 
-            if (value.GetType().IsArray)
+            if (value.GetType().IsArray && (value as Array).Length > 0)
             {
                 Value = (value as IEnumerable).Cast<string>().Aggregate((c, n) => $"{c}\n{n}");
             }

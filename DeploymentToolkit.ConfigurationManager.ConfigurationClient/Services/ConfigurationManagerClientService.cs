@@ -160,6 +160,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return GetInstances("CCM_Application", new ManagementScope(@"ROOT\ccm\ClientSDK"));
         }
 
+        public ManagementObjectCollection GetPrograms()
+        {
+            return GetInstances("CCM_Program", new ManagementScope(@"ROOT\ccm\ClientSDK"));
+        }
+
         private ManagementObjectCollection GetInstances(string className, ManagementScope scope = default)
         {
             var selectedScope = scope == default ? _clientManagementScope : scope;

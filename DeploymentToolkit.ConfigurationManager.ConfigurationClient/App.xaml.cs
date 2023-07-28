@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using System;
+using UIRESOURCELib;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -67,6 +68,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
             services.AddTransient<DeviceRegistrationViewModel>();
 
             services.AddTransient<ApplicationsPageViewModel>();
+            services.AddTransient<ProgramPageViewModel>();
 
             services.AddTransient<GeneralPageViewModel>();
 

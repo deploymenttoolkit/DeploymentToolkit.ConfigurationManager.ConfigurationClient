@@ -28,6 +28,7 @@
     <None Remove="Views\GeneralPage.xaml" />
     <None Remove="Views\LogPage.xaml" />
     <None Remove="Views\PolicyPage.xaml" />
+    <None Remove="Views\ProgramsPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="UIRESOURCELib">
@@ -100,6 +101,11 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ProgramsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\ApplicationsPage.xaml">

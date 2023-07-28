@@ -47,6 +47,7 @@
                 <NavigationViewItem Icon="OpenFile" Tag="ClientEventsPage" Content="Events"/>
                 <NavigationViewItemSeparator/>
                 <NavigationViewItem Icon="AllApps" Tag="ApplicationsPage" Content="Applications"/>
+                <NavigationViewItem Icon="AllApps" Tag="ProgramsPage" Content="Programs"/>
             </NavigationView.MenuItems>
 
             <ScrollViewer>

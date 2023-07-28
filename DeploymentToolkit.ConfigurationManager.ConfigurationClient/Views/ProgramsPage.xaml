@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views.ProgramsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:models="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <controls:DataGrid SelectionMode="Single"
+                           ItemsSource="{x:Bind ViewModel.Programs}"
+                           GridLinesVisibility="Horizontal"
+                           AutoGenerateColumns="False"
+                           x:DefaultBindMode="OneWay"
+                           IsReadOnly="True">
+            <controls:DataGrid.RowDetailsTemplate>
+                <DataTemplate x:DataType="models:Program">
+                    <StackPanel Margin="10">
+                        <ListView ItemsSource="{x:Bind Properties}" Margin="0, 5" Padding="0, 0, 0, 10">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:BasicProperty">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="0.3*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                        <TextBlock Grid.Column="1" Text="{x:Bind Value}" TextWrapping="Wrap"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </DataTemplate>
+            </controls:DataGrid.RowDetailsTemplate>
+
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="PackageID" Binding="{Binding PackageID}"/>
+                <controls:DataGridTextColumn Header="ProgramID" Binding="{Binding ProgramID}"/>
+                <controls:DataGridTextColumn Header="Name" Binding="{Binding PackageName}"/>
+
+                <controls:DataGridTemplateColumn Header="Requires User Input">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding RequiresUserInput}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTemplateColumn Header="Restart">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding RestartRequired}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTemplateColumn Header="Run at Logoff">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding RunAtLogoff}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+
+                <controls:DataGridTemplateColumn Header="Run at Logon">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding RunAtLogon}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTemplateColumn Header="Task Sequence">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding TaskSequence}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+
+                <controls:DataGridTextColumn Header="ActivationTime" Binding="{Binding ActivationTime}"/>
+                <controls:DataGridTextColumn Header="Deadline" Binding="{Binding Deadline}"/>
+                <controls:DataGridTextColumn Header="ExpirationTime" Binding="{Binding ExpirationTime}"/>
+                <controls:DataGridTextColumn Header="NextUserScheduledTime" Binding="{Binding NextUserScheduledTime}"/>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </Grid>
+</Page>
