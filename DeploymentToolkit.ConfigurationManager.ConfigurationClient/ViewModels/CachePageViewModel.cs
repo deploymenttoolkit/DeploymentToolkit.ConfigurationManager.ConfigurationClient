@@ -127,7 +127,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             var dialog = new ContentDialog
             {
                 XamlRoot = Page.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Style = Microsoft.UI.Xaml.Application.Current.Resources["DefaultContentDialogStyle"] as Style,
                 Title = "Delete Cache?",
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
@@ -156,7 +156,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             var dialog = new ContentDialog
             {
                 XamlRoot = Page.XamlRoot,
-                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Style = Microsoft.UI.Xaml.Application.Current.Resources["DefaultContentDialogStyle"] as Style,
                 Title = "Restart Service?",
                 PrimaryButtonText = "Restart",
                 CloseButtonText = "Do not restart",

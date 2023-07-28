@@ -41,10 +41,12 @@
                 <NavigationViewItem Icon="Setting" Tag="ConfigurationsPage" Content="Configurations"/>
                 <!--<NavigationViewItem Icon="Sync" Tag="NetworkPage" Content="Network"/>-->
                 <NavigationViewItem Icon="Sync" Tag="BITSPage" Content="BITS"/>
-                <NavigationViewItem Icon="AllApps" Tag="PolicyPage" Content="Policy"/>
-                <NavigationViewItem Icon="Folder" Tag="LogPage" Content="Logs"/>
+                <NavigationViewItem Icon="ProtectedDocument" Tag="PolicyPage" Content="Policy"/>
+                <NavigationViewItem Icon="Document" Tag="LogPage" Content="Logs"/>
                 <NavigationViewItem Icon="Remote" Tag="DeviceRegistrationPage" Content="Device Registration"/>
                 <NavigationViewItem Icon="OpenFile" Tag="ClientEventsPage" Content="Events"/>
+                <NavigationViewItemSeparator/>
+                <NavigationViewItem Icon="AllApps" Tag="ApplicationsPage" Content="Applications"/>
             </NavigationView.MenuItems>
 
             <ScrollViewer>

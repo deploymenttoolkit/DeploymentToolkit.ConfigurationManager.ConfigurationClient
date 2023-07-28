@@ -53,6 +53,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
             services.AddSingleton<NavigationService>();
             services.AddSingleton<ConfigurationManagerClientService>();
 
+            // We want to continiously recieve SDK events even when page is closed
+            services.AddSingleton<ClientEventsPageViewModel>();
+
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<ComponentsPageViewModel>();
             services.AddTransient<CachePageViewModel>();
@@ -62,7 +65,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
             services.AddTransient<PolicyPageViewModel>();
             services.AddTransient<LogPageViewModel>();
             services.AddTransient<DeviceRegistrationViewModel>();
-            services.AddTransient<ClientEventsPageViewModel>();
+
+            services.AddTransient<ApplicationsPageViewModel>();
 
             services.AddTransient<GeneralPageViewModel>();
 

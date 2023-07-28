@@ -155,6 +155,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return GetInstances("SMS_DesiredConfiguration", new ManagementScope(@"ROOT\ccm\dcm"));
         }
 
+        public ManagementObjectCollection GetApplications()
+        {
+            return GetInstances("CCM_Application", new ManagementScope(@"ROOT\ccm\ClientSDK"));
+        }
+
         private ManagementObjectCollection GetInstances(string className, ManagementScope scope = default)
         {
             var selectedScope = scope == default ? _clientManagementScope : scope;
