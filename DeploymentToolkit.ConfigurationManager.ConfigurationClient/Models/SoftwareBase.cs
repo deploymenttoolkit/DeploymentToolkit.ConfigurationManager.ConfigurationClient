@@ -21,8 +21,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         private DateTime _deadline;
         [ObservableProperty]
         private DateTime _nextUserScheduledTime;
-        [ObservableProperty]
-        private uint _evaluationState;
+        // Evaluation state differes between Configuration Items
+        //[ObservableProperty]
+        //private ApplicationEvaluationState _evaluationState;
         [ObservableProperty]
         private uint _percentComplete;
         [ObservableProperty]

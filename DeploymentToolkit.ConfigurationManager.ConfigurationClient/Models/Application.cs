@@ -101,6 +101,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         private bool _repairable;
 
         [ObservableProperty]
+        private ApplicationEvaluationState _evaluationState;
+        [ObservableProperty]
         private ApplicabilityState _applicabilityState;
         [ObservableProperty]
         private InstallState _installState;

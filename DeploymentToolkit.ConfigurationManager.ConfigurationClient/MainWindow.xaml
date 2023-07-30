@@ -48,6 +48,7 @@
                 <NavigationViewItemSeparator/>
                 <NavigationViewItem Icon="AllApps" Tag="ApplicationsPage" Content="Applications"/>
                 <NavigationViewItem Icon="AllApps" Tag="ProgramsPage" Content="Programs"/>
+                <NavigationViewItem Icon="PostUpdate" Tag="SoftwareUpdatesPage" Content="Software Updates"/>
             </NavigationView.MenuItems>
 
             <ScrollViewer>

@@ -51,9 +51,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
             ThreadId = Convert.ToUInt32(ccmEvent.GetPropertyValue("ThreadID"));
             Severity = (EventSeverity)(uint)ccmEvent.GetPropertyValue("Severity");
 
-            foreach(var property in ccmEvent.Properties)
+            foreach (var property in ccmEvent.Properties)
             {
-                if(_defaultProperties.Contains(property.Name))
+                if (_defaultProperties.Contains(property.Name))
                 {
                     continue;
                 }

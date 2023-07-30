@@ -3,58 +3,68 @@ using CommunityToolkit.Mvvm.Input;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using Microsoft.UI.Xaml;
-using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Management;
+using System.Collections.Specialized;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
-    public partial class ClientEventsPageViewModel : ObservableObject, IDisposable
+    public partial class ClientEventsPageViewModel : ObservableObject
     {
         [ObservableProperty]
         private Visibility _errorMessageVisibility = Visibility.Collapsed;
 
-        private const string _wmiQuery = "SELECT * FROM CCM_Event";
-        private const string _namespace = @"root\CCM\Events";
-
-        private readonly ManagementEventWatcher _eventWatcher;
         private readonly UACService _uacService;
+        private readonly ClientEventsService _clientEventsService;
 
         public ObservableCollection<CcmEvent> Events { get; private set; } = new();
 
-        public ClientEventsPageViewModel(UACService uacService)
+        public ClientEventsPageViewModel(UACService uacService, ClientEventsService clientEventsService)
         {
             _uacService = uacService;
+            _clientEventsService = clientEventsService;
+
             if(!uacService.IsElevated)
             {
                 ErrorMessageVisibility = Visibility.Collapsed;
                 return;
             }
 
-            _eventWatcher = new ManagementEventWatcher(new ManagementScope(_namespace), new EventQuery(_wmiQuery));
-            _eventWatcher.EventArrived += OnEventArrived;
-            _eventWatcher.Start();
+            foreach(var item in _clientEventsService.Events)
+            {
+                Events.Add(item);
+            }
+            _clientEventsService.Events.CollectionChanged += Events_CollectionChanged;
         }
 
-        private void OnEventArrived(object sender, EventArrivedEventArgs e)
+        private void Events_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-#if DEBUG
-            Debug.WriteLine(e.NewEvent.GetPropertyValue("__CLASS"));
-#endif
-
-            var ccmEvent = new CcmEvent(e.NewEvent);
             App.Current.DispatcherQueue.TryEnqueue(() =>
             {
-                Events.Add(ccmEvent);
+                switch (e.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                    {
+                        foreach (var item in e.NewItems)
+                        {
+                            Events.Add(item as CcmEvent);
+                        }
+                        break;
+                    }
+                    case NotifyCollectionChangedAction.Remove:
+                    {
+                        foreach (var item in e.NewItems)
+                        {
+                            Events.Remove(item as CcmEvent);
+                        }
+                        break;
+                    }
+                    case NotifyCollectionChangedAction.Reset:
+                    {
+                        Events.Clear();
+                        break;
+                    }
+                }
             });
-        }
-
-        public void Dispose()
-        {
-            _eventWatcher.Stop();
-            _eventWatcher?.Dispose();
-            GC.SuppressFinalize(this);
         }
 
         [RelayCommand]

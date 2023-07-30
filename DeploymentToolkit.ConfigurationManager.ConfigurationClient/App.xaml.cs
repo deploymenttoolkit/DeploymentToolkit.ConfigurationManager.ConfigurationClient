@@ -1,13 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.HostedServices;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using System;
-using UIRESOURCELib;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -22,13 +23,47 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
         public static new App Current => (App)Application.Current;
         public DispatcherQueue DispatcherQueue { get; private set; }
 
-        public IServiceProvider Services { get; }
+        private readonly IHost HostedService;
+
+        public IServiceProvider Services => HostedService.Services;
 
         public App()
         {
-            Services = ConfigureServices();
+            HostedService = Host.CreateDefaultBuilder().ConfigureServices(services =>
+            {
+                services.AddSingleton<UACService>();
+                services.AddSingleton<NavigationService>();
+                services.AddSingleton<ConfigurationManagerClientService>();
+                services.AddSingleton<ClientEventsService>();
+
+                services.AddTransient<ClientEventsPageViewModel>();
+                services.AddTransient<MainWindowViewModel>();
+                services.AddTransient<ComponentsPageViewModel>();
+                services.AddTransient<CachePageViewModel>();
+                services.AddTransient<BITSPageViewModel>();
+                services.AddTransient<ActionsPageViewModel>();
+                services.AddTransient<ConfigurationsViewModel>();
+                services.AddTransient<PolicyPageViewModel>();
+                services.AddTransient<LogPageViewModel>();
+                services.AddTransient<DeviceRegistrationViewModel>();
+
+                services.AddTransient<ApplicationsPageViewModel>();
+                services.AddTransient<ProgramPageViewModel>();
+                services.AddTransient<SoftwareUpdatesPageViewModel>();
+
+                services.AddTransient<GeneralPageViewModel>();
+
+                services.AddHostedService<ClientEventsHostedService>();
+            }).Build();
+
+            HostedService.RunAsync();
 
             this.InitializeComponent();
+        }
+
+        ~App()
+        {
+            HostedService.StopAsync().ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
@@ -44,35 +79,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
         internal Window GetActiveWindow()
         {
             return m_window;
-        }
-
-        private static IServiceProvider ConfigureServices()
-        {
-            var services = new ServiceCollection();
-
-            services.AddSingleton<UACService>();
-            services.AddSingleton<NavigationService>();
-            services.AddSingleton<ConfigurationManagerClientService>();
-
-            // We want to continiously recieve SDK events even when page is closed
-            services.AddSingleton<ClientEventsPageViewModel>();
-
-            services.AddTransient<MainWindowViewModel>();
-            services.AddTransient<ComponentsPageViewModel>();
-            services.AddTransient<CachePageViewModel>();
-            services.AddTransient<BITSPageViewModel>();
-            services.AddTransient<ActionsPageViewModel>();
-            services.AddTransient<ConfigurationsViewModel>();
-            services.AddTransient<PolicyPageViewModel>();
-            services.AddTransient<LogPageViewModel>();
-            services.AddTransient<DeviceRegistrationViewModel>();
-
-            services.AddTransient<ApplicationsPageViewModel>();
-            services.AddTransient<ProgramPageViewModel>();
-
-            services.AddTransient<GeneralPageViewModel>();
-
-            return services.BuildServiceProvider();
         }
     }
 }

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views.SoftwareUpdatesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:models="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models"
+    xmlns:converters="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Converters"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <converters:SoftwareUpdateStateConverter x:Key="SoftwareUpdateStateConverter"/>
+    </Page.Resources>
+    <Grid>
+        <controls:DataGrid SelectionMode="Single"
+                           ItemsSource="{x:Bind ViewModel.SoftwareUpdates}"
+                           GridLinesVisibility="Horizontal"
+                           AutoGenerateColumns="False"
+                           x:DefaultBindMode="OneWay">
+            <controls:DataGrid.RowDetailsTemplate>
+                <DataTemplate x:DataType="models:SoftwareUpdate">
+                    <StackPanel Margin="10">
+                        <ListView ItemsSource="{x:Bind Properties}" Margin="0, 5" Padding="0, 0, 0, 10">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="models:BasicProperty">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="0.3*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                        <TextBlock Grid.Column="1" Text="{x:Bind Value}" TextWrapping="Wrap"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </DataTemplate>
+            </controls:DataGrid.RowDetailsTemplate>
+
+            <controls:DataGrid.Columns>
+                <controls:DataGridTextColumn Header="Publisher" Binding="{Binding Publisher}"/>
+                <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                <controls:DataGridTextColumn Header="ComplianceState" Binding="{Binding ComplianceState}"/>
+                <controls:DataGridTextColumn Header="EvaluationState" Binding="{Binding Converter={StaticResource SoftwareUpdateStateConverter}}"/>
+                <controls:DataGridTextColumn Header="StartTime" Binding="{Binding StartTime}"/>
+                <controls:DataGridTextColumn Header="Deadline" Binding="{Binding Deadline}"/>
+                <controls:DataGridTextColumn Header="RestartDeadline" Binding="{Binding RestartDeadline}"/>
+
+                <controls:DataGridTemplateColumn Header="ExclusiveUpdate">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding ExclusiveUpdate}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTemplateColumn Header="UserUIExperience">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding UserUIExperience}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTemplateColumn Header="NotifyUser">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding NotifyUser}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTemplateColumn Header="OverrideServiceWindows">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding OverrideServiceWindows}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTemplateColumn Header="RebootOutsideServiceWindows">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding RebootOutsideServiceWindows}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTemplateColumn Header="IsUpgrade">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsUpgrade}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+                <controls:DataGridTemplateColumn Header="IsO365Update">
+                    <controls:DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsO365Update}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
+                        </DataTemplate>
+                    </controls:DataGridTemplateColumn.CellTemplate>
+                </controls:DataGridTemplateColumn>
+            </controls:DataGrid.Columns>
+        </controls:DataGrid>
+    </Grid>
+</Page>
