@@ -32,6 +32,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 applications.Add(new Application(this, application));
             }
 
+            Applications.Clear();
             foreach(var application in applications.OrderBy(a => a.Name))
             {
                 Applications.Add(application);
