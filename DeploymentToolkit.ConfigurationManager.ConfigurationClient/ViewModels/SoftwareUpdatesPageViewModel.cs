@@ -7,7 +7,6 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Management;
 
@@ -49,6 +48,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             var update = SoftwareUpdates.FirstOrDefault(u => u.UpdateID == updateId);
             if(update == null)
             {
+                var softwareUpdate = new SoftwareUpdate(this, _clientService.GetSoftwareUpdate(updateId));
+                App.Current.DispatcherQueue.TryEnqueue(() =>
+                {
+                    SoftwareUpdates.Add(softwareUpdate);
+                });
                 return;
             }
 

@@ -3,7 +3,7 @@ using System;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
 {
-    public partial class SoftwareBase : ObservableObject
+    public abstract partial class SoftwareBase : ObservableObject
     {
         [ObservableProperty]
         private uint _type;
@@ -21,14 +21,14 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         private DateTime _deadline;
         [ObservableProperty]
         private DateTime _nextUserScheduledTime;
-        // Evaluation state differes between Configuration Items
-        //[ObservableProperty]
-        //private ApplicationEvaluationState _evaluationState;
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(EvaluationStateText))]
         private uint _percentComplete;
         [ObservableProperty]
         private uint _errorCode;
         [ObservableProperty]
         private uint _estimatedInstallTime;
+
+        public abstract string EvaluationStateText { get; }
     }
 }

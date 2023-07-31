@@ -144,13 +144,13 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         [ObservableProperty]
         private bool _highImpactDeployment;
 
-        public string EvaluationStateText
+        public override string EvaluationStateText
         {
             get
             {
                 if (EvaluationState == ApplicationEvaluationState.DownloadingContent)
                 {
-                    return $"{EvaluationState} ({PercentComplete})";
+                    return $"{EvaluationState} ({PercentComplete}%)";
                 }
                 return EvaluationState.ToString();
             }

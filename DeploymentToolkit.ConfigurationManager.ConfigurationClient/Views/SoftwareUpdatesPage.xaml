@@ -8,12 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models"
-    xmlns:converters="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <Page.Resources>
-        <converters:SoftwareUpdateStateConverter x:Key="SoftwareUpdateStateConverter"/>
-    </Page.Resources>
     <Grid>
         <controls:DataGrid SelectionMode="Single"
                            ItemsSource="{x:Bind ViewModel.SoftwareUpdates}"
@@ -46,7 +42,7 @@
                 <controls:DataGridTextColumn Header="Publisher" Binding="{Binding Publisher}"/>
                 <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <controls:DataGridTextColumn Header="ComplianceState" Binding="{Binding ComplianceState}"/>
-                <controls:DataGridTextColumn Header="EvaluationState" Binding="{Binding Converter={StaticResource SoftwareUpdateStateConverter}}"/>
+                <controls:DataGridTextColumn Header="EvaluationState" Binding="{Binding EvaluationStateText}"/>
                 <controls:DataGridTextColumn Header="StartTime" Binding="{Binding StartTime}"/>
                 <controls:DataGridTextColumn Header="Deadline" Binding="{Binding Deadline}"/>
                 <controls:DataGridTextColumn Header="RestartDeadline" Binding="{Binding RestartDeadline}"/>

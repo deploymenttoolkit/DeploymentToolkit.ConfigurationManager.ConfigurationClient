@@ -20,6 +20,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         string _updateID;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(EvaluationStateText))]
         private SoftwareUpdateEvaluationState _evaluationState;
 
         [ObservableProperty]
@@ -50,6 +51,18 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         bool _isUpgrade;
         [ObservableProperty]
         bool _isO365Update;
+
+        public override string EvaluationStateText
+        {
+            get
+            {
+                if (EvaluationState == SoftwareUpdateEvaluationState.ciJobStateDownloading || EvaluationState == SoftwareUpdateEvaluationState.ciJobStateInstalling)
+                {
+                    return $"{EvaluationState} ({PercentComplete}%)";
+                }
+                return EvaluationState.ToString();
+            }
+        }
 
         private static readonly List<PropertyInfo> _properties = new();
 

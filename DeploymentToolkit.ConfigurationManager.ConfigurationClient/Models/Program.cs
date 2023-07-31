@@ -107,6 +107,23 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         [ObservableProperty]
         private bool _notifyUser;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(EvaluationStateText))]
+        // Now ApplicationEvaluationState is probably wrong for a Program but I can't seem to find a documentation for it ...
+        private ApplicationEvaluationState _evaluationState;
+
+        public override string EvaluationStateText
+        {
+            get
+            {
+                if (EvaluationState == ApplicationEvaluationState.DownloadingContent)
+                {
+                    return $"{EvaluationState} ({PercentComplete})";
+                }
+                return EvaluationState.ToString();
+            }
+        }
+
         private static readonly List<PropertyInfo> _properties = new();
 
         private readonly ManagementBaseObject _instance;
