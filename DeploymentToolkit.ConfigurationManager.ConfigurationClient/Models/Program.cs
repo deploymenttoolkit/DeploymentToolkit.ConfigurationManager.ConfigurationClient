@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
 {
-    public enum RepeatRunBehavior
+    public enum RepeatRunBehavior : uint
     {
         RerunAlways,
         RerunIfFail,
@@ -158,7 +158,14 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
                 {
                     if (Enum.IsDefined(property.PropertyType, value))
                     {
-                        property.SetValue(this, Enum.ToObject(property.PropertyType, value));
+                        if (value is string)
+                        {
+                            property.SetValue(this, Enum.Parse(property.PropertyType, value as string));
+                        }
+                        else
+                        {
+                            property.SetValue(this, Enum.ToObject(property.PropertyType, value));
+                        }
                     }
                     else
                     {
