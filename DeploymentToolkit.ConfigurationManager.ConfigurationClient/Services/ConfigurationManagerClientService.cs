@@ -1,8 +1,10 @@
 ﻿using CPAPPLETLib;
-using SmsClientLib;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using System;
 using System.Management;
 using System.ServiceProcess;
 using UIRESOURCELib;
+using CacheElement = UIRESOURCELib.CacheElement;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
@@ -158,6 +160,31 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         public ManagementObjectCollection GetApplications()
         {
             return GetInstances("CCM_Application", new ManagementScope(@"ROOT\ccm\ClientSDK"));
+        }
+
+        public ManagementObject GetApplication(string id, string revision, bool isMachineTarget)
+        {
+            return GetInstance(@$"CCM_Application.Id=""{id}"",Revision=""{revision}"",IsMachineTarget={(isMachineTarget ? "true" : "false")}", new ManagementScope(@"ROOT\ccm\ClientSDK"));
+        }
+
+        public uint InstallApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Install", application, priority, reboot);
+        public uint RepairApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Repair", application, priority, reboot);
+        public uint UninstallApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Uninstall", application, priority, reboot);
+
+        private uint InvokeApplicationMethod(string method, Application application, Priority priority, bool reboot)
+        {
+            var applicationClass = new ManagementClass(@"ROOT\ccm\ClientSDK", "CCM_Application", null);
+
+            var parameters = applicationClass.GetMethodParameters(method);
+            parameters["Id"] = application.Id;
+            parameters["Revision"] = application.Revision;
+            parameters["IsMachineTarget"] = application.IsMachineTarget;
+            parameters["EnforcePreference"] = (uint)application.EnforcePreference;
+            parameters["Priority"] = priority.ToString();
+            parameters["IsRebootIfNeeded"] = reboot;
+
+            var result = applicationClass.InvokeMethod(method, parameters, null);
+            return Convert.ToUInt32(result["ReturnValue"]);
         }
 
         public ManagementObjectCollection GetPrograms()

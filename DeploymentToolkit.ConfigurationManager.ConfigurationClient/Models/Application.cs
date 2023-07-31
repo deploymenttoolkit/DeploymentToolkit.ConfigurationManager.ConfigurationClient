@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
 {
@@ -64,7 +65,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         ApplicationGroup
     }
 
-    public partial class Application : ObservableObject
+    public partial class Application : SoftwareBase
     {
         public ApplicationsPageViewModel ViewModel { get; private set; }
 
@@ -101,6 +102,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         private bool _repairable;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(EvaluationStateText))]
         private ApplicationEvaluationState _evaluationState;
         [ObservableProperty]
         private ApplicabilityState _applicabilityState;
@@ -142,7 +144,19 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         [ObservableProperty]
         private bool _highImpactDeployment;
 
-        private readonly ManagementBaseObject _instance;
+        public string EvaluationStateText
+        {
+            get
+            {
+                if (EvaluationState == ApplicationEvaluationState.DownloadingContent)
+                {
+                    return $"{EvaluationState} ({PercentComplete})";
+                }
+                return EvaluationState.ToString();
+            }
+        }
+
+        private ManagementBaseObject _instance;
         private readonly bool _isPartOfApplicationGroup;
 
         public Application(ApplicationsPageViewModel viewModel, ManagementBaseObject application, bool isPartOfApplicationGroup = false)
@@ -155,8 +169,13 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
             UpdateInstance();
         }
 
-        private void UpdateInstance()
+        internal void UpdateInstance(bool refresh = false)
         {
+            if(refresh)
+            {
+                _instance = ViewModel.GetApplication(_instance.Properties["Id"].Value as string, _instance.Properties["Revision"].Value as string, Convert.ToBoolean(_instance.Properties["IsMachineTarget"].Value));
+            }
+
             Properties.Clear();
 
             Id = _instance.GetPropertyValue("Id") as string;
@@ -187,13 +206,14 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
             Uninstallable = allowedActions.Contains("Uninstall");
             Repairable = allowedActions.Contains("Repair");
 
+            EvaluationState = EnumExtensions.ParseOrDefault<ApplicationEvaluationState>(_instance.GetPropertyValue("EvaluationState").ToString());
             ApplicabilityState = EnumExtensions.ParseOrDefault<ApplicabilityState>(_instance.GetPropertyValue("ApplicabilityState") as string);
             InstallState = EnumExtensions.ParseOrDefault<InstallState>(_instance.GetPropertyValue("InstallState") as string);
             ResolvedState = EnumExtensions.ParseOrDefault<ResolvedState>(_instance.GetPropertyValue("ResolvedState") as string);
             ConfigureState = EnumExtensions.ParseOrDefault<ConfigureState>(_instance.GetPropertyValue("ConfigureState") as string);
             if (!_isPartOfApplicationGroup)
             {
-                EnforcePreference = EnumExtensions.ParseOrDefault<EnforcePreference>(_instance.GetPropertyValue("EnforcePreference") as string);
+                EnforcePreference = EnumExtensions.ParseOrDefault<EnforcePreference>(_instance.GetPropertyValue("EnforcePreference").ToString());
                 SupersessionState = EnumExtensions.ParseOrDefault<SupersessionState>(_instance.GetPropertyValue("SupersessionState") as string);
 
 
@@ -220,6 +240,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
             Properties.Add(new BasicProperty(nameof(Id), Id));
             Properties.Add(new BasicProperty(nameof(Revision), Revision));
             Properties.Add(new BasicProperty(nameof(ConfigureState), ConfigureState));
+            Properties.Add(new BasicProperty(nameof(EvaluationState), EvaluationState));
             if (!_isPartOfApplicationGroup)
             {
                 Properties.Add(new BasicProperty(nameof(EnforcePreference), EnforcePreference));

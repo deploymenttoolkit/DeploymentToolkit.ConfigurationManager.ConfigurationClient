@@ -52,6 +52,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.HostedServi
                         WeakReferenceMessenger.Default.Send(new CCMSoftwareUpdateMessage(instanceEvent));
                     }
                     break;
+
+                    case "CCM_Application":
+                    {
+                        WeakReferenceMessenger.Default.Send(new CCMApplicationMessage(instanceEvent));
+                    }
+                    break;
                 }
             }
         }

@@ -11,8 +11,40 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Grid>
-        <controls:DataGrid SelectionMode="Single"
-                           ItemsSource="{x:Bind ViewModel.Applications}"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock TextAlignment="Right" Text="Last Updated" Padding="5"/>
+                    <TextBlock TextAlignment="Right" Text="{x:Bind ViewModel.LastUpdated, Mode=OneWay}" Padding="5"/>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                            Background="{StaticResource SystemFillColorSuccessBackground}"
+                            Foreground="{StaticResource SystemFillColorSuccess}"
+                            Command="{x:Bind ViewModel.UpdateApplicationsCommand}"
+                            Padding="10" Margin="5">
+                    <SymbolIcon Symbol="Refresh"/>
+                </Button>
+            </Grid>
+        </Grid>
+        
+        <controls:DataGrid SelectionMode="Single" Grid.Row="1"
+                           ItemsSource="{x:Bind ViewModel.Applications, Mode=OneWay}"
                            GridLinesVisibility="Horizontal"
                            AutoGenerateColumns="False"
                            x:DefaultBindMode="OneWay"
@@ -68,6 +100,7 @@
                 <controls:DataGridTextColumn Header="ApplicationType" Binding="{Binding ApplicationType}"/>
                 <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <controls:DataGridTextColumn Header="Revision" Binding="{Binding Revision}"/>
+                <controls:DataGridTextColumn Header="EvaluationState" Binding="{Binding EvaluationStateText}"/>
 
                 <controls:DataGridTemplateColumn Header="Machine Target">
                     <controls:DataGridTemplateColumn.CellTemplate>
@@ -119,19 +152,22 @@
 
                 <controls:DataGridTextColumn Header="LastInstallTime" Binding="{Binding LastInstallTime}"/>
 
-                <!--<controls:DataGridTemplateColumn Header="">
+                <controls:DataGridTemplateColumn Header="">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Grid.Column="6" Margin="2"
-                                        Background="{StaticResource SystemFillColorSuccessBackground}"
-                                        Foreground="{StaticResource SystemFillColorSuccess}"
-                                        Command="{Binding ViewModel.RunActionCommand}"
-                                        CommandParameter="{Binding ActionId}">
-                                <SymbolIcon Symbol="Refresh"/>
-                            </Button>
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel.Resources>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Margin" Value="0, 0, 5, 0"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <Button Content="Install" IsEnabled="{Binding Installable}" Command="{Binding ViewModel.InstallCommand}" CommandParameter="{Binding}" Background="{StaticResource SystemFillColorSuccessBackground}" Foreground="{StaticResource SystemFillColorSuccess}"/>
+                                <Button Content="Repair" IsEnabled="{Binding Repairable}" Command="{Binding ViewModel.RepairCommand}" CommandParameter="{Binding}" Background="{StaticResource SystemFillColorAttentionBackground}"/>
+                                <Button Content="Uninstall" IsEnabled="{Binding Uninstallable}" Command="{Binding ViewModel.UninstallCommand}" CommandParameter="{Binding}" Background="{StaticResource SystemFillColorCautionBackground}" Foreground="{StaticResource SystemFillColorCaution}" />
+                            </StackPanel>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>-->
+                </controls:DataGridTemplateColumn>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
