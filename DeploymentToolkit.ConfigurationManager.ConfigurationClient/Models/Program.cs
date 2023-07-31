@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Common.Parsers;
-using CommunityToolkit.Mvvm.ComponentModel;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Extensions;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,9 +7,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Vanara.PInvoke;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
 {
@@ -161,9 +156,13 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
                 }
                 else if(property.PropertyType.IsEnum)
                 {
-                    if (Enum.TryParse(property.PropertyType, value as string, out var parsed))
+                    if (Enum.IsDefined(property.PropertyType, value))
                     {
-                        property.SetValue(this, parsed);
+                        property.SetValue(this, Enum.ToObject(property.PropertyType, value));
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"Failed to parse {value} to {property.PropertyType}");
                     }
                 }
                 else if(property.PropertyType.IsArray)
