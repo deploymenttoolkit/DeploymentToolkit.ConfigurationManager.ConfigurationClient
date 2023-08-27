@@ -85,6 +85,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             {
                 return;
             }
+            
+            // Prevent clicking on title
+            if(policy.DisplayName != "ActualConfig" && policy.DisplayName != "RequestedConfig")
+            {
+                return;
+            }
 
             Classes.Source = _clientService.GetPolicyClasses(policy).OrderBy(c => c.DisplayName);
             Instances.Source = null;
