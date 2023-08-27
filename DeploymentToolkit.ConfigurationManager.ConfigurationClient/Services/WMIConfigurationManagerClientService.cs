@@ -1,7 +1,6 @@
 ﻿using CPAPPLETLib;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using System;
-using System.Collections.Generic;
 using System.Management;
 using System.ServiceProcess;
 using UIRESOURCELib;

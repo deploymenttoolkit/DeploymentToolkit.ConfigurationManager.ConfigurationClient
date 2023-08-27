@@ -10,6 +10,8 @@
     xmlns:win="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
@@ -52,17 +54,29 @@
             </win:StackPanel.ChildrenTransitions>
 
             <!-- Remote Settings -->
-            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
-                           Text="Remote Connection Settings" />
-            <labs:SettingsCard Description="Host to connect remotely to"
-                                   Header="Host">
+            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="Remote Connection Settings" />
+
+            <labs:SettingsCard Description="Connection Method" Header="Host">
+                <labs:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xe703;" />
+                </labs:SettingsCard.HeaderIcon>
+
+                <ComboBox MinWidth="{StaticResource TextBoxMinWidth}" ItemsSource="{x:Bind ViewModel.ConnectionMethods}" SelectedItem="{x:Bind ViewModel.SelectedConnectionMethod, Mode=TwoWay}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="SelectionChanged">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ConnectionMethodChangedCommand}"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </ComboBox>
+            </labs:SettingsCard>
+            <labs:SettingsCard Description="Host to connect remotely to" Header="Host">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe7ef;" />
                 </labs:SettingsCard.HeaderIcon>
 
                 <TextBox Text="{x:Bind ViewModel.Host, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
             </labs:SettingsCard>
-            <labs:SettingsCard Description="Allow unencrypted WinRM connection (not recommended)" Header="Allow unencrypted">
+            <labs:SettingsCard Description="Allow unencrypted WinRM connection (not recommended)" Header="Allow unencrypted" IsEnabled="{x:Bind ViewModel.IsEncryptionSupported, Mode=OneWay}">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xeb59;" />
                 </labs:SettingsCard.HeaderIcon>
