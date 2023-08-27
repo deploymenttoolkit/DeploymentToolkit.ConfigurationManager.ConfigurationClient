@@ -4,6 +4,7 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using Windows.Management.Policies;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
@@ -22,23 +23,30 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private string _pageTitle;
 
         private readonly NavigationService _navigationService;
-        private readonly IWindowsManagementInstrumentationConnection _wmiConnection;
+        private readonly ClientConnectionManager _connectionManager;
 
-        public MainWindowViewModel(NavigationService navigationService, IWindowsManagementInstrumentationConnection wmiConnection)
+        public MainWindowViewModel(NavigationService navigationService, ClientConnectionManager connectionManager)
         {
             _navigationService = navigationService;
-            _wmiConnection = wmiConnection;
+            _connectionManager = connectionManager;
 
             _navigationService.Navigate("Settings");
-            
-            _wmiConnection.PropertyChanged += WMIConnection_PropertyChanged;
+
+            _connectionManager.PropertyChanged += ConnectionPropertyChanged;
+            _connectionManager.Connection.PropertyChanged += ConnectionPropertyChanged;
         }
 
-        private void WMIConnection_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void ConnectionPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(_wmiConnection.IsConnected))
+            if(e.PropertyName == nameof(_connectionManager.Connection.IsConnected))
             {
-                IsWMIConnected = _wmiConnection.IsConnected;
+                IsWMIConnected = _connectionManager.Connection.IsConnected;
+            }
+            else if(e.PropertyName == nameof(_connectionManager.Connection))
+            {
+                IsWMIConnected = _connectionManager.Connection.IsConnected;
+                _connectionManager.Connection.PropertyChanged -= ConnectionPropertyChanged;
+                _connectionManager.Connection.PropertyChanged += ConnectionPropertyChanged;
             }
         }
 

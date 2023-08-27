@@ -39,12 +39,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
 
                     services.AddSingleton<UACService>();
 
-                    services.AddSingleton<IWindowsManagementInstrumentationConnection, WindowsRemoteManagementClient>();
-                    services.AddSingleton<IConfigurationManagerClientService, ConfigurationManagerClientService>();
-
-#if DEBUG
                     services.AddSingleton<WindowsRemoteManagementClient>();
-#endif
+                    services.AddSingleton<WindowsManagementInstrumentationClient>();
+
+                    services.AddSingleton<ClientConnectionManager>();
+
+                    services.AddTransient<IConfigurationManagerClientService, ConfigurationManagerClientService>();
 
                     services.AddSingleton<WMIConfigurationManagerClientService>();
                     services.AddSingleton<ClientEventsService>();

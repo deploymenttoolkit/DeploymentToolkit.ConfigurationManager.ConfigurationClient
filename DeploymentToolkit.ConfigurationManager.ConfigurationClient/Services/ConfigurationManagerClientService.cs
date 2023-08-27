@@ -5,7 +5,6 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
@@ -30,9 +29,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         private static readonly Lazy<PolicyNamespace> _defaultPolicy = new(() => new PolicyNamespace("Policy", null));
 
-        public ConfigurationManagerClientService(IWindowsManagementInstrumentationConnection remoteManagementClient)
+        public ConfigurationManagerClientService(ClientConnectionManager clientConnectionManager)
         {
-            _remoteManagementClient = remoteManagementClient;
+            _remoteManagementClient = clientConnectionManager.Connection;
         }
 
         public IEnumerable<CCM_ClientActions>? GetClientActions()

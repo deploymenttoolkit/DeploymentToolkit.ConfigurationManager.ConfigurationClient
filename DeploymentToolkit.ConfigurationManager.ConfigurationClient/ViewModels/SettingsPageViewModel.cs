@@ -58,11 +58,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             }
         }
 
-        private readonly IWindowsManagementInstrumentationConnection _windowsManagementInstrumentationConnection;
+        private readonly ClientConnectionManager _clientConnectionManager;
 
-        public SettingsPageViewModel(IWindowsManagementInstrumentationConnection windowsRemoteManagementClient)
+        public SettingsPageViewModel(ClientConnectionManager clientConnectionManager)
         {
-            _windowsManagementInstrumentationConnection = windowsRemoteManagementClient;
+            _clientConnectionManager = clientConnectionManager;
         }
 
         [RelayCommand]
@@ -73,11 +73,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 return;
             }
 
-            switch(selectedConnectionMethod)
+            _clientConnectionManager.SetConnectionMethod(selectedConnectionMethod);
+
+            switch (selectedConnectionMethod)
             {
                 case ConnectionMethod.Auto:
-                    // TODO: properly evaluate
-                    IsEncryptionSupported = _windowsManagementInstrumentationConnection is WindowsRemoteManagementClient;
+                    IsEncryptionSupported = _clientConnectionManager.Connection is WindowsRemoteManagementClient;
                     break;
 
                 case ConnectionMethod.WMI:
@@ -97,30 +98,30 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
             if(CredentialsEnabled)
             {
-                result = _windowsManagementInstrumentationConnection.Connect(Host, Username, Password, !AllowUnencryptedConnections);
+                result = _clientConnectionManager.Connection.Connect(Host, Username, Password, !AllowUnencryptedConnections);
             }
             else
             {
-                result = _windowsManagementInstrumentationConnection.Connect(Host, encrypted: !AllowUnencryptedConnections) ;
+                result = _clientConnectionManager.Connection.Connect(Host, encrypted: !AllowUnencryptedConnections) ;
             }
 
             IsWMIConnected = result.IsSuccess;
 
             if(result.IsSuccess)
             {
-                Notification.Show(new InAppNotificationData($"Successfully connected to WinRM on host {Host}", ""), 5000);
+                Notification.Show(new InAppNotificationData($"Successfully connected to host {Host}", ""), 5000);
             }
             else
             {
-                Notification.Show(new InAppNotificationData($"Failed to connect to WinRM on host {Host}", result.Errors[0].Message, Microsoft.UI.Xaml.Controls.InfoBarSeverity.Error), 5000);
+                Notification.Show(new InAppNotificationData($"Failed to connect to host {Host}", result.Errors[0].Message, InfoBarSeverity.Error), 5000);
             }
         }
 
         [RelayCommand]
         private void Disconnect()
         {
-            _windowsManagementInstrumentationConnection.Disconnect();
-            IsWMIConnected = _windowsManagementInstrumentationConnection.IsConnected;
+            _clientConnectionManager.Connection.Disconnect();
+            IsWMIConnected = _clientConnectionManager.Connection.IsConnected;
         }
     }
 }
