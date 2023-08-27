@@ -33,9 +33,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
         
         private readonly UACService _uacService;
-        private readonly ConfigurationManagerClientService _clientService;
+        private readonly WMIConfigurationManagerClientService _clientService;
 
-        public CachePageViewModel(UACService uacService, ConfigurationManagerClientService clientService)
+        public CachePageViewModel(UACService uacService, WMIConfigurationManagerClientService clientService)
         {
             this._uacService = uacService;
             this._clientService = clientService;

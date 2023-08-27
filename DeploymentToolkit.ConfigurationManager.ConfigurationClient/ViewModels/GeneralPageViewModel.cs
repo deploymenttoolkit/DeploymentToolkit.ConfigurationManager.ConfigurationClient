@@ -8,20 +8,34 @@ using System;
 using System.Management;
 using Microsoft.UI.Xaml.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
-    public class GeneralPageViewModel : ObservableObject
+    public partial class GeneralPageViewModel : ObservableObject
     {
-        private ObservableGroupedCollection<string, ClientProperty> _properties;
-        public ReadOnlyObservableGroupedCollection<string, ClientProperty> Properties { get; }
-        public CollectionViewSource CollectionViewSource { get; }
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(CollectionViewSource))]
+        private ObservableCollection<ClientProperty> _properties = new();
 
-        private readonly ConfigurationManagerClientService _clientService;
+        public CollectionViewSource CollectionViewSource { get; } = new()
+        {
+            IsSourceGrouped = true
+        };
 
-        private readonly Dictionary<string, Func<ManagementBaseObject>> _updateActions;
+        private readonly IConfigurationManagerClientService _clientService;
 
-        public GeneralPageViewModel(ConfigurationManagerClientService clientService)
+        private readonly Dictionary<string, Func<IWindowsManagementInstrumentationStaticInstance?>> _updateActions;
+
+        private readonly string[] _propertiesToSkip = {
+            "Namespace",
+            "Class",
+            "Reserved",
+            "ReservedString1", "ReservedString2", "ReservedString3",
+            "ReservedUint1", "ReservedUint2"
+        };
+
+        public GeneralPageViewModel(IConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 
@@ -30,34 +44,49 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 { "Client", _clientService.GetClient },
                 { "ClientInfo", _clientService.GetClientInfo },
                 { "SMSClient", _clientService.GetSMSClient },
-                { "SMSMP", _clientService.GetSMSLookupMP },
                 { "ClientIdentificationInformation", _clientService.GetClientIdentificationInformation },
                 { "ClientSiteMode", _clientService.GetClientSiteMode },
                 { "ClientUpgradeStatus", _clientService.GetClientUpgradeStatus },
             };
 
-            var properties = new Collection<ClientProperty>();
+            Update();
+        }
+
+        private void Update()
+        {
+            Properties.Clear();
 
             foreach (var pair in _updateActions)
             {
-                foreach (var property in pair.Value.Invoke().Properties)
+                var result = pair.Value.Invoke();
+                if (result == null)
                 {
-                    properties.Add(new ClientProperty()
+                    continue;
+                }
+
+                var classProperties = result.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                if (classProperties == null)
+                {
+                    continue;
+                }
+
+                foreach (var property in classProperties)
+                {
+                    if (_propertiesToSkip.Contains(property.Name))
+                    {
+                        continue;
+                    }
+
+                    Properties.Add(new ClientProperty()
                     {
                         Group = pair.Key,
                         Name = property.Name,
-                        Value = property.Value?.ToString() ?? string.Empty,
+                        Value = property.GetValue(result)?.ToString() ?? string.Empty
                     });
                 }
             }
 
-            _properties = new(properties.GroupBy(p => p.Group));
-            Properties = new(_properties);
-            CollectionViewSource = new CollectionViewSource()
-            {
-                IsSourceGrouped = true,
-                Source = Properties
-            };
+            CollectionViewSource.Source = Properties.GroupBy(p => p.Group);
         }
     }
 }

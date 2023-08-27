@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models"
+    xmlns:clientsdk="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Grid>
@@ -17,7 +18,7 @@
                            AutoGenerateColumns="False"
                            x:DefaultBindMode="OneWay">
             <controls:DataGrid.RowDetailsTemplate>
-                <DataTemplate x:DataType="models:SoftwareUpdate">
+                <DataTemplate x:DataType="clientsdk:CCM_SoftwareUpdate">
                     <StackPanel Margin="10">
                         <ListView ItemsSource="{x:Bind Properties}" Margin="0, 5" Padding="0, 0, 0, 10">
                             <ListView.ItemTemplate>

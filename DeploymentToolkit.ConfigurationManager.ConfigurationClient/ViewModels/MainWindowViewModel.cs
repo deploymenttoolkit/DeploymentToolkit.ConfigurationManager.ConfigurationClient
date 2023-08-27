@@ -22,18 +22,20 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         public MainWindowViewModel(NavigationService navigationService)
         {
             _navigationService = navigationService;
+            _navigationService.Navigate("Settings");
         }
 
 
         [RelayCommand]
         private void OnSelectionChanged(NavigationViewSelectionChangedEventArgs selectionChangedEvent)
         {
-            if(selectionChangedEvent.SelectedItem == null)
+            if(selectionChangedEvent.SelectedItem == null || selectionChangedEvent.SelectedItem is not NavigationViewItem item)
             {
                 return;
             }
-            _navigationService.Navigate(selectionChangedEvent.SelectedItem as NavigationViewItem);
-            PageTitle = (selectionChangedEvent.SelectedItem as NavigationViewItem).Content.ToString();
+
+            _navigationService.Navigate(item);
+            PageTitle = item.Content?.ToString() ?? nameof(item);
         }
 
         [RelayCommand]

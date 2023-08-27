@@ -1,245 +1,177 @@
-﻿using CPAPPLETLib;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.SoftMgmtAgent;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using System;
-using System.Management;
-using System.ServiceProcess;
-using UIRESOURCELib;
-using CacheElement = UIRESOURCELib.CacheElement;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
-    public partial class ConfigurationManagerClientService
+    public class ConfigurationManagerClientService : IConfigurationManagerClientService
     {
-        private ManagementScope _clientManagementScope;
+        private readonly IWindowsManagementInstrumentationConnection _remoteManagementClient;
 
-        private UACService _uacService;
+        private static readonly Lazy<CCM_ClientActions> _defaultClientAction = new(() => new CCM_ClientActions(false, PolicyTarget.Machine, ConfigState.Actual));
 
-        private UIResourceMgr _uiResourceMgr;
-        //private SmsClient _smsClient;
-        private CPAppletMgr _cpAppletManager;
+        private static readonly Lazy<CCM_InstalledComponent> _defaultInstalledComponent = new(() => new CCM_InstalledComponent());
 
-        public ConfigurationManagerClientService(UACService uacService)
+        private static readonly Lazy<CacheInfoEx> _defaultCacheInfo = new(() => new CacheInfoEx());
+        private static readonly Lazy<CacheConfig> _defaultCacheConfig = new(() => new CacheConfig() { ConfigKey = "Cache" });
+
+        private static readonly Lazy<CCM_Client> _defaultClient = new(() => new CCM_Client());
+        private static readonly Lazy<SMS_Client> _defaultSMSClient = new(() => new SMS_Client());
+        private static readonly Lazy<SMS_LookupMP> _defaultSMSLookupMP = new(() => new SMS_LookupMP());
+        private static readonly Lazy<CCM_ClientIdentificationInformation> _defaultClientIdentification = new(() => new CCM_ClientIdentificationInformation());
+        private static readonly Lazy<CCM_ClientSiteMode> _defaultSiteMode = new(() => new CCM_ClientSiteMode());
+        private static readonly Lazy<CCM_ClientUpgradeStatus> _defaultUpgradeStatus = new(() => new CCM_ClientUpgradeStatus());
+        private static readonly Lazy<ClientInfo> _defaultClientInfo = new(() => new ClientInfo());
+
+        private static readonly Lazy<PolicyNamespace> _defaultPolicy = new(() => new PolicyNamespace("Policy", null));
+
+        public ConfigurationManagerClientService(IWindowsManagementInstrumentationConnection remoteManagementClient)
         {
-            _uacService = uacService;
+            _remoteManagementClient = remoteManagementClient;
+        }
 
-            _clientManagementScope = new ManagementScope(@"ROOT\ccm");
-            _clientManagementScope.Connect();
+        public IEnumerable<CCM_ClientActions>? GetClientActions()
+        {
+            return _remoteManagementClient.GetInstances<CCM_ClientActions>(_defaultClientAction.Value.Class, _defaultClientAction.Value.Namespace);
+        }
 
-            _cpAppletManager = new CPAppletMgr();
+        public IEnumerable<CCM_InstalledComponent>? GetInstalledComponents()
+        {
+            return _remoteManagementClient.GetInstances<CCM_InstalledComponent>(_defaultInstalledComponent.Value.Class, _defaultInstalledComponent.Value.Namespace);
+        }
 
-            if (_uacService.IsElevated)
+        public IEnumerable<CacheInfoEx>? GetClientCache()
+        {
+            return _remoteManagementClient.GetInstances<CacheInfoEx>(_defaultCacheInfo.Value.Class, _defaultCacheInfo.Value.Namespace);
+        }
+
+        public CacheConfig? GetClientCacheConfig()
+        {
+            return _remoteManagementClient.GetInstance<CacheConfig>(_defaultCacheConfig.Value);
+        }
+
+        public CCM_Client? GetClient()
+        {
+            return _remoteManagementClient.GetStaticInstance<CCM_Client>(_defaultClient.Value);
+        }
+
+        public SMS_Client? GetSMSClient()
+        {
+            return _remoteManagementClient.GetStaticInstance<SMS_Client>(_defaultSMSClient.Value);
+        }
+
+        public SMS_LookupMP? GetSMSLookupMP()
+        {
+            return _remoteManagementClient.GetInstances<SMS_LookupMP>(_defaultSMSLookupMP.Value)?.FirstOrDefault();
+        }
+
+        public CCM_ClientIdentificationInformation? GetClientIdentificationInformation()
+        {
+            return _remoteManagementClient.GetStaticInstance<CCM_ClientIdentificationInformation>(_defaultClientIdentification.Value);
+        }
+
+        public CCM_ClientSiteMode? GetClientSiteMode()
+        {
+            return _remoteManagementClient.GetStaticInstance<CCM_ClientSiteMode>(_defaultSiteMode.Value);
+        }
+
+        public CCM_ClientUpgradeStatus? GetClientUpgradeStatus()
+        {
+            return _remoteManagementClient.GetStaticInstance<CCM_ClientUpgradeStatus>(_defaultUpgradeStatus.Value);
+        }
+
+        public ClientInfo? GetClientInfo()
+        {
+            return _remoteManagementClient.GetStaticInstance<ClientInfo>(_defaultClientInfo.Value);
+        }
+
+        public IEnumerable<PolicyNamespace> GetPolicy()
+        {
+            var classes = _remoteManagementClient.GetChildNamespaces(_defaultPolicy.Value);
+            if (classes == null)
             {
-                _uiResourceMgr = new UIResourceMgr();
-                //_smsClient = new SmsClient();
-            }
-        }
-
-        public void RestartService()
-        {
-            if (!_uacService.IsElevated)
-            {
-                return;
-            }
-
-            var ccmExecService = new ServiceController("ccmexec");
-            if(ccmExecService.Status == ServiceControllerStatus.Running)
-            {
-                ccmExecService.Stop();
-                ccmExecService.WaitForStatus(ServiceControllerStatus.Stopped);
-            }
-
-            ccmExecService.Start();
-        }
-
-        public ClientComponents GetInstalledComponent()
-        {
-            return _cpAppletManager.GetClientComponents();
-        }
-
-        public ClientActions GetClientActions()
-        {
-            return _cpAppletManager.GetClientActions();
-        }
-
-        public CacheElements GetCache()
-        {
-            if (!_uacService.IsElevated)
-            {
-                return default;
-            }
-            return _uiResourceMgr.GetCacheInfo().GetCacheElements();
-        }
-
-        public uint GetCacheSize()
-        {
-            var cacheConfig = GetInstance(@"CacheConfig.ConfigKey=""Cache""", new ManagementScope(@"ROOT\ccm\SoftMgmtAgent"));
-            return (uint)cacheConfig.GetPropertyValue("Size");
-        }
-
-        public void SetCacheSize(uint size)
-        {
-            var cacheConfig = GetInstance(@"CacheConfig.ConfigKey=""Cache""", new ManagementScope(@"ROOT\ccm\SoftMgmtAgent"));
-            cacheConfig.SetPropertyValue("Size", size);
-            cacheConfig.Put();
-        }
-
-        public void ClearCache(bool includePersistent)
-        {
-            if(!_uacService.IsElevated)
-            {
-                return;
-            }
-
-            var cacheInfo = _uiResourceMgr.GetCacheInfo();
-            foreach (CacheElement element in cacheInfo.GetCacheElements())
-            {
-                cacheInfo.DeleteCacheElementEx(element.CacheElementId, includePersistent ? 1 : 0);
-            }
-        }
-
-        public bool DeleteFromCache(string cacheElementId)
-        {
-            if (!_uacService.IsElevated)
-            {
-                return false;
+                yield break;
             }
 
-            var cacheInfo = _uiResourceMgr.GetCacheInfo();
-            var cache = cacheInfo.GetCacheElements();
-            foreach(CacheElement element in cache)
+            foreach(var child in classes)
             {
-                if(element.CacheElementId == cacheElementId)
+                var isDefault = child == "DefaultMachine" || child == "DefaultUser";
+                var policyTarget = child == "Machine" ? PolicyTarget.Machine : PolicyTarget.User;
+                var sid = !isDefault && policyTarget == PolicyTarget.User ? child : null;
+
+                var childNamespace = new PolicyNamespace(child, null, isDefault, policyTarget, null, sid);
+
+                var childClasses = _remoteManagementClient.GetChildNamespaces(childNamespace);
+                if(childClasses != null)
                 {
-                    cacheInfo.DeleteCacheElementEx(element.CacheElementId, 1);
-                    return true;
+                    foreach(var childClass in childClasses)
+                    {
+                        var configClass = new PolicyNamespace(
+                            childClass, null,
+                            childNamespace.Default,
+                            childNamespace.PolicyTarget,
+                            childClass == "ActualConfig" ? ConfigState.Actual : ConfigState.Requested,
+                            childNamespace.SID
+                        );
+
+                        childNamespace.Children.Add(configClass);
+                    }
                 }
+
+                yield return childNamespace;
             }
-            return false;
         }
 
-        public ManagementObject GetClient()
+        public IEnumerable<PolicyClass> GetPolicyClasses(PolicyNamespace policy)
         {
-            return GetInstance("CCM_Client=@");
-        }
-
-        public ManagementObject GetSMSClient()
-        {
-            return GetInstance("SMS_Client=@");
-        }
-        
-        public ManagementBaseObject GetSMSLookupMP()
-        {
-            return GetFirstInstance("SMS_LookupMP");
-        }
-
-        public ManagementObject GetClientIdentificationInformation()
-        {
-            return GetInstance("CCM_ClientIdentificationInformation=@");
-        }
-
-        public ManagementObject GetClientSiteMode()
-        {
-            return GetInstance("CCM_ClientSiteMode=@");
-        }
-
-        public ManagementObject GetClientUpgradeStatus()
-        {
-            return GetInstance("CCM_ClientUpgradeStatus=@");
-        }
-
-        public ManagementObject GetClientInfo()
-        {
-            return GetInstance("ClientInfo=@");
-        }
-
-        public ManagementObjectCollection GetDesiredStateConfiguration()
-        {
-            return GetInstances("SMS_DesiredConfiguration", new ManagementScope(@"ROOT\ccm\dcm"));
-        }
-
-        public ManagementObjectCollection GetApplications()
-        {
-            return GetInstances("CCM_Application", new ManagementScope(@"ROOT\ccm\ClientSDK"));
-        }
-
-        public ManagementObject GetApplication(string id, string revision, bool isMachineTarget)
-        {
-            return GetInstance(@$"CCM_Application.Id=""{id}"",Revision=""{revision}"",IsMachineTarget={(isMachineTarget ? "true" : "false")}", new ManagementScope(@"ROOT\ccm\ClientSDK"));
-        }
-
-        public uint InstallApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Install", application, priority, reboot);
-        public uint RepairApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Repair", application, priority, reboot);
-        public uint UninstallApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Uninstall", application, priority, reboot);
-
-        private uint InvokeApplicationMethod(string method, Application application, Priority priority, bool reboot)
-        {
-            var applicationClass = new ManagementClass(@"ROOT\ccm\ClientSDK", "CCM_Application", null);
-
-            var parameters = applicationClass.GetMethodParameters(method);
-            parameters["Id"] = application.Id;
-            parameters["Revision"] = application.Revision;
-            parameters["IsMachineTarget"] = application.IsMachineTarget;
-            parameters["EnforcePreference"] = (uint)application.EnforcePreference;
-            parameters["Priority"] = priority.ToString();
-            parameters["IsRebootIfNeeded"] = reboot;
-
-            var result = applicationClass.InvokeMethod(method, parameters, null);
-            return Convert.ToUInt32(result["ReturnValue"]);
-        }
-
-        public ManagementObjectCollection GetPrograms()
-        {
-            return GetInstances("CCM_Program", new ManagementScope(@"ROOT\ccm\ClientSDK"));
-        }
-
-        public ManagementObjectCollection GetSoftwareUpdates()
-        {
-            return GetInstances("CCM_SoftwareUpdate", new ManagementScope(@"ROOT\ccm\ClientSDK"));
-        }
-
-        public ManagementObject GetSoftwareUpdate(string id)
-        {
-            return GetInstance(@$"CCM_SoftwareUpdate.UpdateID=""{id}""", new ManagementScope(@"ROOT\ccm\ClientSDK"));
-        }
-
-        private ManagementObjectCollection GetInstances(string className, ManagementScope scope = default)
-        {
-            var selectedScope = scope == default ? _clientManagementScope : scope;
-            if (!selectedScope.IsConnected)
+            var classes = _remoteManagementClient.GetChildClasses(policy);
+            if(classes == null)
             {
-                selectedScope.Connect();
+                yield break;
             }
 
-            var searcher = new ManagementObjectSearcher(selectedScope, new ObjectQuery($"SELECT * FROM {className}"));
-            return searcher.Get();
+            foreach(var child in classes)
+            {
+                yield return new PolicyClass(
+                    child,
+                    policy.Default,
+                    policy.PolicyTarget,
+                    policy.ConfigState,
+                    policy.SID
+                );
+            }
         }
 
-        private ManagementBaseObject GetFirstInstance(string className)
+        public IEnumerable<PolicyInstance> GetPolicyInstances(PolicyClass policyClass)
         {
-            var searcher = new ManagementObjectSearcher(_clientManagementScope, new ObjectQuery($"SELECT * FROM {className}"));
-            var results = searcher.Get();
-            foreach (var result in results)
+            var instanes = _remoteManagementClient.GetInstances(policyClass);
+            if(instanes == null)
             {
-                return result;
-            }
-            return default;
-        }
-
-        private ManagementObject GetInstance(string path, ManagementScope scope = default)
-        {
-            var selectedScope = scope == default ? _clientManagementScope : scope;
-            if(!selectedScope.IsConnected)
-            {
-                selectedScope.Connect();
+                yield break;
             }
 
-            var managementPath = new ManagementPath(selectedScope.Path + ":" + path);
-            var managementObject = new ManagementObject()
+            foreach(var instance in instanes)
             {
-                Path = managementPath
-            };
-            managementObject.Get();
-            return managementObject;
+                var newInstance = new PolicyInstance(
+                    instance.Namespace,
+                    instance.Class,
+                    instance.Class,
+                    policyClass.Default,
+                    policyClass.PolicyTarget,
+                    policyClass.ConfigState,
+                    policyClass.SID
+                );
+                foreach(var property in instance.Properties)
+                {
+                    newInstance.Properties.Add(property);
+                }
+                yield return newInstance;
+            }
         }
     }
 }

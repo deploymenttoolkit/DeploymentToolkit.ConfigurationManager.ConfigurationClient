@@ -17,12 +17,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private ObservableCollection<Application> _applications = new();
         public ObservableCollection<Application> Applications => _applications;
 
-        private ConfigurationManagerClientService _clientService;
+        private WMIConfigurationManagerClientService _clientService;
 
         [ObservableProperty]
         private DateTime _lastUpdated;
 
-        public ApplicationsPageViewModel(ConfigurationManagerClientService clientService)
+        public ApplicationsPageViewModel(WMIConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 

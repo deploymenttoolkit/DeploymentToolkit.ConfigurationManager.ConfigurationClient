@@ -15,9 +15,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private ObservableCollection<ClientActionWrapper> _actions = new();
         public ObservableCollection<ClientActionWrapper> Actions => _actions;
 
-        private ConfigurationManagerClientService _clientService;
+        private WMIConfigurationManagerClientService _clientService;
 
-        public ActionsPageViewModel(ConfigurationManagerClientService clientService)
+        public ActionsPageViewModel(WMIConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 

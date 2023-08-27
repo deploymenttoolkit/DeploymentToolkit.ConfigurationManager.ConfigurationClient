@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.HostedServices;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using System;
@@ -29,32 +31,58 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
 
         public App()
         {
-            HostedService = Host.CreateDefaultBuilder().ConfigureServices(services =>
-            {
-                services.AddSingleton<UACService>();
-                services.AddSingleton<NavigationService>();
-                services.AddSingleton<ConfigurationManagerClientService>();
-                services.AddSingleton<ClientEventsService>();
+            HostedService = Host
+                .CreateDefaultBuilder()
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton<NavigationService>();
 
-                services.AddTransient<ClientEventsPageViewModel>();
-                services.AddTransient<MainWindowViewModel>();
-                services.AddTransient<ComponentsPageViewModel>();
-                services.AddTransient<CachePageViewModel>();
-                services.AddTransient<BITSPageViewModel>();
-                services.AddTransient<ActionsPageViewModel>();
-                services.AddTransient<ConfigurationsViewModel>();
-                services.AddTransient<PolicyPageViewModel>();
-                services.AddTransient<LogPageViewModel>();
-                services.AddTransient<DeviceRegistrationViewModel>();
+                    services.AddSingleton<UACService>();
 
-                services.AddTransient<ApplicationsPageViewModel>();
-                services.AddTransient<ProgramPageViewModel>();
-                services.AddTransient<SoftwareUpdatesPageViewModel>();
+                    services.AddSingleton<IWindowsManagementInstrumentationConnection, WindowsRemoteManagementClient>();
+                    services.AddSingleton<IConfigurationManagerClientService, ConfigurationManagerClientService>();
 
-                services.AddTransient<GeneralPageViewModel>();
+#if DEBUG
+                    services.AddSingleton<WindowsRemoteManagementClient>();
+#endif
 
-                services.AddHostedService<ClientEventsHostedService>();
-            }).Build();
+                    services.AddSingleton<WMIConfigurationManagerClientService>();
+                    services.AddSingleton<ClientEventsService>();
+
+                    services.AddTransient<ClientEventsPageViewModel>();
+                    services.AddTransient<MainWindowViewModel>();
+                    services.AddTransient<ComponentsPageViewModel>();
+                    services.AddTransient<CachePageViewModel>();
+                    services.AddTransient<BITSPageViewModel>();
+                    services.AddTransient<ActionsPageViewModel>();
+                    services.AddTransient<ConfigurationsViewModel>();
+                    services.AddTransient<PolicyPageViewModel>();
+                    services.AddTransient<LogPageViewModel>();
+                    services.AddTransient<DeviceRegistrationViewModel>();
+
+                    services.AddSingleton<SettingsPageViewModel>();
+
+                    services.AddSingleton<WinRMDebugPageViewModel>();
+
+                    services.AddTransient<ApplicationsPageViewModel>();
+                    services.AddTransient<ProgramPageViewModel>();
+                    services.AddTransient<SoftwareUpdatesPageViewModel>();
+
+                    services.AddTransient<GeneralPageViewModel>();
+
+                    services.AddHostedService<ClientEventsHostedService>();
+                })
+                .ConfigureLogging((context, logger) =>
+                {
+                    logger.ClearProviders();
+
+                    logger
+                        .AddDebug()
+#if DEBUG
+                        .SetMinimumLevel(LogLevel.Trace);
+#endif
+                })
+                .Build();
 
             HostedService.RunAsync();
 

@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Policy;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -30,7 +30,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         [ObservableProperty]
         private EventSeverity _severity;
 
-        public ObservableCollection<Property> Properties { get; set; } = new();
+        public ObservableCollection<WindowsManagementInstrumentationProperty> Properties { get; set; } = new();
 
         private static readonly List<string> _defaultProperties = new()
         {
@@ -57,7 +57,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
                 {
                     continue;
                 }
-                Properties.Add(new Property(property.Name, property.Value));
+                Properties.Add(new WindowsManagementInstrumentationProperty(property.Name, property.Value));
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -6,13 +7,15 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Management;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using Windows.Media.AppBroadcasting;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK
 {
-    public partial class SoftwareUpdate : SoftwareBase
+    public partial class CCM_SoftwareUpdate : CCM_SoftwareBase, IWindowsManagementInstrumentationInstance
     {
+        public string Namespace => CCM_Constants.ClientSDKNamespace;
+        public string Class => nameof(CCM_SoftwareUpdate);
+        public string Key => @$"UpdateID=""{UpdateID}""";
+
         internal SoftwareUpdatesPageViewModel ViewModel { get; private set; }
         internal ObservableCollection<BasicProperty> Properties { get; private set; } = new();
 
@@ -68,25 +71,25 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
 
         private ManagementBaseObject _instance;
 
-        static SoftwareUpdate()
+        static CCM_SoftwareUpdate()
         {
-            var supType = typeof(SoftwareUpdate);
+            var supType = typeof(CCM_SoftwareUpdate);
             var properties = supType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             _properties.AddRange(properties);
         }
 
-        public SoftwareUpdate(SoftwareUpdatesPageViewModel viewModel, ManagementBaseObject softwareUpdate)
+        public CCM_SoftwareUpdate(SoftwareUpdatesPageViewModel viewModel, ManagementBaseObject softwareUpdate)
         {
             ViewModel = viewModel;
             _instance = softwareUpdate;
 
             UpdateInstance();
-            
+
         }
 
         internal void UpdateInstance(bool refresh = false)
         {
-            if(refresh)
+            if (refresh)
             {
                 _instance = ViewModel.GetSoftwareUpdate(_instance.Properties["UpdateID"].Value as string);
             }

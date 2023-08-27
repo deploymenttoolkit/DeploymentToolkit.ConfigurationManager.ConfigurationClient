@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +17,28 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             var windows = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.BaseType == typeof(Page));
             foreach (var type in windows)
             {
-                _windows.Add(type.Name, type);
+                if (type.Name == nameof(SettingsPage))
+                {
+                    _windows.Add($"Settings", type);
+                }
+                else
+                {
+                    _windows.Add(type.Name, type);
+                }
             }
         }
 
         public void SetNavigationFrame(Frame navigationFrame)
         {
             _navigationFrame = navigationFrame;
+        }
+
+        public void Navigate(string pageName)
+        {
+            if (_windows.ContainsKey(pageName))
+            {
+                _navigationFrame.Navigate(_windows[pageName]);
+            }
         }
 
         public void Navigate(NavigationViewItem item)

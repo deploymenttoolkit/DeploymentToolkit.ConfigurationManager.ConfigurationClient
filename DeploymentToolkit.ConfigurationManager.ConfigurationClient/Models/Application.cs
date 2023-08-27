@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Extensions;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using Microsoft.UI.Xaml;
 using System;
@@ -65,7 +66,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         ApplicationGroup
     }
 
-    public partial class Application : SoftwareBase
+    public partial class Application : CCM_SoftwareBase
     {
         public ApplicationsPageViewModel ViewModel { get; private set; }
 

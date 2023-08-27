@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Messages;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using System;
@@ -14,12 +14,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
     public partial class SoftwareUpdatesPageViewModel : ObservableObject, IDisposable
     {
-        private ObservableCollection<SoftwareUpdate> _softwareUpdates = new();
-        public ObservableCollection<SoftwareUpdate> SoftwareUpdates => _softwareUpdates;
+        private ObservableCollection<CCM_SoftwareUpdate> _softwareUpdates = new();
+        public ObservableCollection<CCM_SoftwareUpdate> SoftwareUpdates => _softwareUpdates;
 
-        private readonly ConfigurationManagerClientService _clientService;
+        private readonly WMIConfigurationManagerClientService _clientService;
 
-        public SoftwareUpdatesPageViewModel(ConfigurationManagerClientService clientService)
+        public SoftwareUpdatesPageViewModel(WMIConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 
@@ -48,7 +48,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             var update = SoftwareUpdates.FirstOrDefault(u => u.UpdateID == updateId);
             if(update == null)
             {
-                var softwareUpdate = new SoftwareUpdate(this, _clientService.GetSoftwareUpdate(updateId));
+                var softwareUpdate = new CCM_SoftwareUpdate(this, _clientService.GetSoftwareUpdate(updateId));
                 App.Current.DispatcherQueue.TryEnqueue(() =>
                 {
                     SoftwareUpdates.Add(softwareUpdate);
@@ -65,10 +65,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [RelayCommand]
         private void UpdateSoftwareUpdates()
         {
-            var updates = new List<SoftwareUpdate>();
+            var updates = new List<CCM_SoftwareUpdate>();
             foreach (ManagementObject update in _clientService.GetSoftwareUpdates())
             {
-                updates.Add(new SoftwareUpdate(this, update));
+                updates.Add(new CCM_SoftwareUpdate(this, update));
             }
 
             SoftwareUpdates.Clear();

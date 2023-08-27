@@ -11,6 +11,7 @@
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
 	<WindowsPackageType>None</WindowsPackageType>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Views\ActionsPage.xaml" />
@@ -29,7 +30,9 @@
     <None Remove="Views\LogPage.xaml" />
     <None Remove="Views\PolicyPage.xaml" />
     <None Remove="Views\ProgramsPage.xaml" />
+    <None Remove="Views\SettingsPage.xaml" />
     <None Remove="Views\SoftwareUpdatesPage.xaml" />
+    <None Remove="Views\WinRMDebugPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="UIRESOURCELib">
@@ -68,6 +71,15 @@
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
+    <COMReference Include="WSManAutomation">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>f010be25-296d-4036-980f-5a0669a17577</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -82,9 +94,11 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Common" Version="8.2.1" />
+    <PackageReference Include="CommunityToolkit.Labs.WinUI.SettingsControls" Version="0.0.18" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="CommunityToolkit.WinUI" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
+    <PackageReference Include="FluentResults" Version="3.15.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230724000" />
@@ -92,7 +106,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="System.Management" Version="7.0.2" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="7.0.1" />
-    <PackageReference Include="Vanara.BITS" Version="3.4.15" />
+    <PackageReference Include="Vanara.BITS" Version="3.4.16" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
@@ -103,6 +117,16 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\WinRMDebugPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\ProgramsPage.xaml">
@@ -198,4 +222,10 @@
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
   </PropertyGroup>
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\admincm\source\repos\DeploymentToolkit\DeploymentToolkit.ConfigurationManager.ConfigurationClient\Models\CCM\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\admincm\source\repos\DeploymentToolkit\DeploymentToolkit.ConfigurationManager.ConfigurationClient\Models\CCM\.editorconfig" />
+  </ItemGroup>
 </Project>

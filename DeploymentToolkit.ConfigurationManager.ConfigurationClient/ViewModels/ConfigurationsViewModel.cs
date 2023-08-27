@@ -14,9 +14,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private readonly ObservableCollection<DesiredStateConfiguration> _configurations = new();
         public ObservableCollection<DesiredStateConfiguration> Configurations => _configurations;
 
-        private readonly ConfigurationManagerClientService _clientService;
+        private readonly WMIConfigurationManagerClientService _clientService;
 
-        public ConfigurationsViewModel(ConfigurationManagerClientService clientService)
+        public ConfigurationsViewModel(WMIConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
             

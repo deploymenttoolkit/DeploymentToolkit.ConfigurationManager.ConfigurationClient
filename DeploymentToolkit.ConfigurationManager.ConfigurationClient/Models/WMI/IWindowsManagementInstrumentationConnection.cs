@@ -1,0 +1,24 @@
+﻿using FluentResults;
+using System.Collections.Generic;
+
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI
+{
+    public interface IWindowsManagementInstrumentationConnection
+    {
+        public Result Connect(string host, string? username = null, string? password = null, bool encrypted = true);
+
+        public T? GetInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : new();
+
+        public T? GetStaticInstance<T>(IWindowsManagementInstrumentationStaticInstance instance) where T : new();
+        public T? GetStaticInstance<T>(string managementClass, string? managementScope = null) where T : new();
+
+        public IEnumerable<T>? GetInstances<T>(IWindowsManagementInstrumentationInstance instance) where T : new();
+        public IEnumerable<T>? GetInstances<T>(string managementClass, string? managementScope = null) where T : new();
+
+        public IEnumerable<DynamicWMIClass> GetInstances(IWindowsManagementInstrumentationInstance instance);
+        public IEnumerable<DynamicWMIClass> GetInstances(string managementClass, string? managementScope = null);
+
+        public IEnumerable<string>? GetChildNamespaces(IWindowsManagementInstrumentationStaticInstance instance);
+        public IEnumerable<string>? GetChildClasses(IWindowsManagementInstrumentationStaticInstance instance);
+    }
+}

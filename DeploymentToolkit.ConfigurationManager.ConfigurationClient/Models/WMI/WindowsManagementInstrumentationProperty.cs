@@ -4,16 +4,16 @@ using System.Collections;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Policy
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI
 {
-    public partial class Property : ObservableObject
+    public partial class WindowsManagementInstrumentationProperty : ObservableObject
     {
         [ObservableProperty]
         private string _name;
         [ObservableProperty]
         private string _value;
 
-        public Property(string name, object value)
+        public WindowsManagementInstrumentationProperty(string name, object value)
         {
             Name = name;
 

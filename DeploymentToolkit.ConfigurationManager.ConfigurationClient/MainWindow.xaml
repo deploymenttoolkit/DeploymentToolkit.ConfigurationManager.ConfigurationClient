@@ -17,8 +17,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <Grid Grid.Row="0" x:Name="AppTitleBar" Background="Black">
-
+        <Grid Grid.Row="0" x:Name="AppTitleBar">
+            <TextBlock VerticalAlignment="Center" Margin="5,0">Configuration Manager Client</TextBlock>
         </Grid>
         
         <NavigationView Grid.Row="1" PaneDisplayMode="Left" IsBackEnabled="{x:Bind ViewModel.IsBackButtonEnabled, Mode=OneWay}" SelectedItem="{x:Bind ViewModel.SelectedItem, Mode=TwoWay}">
@@ -29,7 +29,7 @@
             </Interactivity:Interaction.Behaviors>
 
             <NavigationView.Header>
-                <TextBlock Text="{x:Bind ViewModel.PageTitle}"/>
+                <TextBlock Text="{x:Bind ViewModel.PageTitle, Mode=OneWay}"/>
             </NavigationView.Header>
             
             <NavigationView.MenuItems>
@@ -49,10 +49,12 @@
                 <NavigationViewItem Icon="AllApps" Tag="ApplicationsPage" Content="Applications"/>
                 <NavigationViewItem Icon="AllApps" Tag="ProgramsPage" Content="Programs"/>
                 <NavigationViewItem Icon="PostUpdate" Tag="SoftwareUpdatesPage" Content="Software Updates"/>
+                <NavigationViewItemSeparator/>
+                <NavigationViewItem Icon="Globe" Tag="WinRMDebugPage" Content="WinRM Debug Client"/>
             </NavigationView.MenuItems>
 
             <ScrollViewer>
-                <Frame Margin="10" x:Name="NavigationFrame" IsTabStop="True">
+                <Frame Margin="10" x:Name="NavigationFrame" IsTabStop="True" CornerRadius="10">
                     <Interactivity:Interaction.Behaviors>
                         <Core:EventTriggerBehavior EventName="Navigated">
                             <Core:InvokeCommandAction Command="{x:Bind ViewModel.NavigatedCommand}"/>

@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Policy;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -34,12 +34,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [ObservableProperty]
         private bool _propertiesBladeIsOpen = false;
 
-        private UACService _uacService;
-        private ConfigurationManagerClientService _clientService;
+        private readonly UACService _uacService;
+        private readonly IConfigurationManagerClientService _clientService;
 
-        public ObservableCollection<PolicyRequestor> Policies = new();
+        public ObservableCollection<PolicyNamespace> Policies = new();
 
-        public PolicyPageViewModel(UACService uacService, ConfigurationManagerClientService clientService)
+        public PolicyPageViewModel(UACService uacService, IConfigurationManagerClientService clientService)
         {
             _uacService = uacService;
             _clientService = clientService;
@@ -51,7 +51,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 return;
             }
 
-            foreach(var policy in _clientService.GetPolicyRequestors().OrderBy(p => p.DisplayName))
+            var policies = _clientService.GetPolicy();
+            foreach (var policy in policies.OrderBy(p => p.DisplayName))
             {
                 Policies.Add(policy);
             }
@@ -80,13 +81,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [RelayCommand]
         private void Selected(TreeViewItemInvokedEventArgs args)
         {
-            if(args.InvokedItem is not Policy policy)
+            if (args.InvokedItem is not PolicyNamespace policy)
             {
                 return;
             }
 
-            policy.UpdateInstances();
-            Classes.Source = policy.Classes.OrderBy(c => c.Name);
+            Classes.Source = _clientService.GetPolicyClasses(policy).OrderBy(c => c.DisplayName);
             Instances.Source = null;
             Properties.Source = null;
             ClassesBladeIsOpen = true;
@@ -102,8 +102,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 return;
             }
 
-            policyClass.UpdateInstances();
-            Instances.Source = policyClass.Instances.OrderBy(i => i.Name);
+            Instances.Source = _clientService.GetPolicyInstances(policyClass).OrderBy(c => c.DisplayName);
             Properties.Source = null;
             InstancesBladeIsOpen = true;
             PropertiesBladeIsOpen = false;
@@ -117,7 +116,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 return;
             }
 
-            instance.UpdateProperties();
             Properties.Source = instance.Properties.OrderBy(p => p.Name);
             PropertiesBladeIsOpen = true;
         }

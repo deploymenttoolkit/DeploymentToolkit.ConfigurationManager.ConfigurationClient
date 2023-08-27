@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Management;
 using System.Reflection;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK
 {
     public enum RepeatRunBehavior : uint
     {
@@ -17,8 +18,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         RerunIfSuccess,
         RerunNever
     }
-    public partial class Program : SoftwareBase
+    public partial class CCM_Program : CCM_SoftwareBase, IWindowsManagementInstrumentationInstance
     {
+        public string Namespace => CCM_Constants.ClientSDKNamespace;
+        public string Class => nameof(CCM_Program);
+        public string Key => @$"PackageID=""{PackageID}"",ProgramID=""{ProgramID}""";
+
         internal ProgramPageViewModel ViewModel { get; private set; }
 
         public ObservableCollection<BasicProperty> Properties { get; private set; } = new();
@@ -99,7 +104,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         [ObservableProperty]
         private uint _level;
         [ObservableProperty]
-        private Program[] _dependencies;
+        private CCM_Program[] _dependencies;
         [ObservableProperty]
         private RepeatRunBehavior _repeatRunBehavior;
         [ObservableProperty]
@@ -128,14 +133,14 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
 
         private readonly ManagementBaseObject _instance;
 
-        static Program()
+        static CCM_Program()
         {
-            var programType = typeof(Program);
+            var programType = typeof(CCM_Program);
             var properties = programType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             _properties.AddRange(properties);
         }
         
-        public Program(ProgramPageViewModel viewModel, ManagementBaseObject program)
+        public CCM_Program(ProgramPageViewModel viewModel, ManagementBaseObject program)
         {
             ViewModel = viewModel;
             _instance = program;
@@ -199,10 +204,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
                     if(property.Name == nameof(Dependencies))
                     {
                         var programs = value as IEnumerable<ManagementBaseObject>;
-                        Dependencies = new Program[programs.Count()];
+                        Dependencies = new CCM_Program[programs.Count()];
                         for(var i = 0; i <  programs.Count(); i++)
                         {
-                            Dependencies[i] = new Program(ViewModel, programs.ElementAt(i));
+                            Dependencies[i] = new CCM_Program(ViewModel, programs.ElementAt(i));
                         }
                     }
                     else

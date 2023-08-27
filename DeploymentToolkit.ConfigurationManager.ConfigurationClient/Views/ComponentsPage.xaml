@@ -6,13 +6,14 @@
     xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ccm="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <ListView ItemsSource="{x:Bind ViewModel.Properties, Mode=OneWay}" SelectionMode="Single">
+        <ListView ItemsSource="{x:Bind ViewModel.Components, Mode=OneWay}" SelectionMode="Single">
             <ListView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="ccm:CCM_InstalledComponent">
                     <Grid>
                         <Grid.Resources>
                             <Style TargetType="TextBlock">
@@ -25,9 +26,9 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="{Binding DisplayName}"/>
-                        <TextBlock Grid.Column="1" Text="{Binding Version}"/>
-                        <TextBlock Grid.Column="2" Text="{Binding State}"/>
+                        <TextBlock Grid.Column="0" Text="{x:Bind DisplayName}"/>
+                        <TextBlock Grid.Column="1" Text="{x:Bind Version}"/>
+                        <TextBlock Grid.Column="2" Text="Unknown"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

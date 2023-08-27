@@ -1,9 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK
 {
-    public abstract partial class SoftwareBase : ObservableObject
+    public abstract partial class CCM_SoftwareBase : ObservableObject
     {
         [ObservableProperty]
         private uint _type;

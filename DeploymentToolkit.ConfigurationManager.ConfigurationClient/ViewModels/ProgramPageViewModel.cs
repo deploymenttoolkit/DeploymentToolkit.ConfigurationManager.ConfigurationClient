@@ -9,12 +9,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
     public partial class ProgramPageViewModel : ObservableObject
     {
-        private ObservableCollection<Models.Program> _programs = new();
-        public ObservableCollection<Models.Program> Programs => _programs;
+        private ObservableCollection<Models.CCM.ClientSDK.CCM_Program> _programs = new();
+        public ObservableCollection<Models.CCM.ClientSDK.CCM_Program> Programs => _programs;
 
-        private ConfigurationManagerClientService _clientService;
+        private WMIConfigurationManagerClientService _clientService;
 
-        public ProgramPageViewModel(ConfigurationManagerClientService clientService)
+        public ProgramPageViewModel(WMIConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 
@@ -24,10 +24,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [RelayCommand]
         private void UpdatePrograms()
         {
-            var programs = new List<Models.Program>();
+            var programs = new List<Models.CCM.ClientSDK.CCM_Program>();
             foreach(var program in _clientService.GetPrograms())
             {
-                programs.Add(new Models.Program(this, program));
+                programs.Add(new Models.CCM.ClientSDK.CCM_Program(this, program));
             }
 
             Programs.Clear();

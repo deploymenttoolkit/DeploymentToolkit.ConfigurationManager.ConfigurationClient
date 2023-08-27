@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views"
-    xmlns:models="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Policy"
+    xmlns:models="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
@@ -65,8 +65,8 @@
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                     <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:PolicyClass">
-                            <TextBlock Text="{Binding Name}"/>
+                        <DataTemplate x:DataType="models:IPolicy">
+                            <TextBlock Text="{Binding DisplayName}"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -79,15 +79,15 @@
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                     <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="models:PolicyInstance">
+                        <DataTemplate x:DataType="models:IPolicy">
                             <Grid>
-                                <TextBlock Text="{Binding Name}"/>
+                                <TextBlock Text="{Binding DisplayName}"/>
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </controls:BladeItem>
-            <controls:BladeItem Header="Properties" IsOpen="{x:Bind ViewModel.PropertiesBladeIsOpen, Mode=OneWay}">
+            <controls:BladeItem Header="Properties" IsOpen="{x:Bind ViewModel.PropertiesBladeIsOpen, Mode=OneWay}" MaxWidth="2000">
                 <controls:DataGrid SelectionMode="Single"
 							   ItemsSource="{x:Bind ViewModel.Properties.View, Mode=OneWay}"
 							   GridLinesVisibility="Horizontal"
@@ -96,7 +96,13 @@
 							   Grid.Column="3">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                        <controls:DataGridTextColumn Header="Value" Binding="{Binding Value}"/>
+                        <controls:DataGridTemplateColumn Header="Value">
+                            <controls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Value}" TextWrapping="Wrap" MaxWidth="2000" />
+                                </DataTemplate>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </controls:BladeItem>
