@@ -1,4 +1,5 @@
 ﻿using CCMEXEC;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Extensions;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
@@ -9,18 +10,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Security.Cryptography;
 using System.Text.Encodings.Web;
 using System.Xml.Linq;
 using WSManAutomation;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
-    public class WindowsRemoteManagementClient : IDisposable, IWindowsManagementInstrumentationConnection
+    public partial class WindowsRemoteManagementClient : ObservableObject, IDisposable, IWindowsManagementInstrumentationConnection
     {
-        public bool IsConnected => _session != null;
+        [ObservableProperty]
+        private bool _isConnected;
         
         private readonly WSMan _instance;
-        private IWSManSession _session;
+        private IWSManSession? _session;
 
         private readonly ILogger<WindowsRemoteManagementClient> _logger;
 
@@ -33,6 +36,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         public void Dispose()
         {
+            IsConnected = false;
+
             if(_session != null)
             {
                 Marshal.ReleaseComObject(_session);
@@ -84,20 +89,25 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
                 _logger.LogInformation("Sucessfully connected to {host}", host);
 
+                IsConnected = true;
+
                 return Result.Ok();
             }
             catch(UnauthorizedAccessException ex)
             {
+                IsConnected = false;
                 _logger.LogError(ex, "Failed to connect to WinRM on Host {host}. Access is denied", host);
                 return Result.Fail(new Error("Access denied. Invalid username or password?").CausedBy(ex));
             }
             catch(COMException ex)
             {
+                IsConnected = false;
                 _logger.LogError(ex, "Failed to connect to WinRM on Host {host}", host);
                 return Result.Fail(new Error(ex.Message).CausedBy(ex));
             }
             catch (Exception ex)
             {
+                IsConnected = false;
                 _logger.LogError(ex, "Failed to connect to WinRM on Host {host}", host);
                 return Result.Fail(new Error(ex.Message).CausedBy(ex));
             }
@@ -107,9 +117,33 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             }
         }
 
-        internal string? ExecuteQuery(string uri)
+        public Result Disconnect()
         {
             if(_session == null)
+            {
+                return Result.Ok();
+            }
+
+            try
+            {
+                Marshal.ReleaseComObject(_session);
+            }
+            catch (COMException ex)
+            {
+                _logger.LogError(ex, "Failed to release session");
+                return Result.Fail(new Error("Failed to release session").CausedBy(ex));
+            }
+            finally
+            {
+                _session = null;
+                IsConnected = false;
+            }
+            return Result.Ok();
+        }
+        
+        internal string? ExecuteQuery(string uri)
+        {
+            if(!IsConnected)
             {
                 return string.Empty;
             }
@@ -119,7 +153,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         internal IWSManEnumerator? Enumerate(string uri, string filter = "")
         {
-            if (_session == null)
+            if (!IsConnected)
             {
                 return null;
             }
@@ -134,7 +168,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         internal string? InvokeMethod(string uri, string methodName, Dictionary<string, object>? parameters = null)
         {
-            if(_session == null)
+            if(!IsConnected)
             {
                 return null;
             }

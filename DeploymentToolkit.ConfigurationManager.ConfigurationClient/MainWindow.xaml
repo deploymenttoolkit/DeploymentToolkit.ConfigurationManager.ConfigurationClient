@@ -33,22 +33,22 @@
             </NavigationView.Header>
             
             <NavigationView.MenuItems>
-                <NavigationViewItem Icon="Home" Tag="GeneralPage" Content="General"/>
-                <NavigationViewItem Icon="Library" Tag="ComponentsPage" Content="Components"/>
-                <NavigationViewItem Icon="Admin"  Tag="ActionsPage" Content="Actions"/>
-                <!--<NavigationViewItem Icon="Setting" Tag="SitePage" Content="Site"/>-->
-                <NavigationViewItem Icon="DisconnectDrive" Tag="CachePage" Content="Cache"/>
-                <NavigationViewItem Icon="Setting" Tag="ConfigurationsPage" Content="Configurations"/>
-                <!--<NavigationViewItem Icon="Sync" Tag="NetworkPage" Content="Network"/>-->
-                <NavigationViewItem Icon="Sync" Tag="BITSPage" Content="BITS"/>
-                <NavigationViewItem Icon="ProtectedDocument" Tag="PolicyPage" Content="Policy"/>
+                <NavigationViewItem Icon="Home" Tag="GeneralPage" Content="General" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
+                <NavigationViewItem Icon="Library" Tag="ComponentsPage" Content="Components" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
+                <NavigationViewItem Icon="Admin"  Tag="ActionsPage" Content="Actions" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
+                <!--<NavigationViewItem Icon="Setting" Tag="SitePage" Content="Site" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>-->
+                <NavigationViewItem Icon="DisconnectDrive" Tag="CachePage" Content="Cache" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
+                <NavigationViewItem Icon="Setting" Tag="ConfigurationsPage" Content="Configurations" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
+                <!--<NavigationViewItem Icon="Sync" Tag="NetworkPage" Content="Network" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>-->
+                <NavigationViewItem Icon="Sync" Tag="BITSPage" Content="BITS" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
+                <NavigationViewItem Icon="ProtectedDocument" Tag="PolicyPage" Content="Policy" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
                 <NavigationViewItem Icon="Document" Tag="LogPage" Content="Logs"/>
                 <NavigationViewItem Icon="Remote" Tag="DeviceRegistrationPage" Content="Device Registration"/>
-                <NavigationViewItem Icon="OpenFile" Tag="ClientEventsPage" Content="Events"/>
+                <NavigationViewItem Icon="OpenFile" Tag="ClientEventsPage" Content="Events" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
                 <NavigationViewItemSeparator/>
-                <NavigationViewItem Icon="AllApps" Tag="ApplicationsPage" Content="Applications"/>
-                <NavigationViewItem Icon="AllApps" Tag="ProgramsPage" Content="Programs"/>
-                <NavigationViewItem Icon="PostUpdate" Tag="SoftwareUpdatesPage" Content="Software Updates"/>
+                <NavigationViewItem Icon="AllApps" Tag="ApplicationsPage" Content="Applications" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
+                <NavigationViewItem Icon="AllApps" Tag="ProgramsPage" Content="Programs" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
+                <NavigationViewItem Icon="PostUpdate" Tag="SoftwareUpdatesPage" Content="Software Updates" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
                 <NavigationViewItemSeparator/>
                 <NavigationViewItem Icon="Globe" Tag="WinRMDebugPage" Content="WinRM Debug Client"/>
             </NavigationView.MenuItems>

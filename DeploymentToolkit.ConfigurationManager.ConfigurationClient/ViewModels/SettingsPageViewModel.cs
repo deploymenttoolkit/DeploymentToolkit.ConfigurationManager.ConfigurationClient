@@ -25,6 +25,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [NotifyPropertyChangedFor(nameof(TestConnectEnabled))]
         private bool _credentialsEnabled;
 
+        [ObservableProperty]
+        private bool _isWMIConnected;
+
         public InAppNotification Notification;
 
         public bool TestConnectEnabled
@@ -60,6 +63,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 result = _windowsRemoteManagementClient.Connect(Host, encrypted: !AllowUnencryptedConnections) ;
             }
 
+            IsWMIConnected = result.IsSuccess;
+
             if(result.IsSuccess)
             {
                 Notification.Show(new InAppNotificationData($"Successfully connected to WinRM on host {Host}", ""), 5000);
@@ -68,6 +73,13 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             {
                 Notification.Show(new InAppNotificationData($"Failed to connect to WinRM on host {Host}", result.Errors[0].Message, Microsoft.UI.Xaml.Controls.InfoBarSeverity.Error), 5000);
             }
+        }
+
+        [RelayCommand]
+        private void Disconnect()
+        {
+            _windowsRemoteManagementClient.Disconnect();
+            IsWMIConnected = _windowsRemoteManagementClient.IsConnected;
         }
     }
 }

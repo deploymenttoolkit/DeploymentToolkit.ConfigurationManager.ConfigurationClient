@@ -1,11 +1,15 @@
 ﻿using FluentResults;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI
 {
-    public interface IWindowsManagementInstrumentationConnection
+    public interface IWindowsManagementInstrumentationConnection : INotifyPropertyChanged
     {
+        public bool IsConnected { get; }
+
         public Result Connect(string host, string? username = null, string? password = null, bool encrypted = true);
+        public Result Disconnect();
 
         public T? GetInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : new();
 

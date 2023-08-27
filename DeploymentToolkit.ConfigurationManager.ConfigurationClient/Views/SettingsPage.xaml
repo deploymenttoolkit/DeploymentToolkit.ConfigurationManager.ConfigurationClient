@@ -98,7 +98,10 @@
                     <FontIcon Glyph="&#xe703;" />
                 </labs:SettingsCard.HeaderIcon>
 
-                <Button IsEnabled="{x:Bind ViewModel.TestConnectEnabled, Mode=OneWay}" Command="{x:Bind ViewModel.TestConnectCommand}" Content="Test Connection"/>
+                <StackPanel Orientation="Horizontal">
+                    <Button Margin="10,0" IsEnabled="{x:Bind ViewModel.TestConnectEnabled, Mode=OneWay}" Command="{x:Bind ViewModel.TestConnectCommand}" Content="Test Connection"/>
+                    <Button IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}" Command="{x:Bind ViewModel.DisconnectCommand}" Content="Disconnect" Foreground="{StaticResource SystemFillColorCritical}" Background="{StaticResource SystemFillColorCriticalBackground}"/>
+                </StackPanel>
             </labs:SettingsCard>
 
             <!-- About Section -->
