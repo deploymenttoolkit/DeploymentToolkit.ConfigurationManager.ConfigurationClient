@@ -37,5 +37,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         public uint InstallApplication(CCM_Application application, Priority priority, bool reboot = false);
         public uint RepairApplication(CCM_Application application, Priority priority, bool reboot = false);
         public uint UninstallApplication(CCM_Application application, Priority priority, bool reboot = false);
+
+        public IEnumerable<CCM_SoftwareUpdate> GetSoftwareUpdates();
     }
 }

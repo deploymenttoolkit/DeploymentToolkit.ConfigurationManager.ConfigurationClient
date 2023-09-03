@@ -5,21 +5,19 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Clie
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Messages;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Management;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
     public partial class SoftwareUpdatesPageViewModel : ObservableObject, IDisposable
     {
+        [ObservableProperty]
         private ObservableCollection<CCM_SoftwareUpdate> _softwareUpdates = new();
-        public ObservableCollection<CCM_SoftwareUpdate> SoftwareUpdates => _softwareUpdates;
 
-        private readonly WMIConfigurationManagerClientService _clientService;
+        private readonly IConfigurationManagerClientService _clientService;
 
-        public SoftwareUpdatesPageViewModel(WMIConfigurationManagerClientService clientService)
+        public SoftwareUpdatesPageViewModel(IConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 
@@ -34,8 +32,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             GC.SuppressFinalize(this);
         }
 
-        internal ManagementObject GetSoftwareUpdate(string id) => _clientService.GetSoftwareUpdate(id);
-
         private void OnSoftwareUpdateMessage(object sender, CCMSoftwareUpdateMessage message)
         {
             if(message.Value == null)
@@ -48,35 +44,32 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             var update = SoftwareUpdates.FirstOrDefault(u => u.UpdateID == updateId);
             if(update == null)
             {
-                var softwareUpdate = new CCM_SoftwareUpdate(this, _clientService.GetSoftwareUpdate(updateId));
+                var softwareUpdate = new CCM_SoftwareUpdate()
+                {
+                    UpdateID = updateId
+                };
+
                 App.Current.DispatcherQueue.TryEnqueue(() =>
                 {
-                    SoftwareUpdates.Add(softwareUpdate);
+                    SoftwareUpdates.Add(_clientService.UpdateInstance<CCM_SoftwareUpdate>(softwareUpdate));
                 });
                 return;
             }
 
             App.Current.DispatcherQueue.TryEnqueue(() =>
             {
-                update.UpdateInstance(true);
+                _clientService.UpdateInstance<CCM_SoftwareUpdate>(update);
             });
         }
 
         [RelayCommand]
         private void UpdateSoftwareUpdates()
         {
-            var updates = new List<CCM_SoftwareUpdate>();
-            foreach (ManagementObject update in _clientService.GetSoftwareUpdates())
-            {
-                updates.Add(new CCM_SoftwareUpdate(this, update));
-            }
-
             SoftwareUpdates.Clear();
-            foreach(var update in updates.OrderBy(u => u.Name))
+            foreach(var update in _clientService.GetSoftwareUpdates().OrderBy(u => u.Name))
             {
                 SoftwareUpdates.Add(update);
             }
         }
-
     }
 }

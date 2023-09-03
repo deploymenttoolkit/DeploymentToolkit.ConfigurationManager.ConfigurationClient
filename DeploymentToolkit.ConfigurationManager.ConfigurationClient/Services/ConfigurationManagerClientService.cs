@@ -36,6 +36,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         private static readonly Lazy<CCM_Application> _defaultApplication = new(() => new CCM_Application());
 
+        private static readonly Lazy<CCM_SoftwareUpdate> _defaultSoftwareUpdate = new(() => new CCM_SoftwareUpdate());
+
         public ConfigurationManagerClientService(ClientConnectionManager clientConnectionManager)
         {
             _remoteManagementClient = clientConnectionManager.Connection;
@@ -230,6 +232,20 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             });
 
             return result?.ReturnValue ?? uint.MaxValue;
+        }
+
+        public IEnumerable<CCM_SoftwareUpdate> GetSoftwareUpdates()
+        {
+            var instances = _remoteManagementClient.GetInstances<CCM_SoftwareUpdate>(_defaultSoftwareUpdate.Value);
+            if (instances == null)
+            {
+                yield break;
+            }
+
+            foreach (var instance in instances)
+            {
+                yield return instance;
+            }
         }
     }
 }
