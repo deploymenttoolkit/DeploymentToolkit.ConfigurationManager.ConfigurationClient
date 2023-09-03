@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -9,12 +9,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
     public partial class ProgramPageViewModel : ObservableObject
     {
-        private ObservableCollection<Models.CCM.ClientSDK.CCM_Program> _programs = new();
-        public ObservableCollection<Models.CCM.ClientSDK.CCM_Program> Programs => _programs;
+        [ObservableProperty]
+        private ObservableCollection<CCM_Program> _programs = new();
 
-        private WMIConfigurationManagerClientService _clientService;
+        private readonly IConfigurationManagerClientService _clientService;
 
-        public ProgramPageViewModel(WMIConfigurationManagerClientService clientService)
+        public ProgramPageViewModel(IConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 
@@ -24,15 +24,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [RelayCommand]
         private void UpdatePrograms()
         {
-            var programs = new List<Models.CCM.ClientSDK.CCM_Program>();
-            foreach(var program in _clientService.GetPrograms())
-            {
-                programs.Add(new Models.CCM.ClientSDK.CCM_Program(this, program));
-            }
-
             Programs.Clear();
-            foreach(var program in programs.OrderBy(p => p.PackageName))
+            foreach(var program in _clientService.GetPrograms().OrderBy(p => p.PackageName))
             {
+                program.ViewModel = this;
                 Programs.Add(program);
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Extensions
 {
@@ -24,6 +25,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Extensions
                 default:
                     return false;
             }
+        }
+
+        public static bool IsObservableCollection(this Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ObservableCollection<>);
         }
     }
 }

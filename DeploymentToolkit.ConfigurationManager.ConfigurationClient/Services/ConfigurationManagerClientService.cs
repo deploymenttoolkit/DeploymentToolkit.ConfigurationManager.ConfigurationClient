@@ -1,4 +1,5 @@
 ﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.SoftMgmtAgent;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
@@ -28,6 +29,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         private static readonly Lazy<ClientInfo> _defaultClientInfo = new(() => new ClientInfo());
 
         private static readonly Lazy<PolicyNamespace> _defaultPolicy = new(() => new PolicyNamespace("Policy", null));
+
+        private static readonly Lazy<CCM_Program> _defaultProgram = new(() => new CCM_Program());
 
         public ConfigurationManagerClientService(ClientConnectionManager clientConnectionManager)
         {
@@ -170,6 +173,20 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                     newInstance.Properties.Add(property);
                 }
                 yield return newInstance;
+            }
+        }
+
+        public IEnumerable<CCM_Program> GetPrograms()
+        {
+            var instances = _remoteManagementClient.GetInstances<CCM_Program>(_defaultProgram.Value);
+            if(instances == null)
+            {
+                yield break;
+            }
+
+            foreach(var instance in instances)
+            {
+                yield return instance;
             }
         }
     }

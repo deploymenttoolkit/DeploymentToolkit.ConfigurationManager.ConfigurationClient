@@ -24,7 +24,7 @@
                     <StackPanel Margin="10">
                         <ListView ItemsSource="{x:Bind Properties}" Margin="0, 5" Padding="0, 0, 0, 10">
                             <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="models:BasicProperty">
+                                <DataTemplate x:DataType="models:ReferenceProperty">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="0.3*"/>

@@ -4,9 +4,7 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Management;
 using System.Reflection;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK
@@ -24,9 +22,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         public string Class => nameof(CCM_Program);
         public string Key => @$"PackageID=""{PackageID}"",ProgramID=""{ProgramID}""";
 
-        internal ProgramPageViewModel ViewModel { get; private set; }
+        internal ProgramPageViewModel ViewModel { get; set; }
 
-        public ObservableCollection<BasicProperty> Properties { get; private set; } = new();
+        public ObservableCollection<ReferenceProperty> Properties { get; private set; } = new();
 
         [ObservableProperty]
         private string _packageID;
@@ -48,7 +46,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         [ObservableProperty]
         private DateTime _expirationTime;
         [ObservableProperty]
-        private string[] _categories;
+        private ObservableCollection<string> _categories;
         [ObservableProperty]
         private bool _requiresUserInput;
         [ObservableProperty]
@@ -104,7 +102,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         [ObservableProperty]
         private uint _level;
         [ObservableProperty]
-        private CCM_Program[] _dependencies;
+        private ObservableCollection<CCM_Program> _dependencies;
         [ObservableProperty]
         private RepeatRunBehavior _repeatRunBehavior;
         [ObservableProperty]
@@ -131,96 +129,18 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
 
         private static readonly List<PropertyInfo> _properties = new();
 
-        private readonly ManagementBaseObject _instance;
-
         static CCM_Program()
         {
             var programType = typeof(CCM_Program);
-            var properties = programType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var properties = programType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.Name != nameof(Properties));
             _properties.AddRange(properties);
         }
-        
-        public CCM_Program(ProgramPageViewModel viewModel, ManagementBaseObject program)
-        {
-            ViewModel = viewModel;
-            _instance = program;
 
-            UpdateInstance();
-        }
-        private void UpdateInstance()
+        public CCM_Program()
         {
-            var instanceProperties = new List<string>(_instance.Properties.Count);
-            foreach(var property in _instance.Properties)
-            {
-                instanceProperties.Add(property.Name);
-            }
-
             foreach(var property in _properties)
             {
-                if (!instanceProperties.Contains(property.Name))
-                {
-                    Debug.WriteLine($"Property {property.Name} not found on Program");
-                    continue;
-                }
-
-                var value = _instance.GetPropertyValue(property.Name);
-                
-                if(property.PropertyType == typeof(DateTime))
-                {
-                    if (value == null)
-                    {
-                        property.SetValue(this, DateTime.MinValue);
-                    }
-                    else
-                    {
-                        property.SetValue(this, ManagementDateTimeConverter.ToDateTime(value as string));
-                    }
-                }
-                else if(property.PropertyType.IsEnum)
-                {
-                    if (Enum.IsDefined(property.PropertyType, value))
-                    {
-                        if (value is string)
-                        {
-                            property.SetValue(this, Enum.Parse(property.PropertyType, value as string));
-                        }
-                        else
-                        {
-                            property.SetValue(this, Enum.ToObject(property.PropertyType, value));
-                        }
-                    }
-                    else
-                    {
-                        Debug.WriteLine($"Failed to parse {value} to {property.PropertyType}");
-                    }
-                }
-                else if(property.PropertyType.IsArray)
-                {
-                    if(value == null)
-                    {
-                        continue;
-                    }
-
-                    if(property.Name == nameof(Dependencies))
-                    {
-                        var programs = value as IEnumerable<ManagementBaseObject>;
-                        Dependencies = new CCM_Program[programs.Count()];
-                        for(var i = 0; i <  programs.Count(); i++)
-                        {
-                            Dependencies[i] = new CCM_Program(ViewModel, programs.ElementAt(i));
-                        }
-                    }
-                    else
-                    {
-                        property.SetValue(this, value);
-                    }
-                }
-                else
-                {
-                    property.SetValue(this, value);
-                }
-
-                Properties.Add(new BasicProperty(property.Name, property.GetValue(this)));
+                Properties.Add(new ReferenceProperty(this, property));
             }
         }
     }

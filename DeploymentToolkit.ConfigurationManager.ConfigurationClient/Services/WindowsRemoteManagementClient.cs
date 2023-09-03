@@ -7,6 +7,7 @@ using FluentResults;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -262,6 +263,21 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                         {
                             _logger.LogError("Failed to parse {value} to {type}", element.Value, property.PropertyType.Name);
                             value = Enum.Parse(property.PropertyType, "0");
+                        }
+                    }
+                    else if(property.PropertyType.IsObservableCollection())
+                    {
+                        if(isEmpty)
+                        {
+                            value = Activator.CreateInstance(property.PropertyType)!;
+                        }
+                        else
+                        {
+                            value = Activator.CreateInstance(property.PropertyType, element.Elements().Count())!;
+                            foreach (var childElement in element.Elements())
+                            {
+                                (value as dynamic).Add(Convert.ChangeType(childElement.Value, property.PropertyType));
+                            }
                         }
                     }
                     else if(isEmpty && property.PropertyType.IsNumericType())

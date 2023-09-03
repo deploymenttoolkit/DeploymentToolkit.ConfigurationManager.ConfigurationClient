@@ -1,4 +1,5 @@
 ﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.SoftMgmtAgent;
 using System.Collections.Generic;
@@ -25,5 +26,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         public IEnumerable<PolicyNamespace> GetPolicy();
         public IEnumerable<PolicyClass> GetPolicyClasses(PolicyNamespace policy);
         public IEnumerable<PolicyInstance> GetPolicyInstances(PolicyClass policyClass);
+
+        public IEnumerable<CCM_Program> GetPrograms();
     }
 }
