@@ -128,11 +128,18 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         }
 
         private static readonly List<PropertyInfo> _properties = new();
+        private static readonly List<string> _propertiesToSkip = new()
+        {
+            nameof(Properties),
+            nameof(ViewModel),
+            nameof(EvaluationStateText),
+            nameof(Dependencies)
+        };
 
         static CCM_Program()
         {
             var programType = typeof(CCM_Program);
-            var properties = programType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.Name != nameof(Properties));
+            var properties = programType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => !_propertiesToSkip.Contains(p.Name));
             _properties.AddRange(properties);
         }
 

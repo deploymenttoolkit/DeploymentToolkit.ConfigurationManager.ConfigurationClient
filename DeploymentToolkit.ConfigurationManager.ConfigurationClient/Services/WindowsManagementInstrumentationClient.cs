@@ -202,6 +202,13 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                                     }
                                     break;
 
+                                case "Dependencies":
+                                    foreach (ManagementBaseObject childProgram in wmiProperty.Value as ManagementBaseObject[])
+                                    {
+                                        (currentValue as dynamic).Add(ConvertManagementObject<CCM_Program>(childProgram));
+                                    }
+                                    break;
+
                                 default:
                                     throw new NotImplementedException("SubType not implemented");
                             }

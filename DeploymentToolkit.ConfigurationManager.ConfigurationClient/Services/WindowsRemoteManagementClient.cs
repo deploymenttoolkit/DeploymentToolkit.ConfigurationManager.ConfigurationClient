@@ -299,6 +299,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                                         (value as dynamic).Add(ParseXmlElement<CCM_Application>(element.ToString()));
                                         break;
 
+                                    case "Dependencies":
+                                        (value as dynamic).Add(ParseXmlElement<CCM_Program>(element.ToString()));
+                                        break;
+
                                     default:
                                         throw new NotImplementedException("SubType not implemented");
                                 }
