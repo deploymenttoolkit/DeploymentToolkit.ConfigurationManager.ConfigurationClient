@@ -3,6 +3,11 @@ using Microsoft.UI.Xaml;
 using System.Collections.ObjectModel;
 using System;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Linq;
+using System.Xml.Serialization;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK
 {
@@ -62,7 +67,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         NotInstalled,
         Installed,
         Unknown,
-        Any
+        Any,
+        Available // Not sure if this is right
     }
 
     public enum ConfigureState : uint
@@ -99,6 +105,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         public string Class => nameof(CCM_Application);
         public string Key => @$"Id=""{Id}"",Revision=""{Revision}"",IsMachineTarget={(IsMachineTarget ? "true" : "false")}";
 
+        public ApplicationsPageViewModel ViewModel { get; set; }
+
+        public ObservableCollection<ReferenceProperty> Properties { get; private set; } = new();
+
         [ObservableProperty]
         private string _id;
         [ObservableProperty]
@@ -106,9 +116,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         [ObservableProperty]
         private ApplicationType _applicationType;
         [ObservableProperty]
-        private ObservableCollection<Application> _applications = new();
-        [ObservableProperty]
-        private Visibility _embeddedApplicationVisibility = Visibility.Collapsed;
+        private ObservableCollection<CCM_Application> _appDTs = new();
 
         [ObservableProperty]
         private string _name;
@@ -123,11 +131,14 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         private bool _rebootOutsideServiceWindow;
 
         [ObservableProperty]
-        private bool _installable;
-        [ObservableProperty]
-        private bool _uninstallable;
-        [ObservableProperty]
-        private bool _repairable;
+        [NotifyPropertyChangedFor(nameof(Installable))]
+        [NotifyPropertyChangedFor(nameof(Uninstallable))]
+        [NotifyPropertyChangedFor(nameof(Repairable))]
+        private ObservableCollection<string> _allowedActions = new();
+
+        public bool Installable => AllowedActions.Contains("Install");
+        public bool Uninstallable => AllowedActions.Contains("Uninstall");
+        public bool Repairable => AllowedActions.Contains("Repair");
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(EvaluationStateText))]
@@ -164,6 +175,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         [ObservableProperty]
         private DateTime _startTime;
         [ObservableProperty]
+        private DateTime _lastEvalTime;
+        [ObservableProperty]
         private bool _notifyUser;
         [ObservableProperty]
         private bool _userUIExperience;
@@ -181,6 +194,33 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
                     return $"{EvaluationState} ({PercentComplete}%)";
                 }
                 return EvaluationState.ToString();
+            }
+        }
+
+        private static readonly List<PropertyInfo> _properties = new();
+        private static readonly List<string> _propertiesToSkip = new()
+        {
+            nameof(Properties),
+            nameof(ViewModel),
+            nameof(AppDTs),
+            nameof(EvaluationStateText),
+            nameof(Installable),
+            nameof(Uninstallable),
+            nameof(Repairable)
+        };
+
+        static CCM_Application()
+        {
+            var programType = typeof(CCM_Application);
+            var properties = programType.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => !_propertiesToSkip.Contains(p.Name));
+            _properties.AddRange(properties);
+        }
+
+        public CCM_Application()
+        {
+            foreach (var property in _properties)
+            {
+                Properties.Add(new ReferenceProperty(this, property));
             }
         }
     }

@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Extensions;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using FluentResults;
 using Microsoft.Extensions.Logging;
@@ -211,14 +212,14 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return $"{_windowsRemoteManagementSchema}/{managementScope}/{managementClass}?{webQuery}";
         }
 
-        public T? ParseXmlElement<T>(string? xml) where T : new()
+        public T? ParseXmlElement<T>(string? xml, T? instance = default) where T : new()
         {
             if (xml == null || string.IsNullOrWhiteSpace(xml))
             {
                 return default;
             }
 
-            var newElement = new T();
+            var newInstance = instance ?? new T();
             try
             {
                 var properties = typeof(T).GetProperties();
@@ -226,7 +227,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
                 if(document.Root == null)
                 {
-                    return newElement;
+                    return newInstance;
                 }
 
                 foreach(var element in document.Root.Elements())
@@ -244,7 +245,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                     var isEmpty = string.IsNullOrEmpty(element.Value);
                     if (property.PropertyType == typeof(DateTime))
                     {
-                        if (isEmpty)
+                        if (isEmpty || element.Value == "0000-00-00T00:00:00Z")
                         {
                             value = DateTime.MinValue;
                         }
@@ -267,18 +268,45 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                     }
                     else if(property.PropertyType.IsObservableCollection())
                     {
-                        if(isEmpty)
+                        var currentValue = property.GetValue(newInstance);
+                        if (isEmpty && currentValue == null)
                         {
                             value = Activator.CreateInstance(property.PropertyType)!;
                         }
-                        else
+                        else if(!isEmpty)
                         {
-                            value = Activator.CreateInstance(property.PropertyType, element.Elements().Count())!;
-                            foreach (var childElement in element.Elements())
+                            if (currentValue == null)
                             {
-                                (value as dynamic).Add(Convert.ChangeType(childElement.Value, property.PropertyType));
+                                value = Activator.CreateInstance(property.PropertyType)!;
+                            }
+                            else
+                            {
+                                value = currentValue;
+                            }
+
+                            var itemType = property.PropertyType.GetGenericArguments()[0];
+                            if (itemType.IsPrimitive || itemType == typeof(string))
+                            {
+                                dynamic converted = Convert.ChangeType(element.Value, itemType);
+                                (value as dynamic).Add(converted);
+                            }
+                            else
+                            {
+                                // TODO: This should be handeled externally
+                                switch (element.Name.LocalName)
+                                {
+                                    case "AppDTs":
+                                        (value as dynamic).Add(ParseXmlElement<CCM_Application>(element.ToString()));
+                                        break;
+
+                                    default:
+                                        throw new NotImplementedException("SubType not implemented");
+                                }
                             }
                         }
+
+                        _logger.LogDebug("Added to collection {name}", element.Name.LocalName);
+                        continue;
                     }
                     else if(isEmpty && property.PropertyType.IsNumericType())
                     {
@@ -294,10 +322,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                     }
 
                     _logger.LogDebug("Setting {name} to '{value}'", element.Name.LocalName, value.ToString());
-                    property.SetValue(newElement, value);
+                    property.SetValue(newInstance, value);
                 }
 
-                return newElement;
+                return newInstance;
             }
             catch(Exception ex)
             {
@@ -368,6 +396,27 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             {
                 _logger.LogError(ex, "Failed to get instance of {namespace}->{name}->{key}", instance.Namespace, instance.Class, instance.Key);
                 return default;
+            }
+        }
+
+        public T PatchInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new()
+        {
+            if(instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            try
+            {
+                var uri = BuildUri(instance.Namespace, instance.Class, instance.Key);
+                _logger.LogTrace("Getting instance of {uri}", uri);
+                var response = ExecuteQuery(uri);
+                return ParseXmlElement<T>(response, instance as T)!;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update instance of {namespace}->{name}->{key}", instance.Namespace, instance.Class, instance.Key);
+                return (instance as T)!;
             }
         }
 
@@ -486,9 +535,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             }
         }
 
-        //public T? InvokeMethod<T>(string managementClass, string? managementScope = null) where T : new()
-        //{
-        //    var uri = BuildUri(managementClass, managementScope);
-        //}
+        public T? InvokeMethod<T>(IWindowsManagementInstrumentationStaticInstance instance, string method, Dictionary<string, object> parameters) where T : IMethodResult, new()
+        {
+            var uri = BuildUri(instance.Class, instance.Namespace);
+
+            var result = InvokeMethod(uri, method, parameters);
+            return ParseXmlElement<T>(result);
+        }
     }
 }

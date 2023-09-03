@@ -1,4 +1,5 @@
-﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM;
+﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.SoftMgmtAgent;
@@ -6,6 +7,7 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.Web.Syndication;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
@@ -32,9 +34,16 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         private static readonly Lazy<CCM_Program> _defaultProgram = new(() => new CCM_Program());
 
+        private static readonly Lazy<CCM_Application> _defaultApplication = new(() => new CCM_Application());
+
         public ConfigurationManagerClientService(ClientConnectionManager clientConnectionManager)
         {
             _remoteManagementClient = clientConnectionManager.Connection;
+        }
+
+        public T UpdateInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new()
+        {
+            return _remoteManagementClient.PatchInstance<T>(instance);
         }
 
         public IEnumerable<CCM_ClientActions>? GetClientActions()
@@ -188,6 +197,39 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             {
                 yield return instance;
             }
+        }
+
+        public IEnumerable<CCM_Application> GetApplications()
+        {
+            var instances = _remoteManagementClient.GetInstances<CCM_Application>(_defaultApplication.Value);
+            if (instances == null)
+            {
+                yield break;
+            }
+
+            foreach (var instance in instances)
+            {
+                yield return instance;
+            }
+        }
+
+        public uint InstallApplication(CCM_Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Install", application, priority, reboot);
+        public uint RepairApplication(CCM_Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Install", application, priority, reboot);
+        public uint UninstallApplication(CCM_Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Install", application, priority, reboot);
+
+        private uint InvokeApplicationMethod(string method, CCM_Application application, Priority priority, bool reboot)
+        {
+            var result = _remoteManagementClient.InvokeMethod<InvokeApplicationMethodResult>(application, method, new Dictionary<string, object>()
+            {
+                { "Id", application.Id },
+                { "Revision", application.Revision },
+                { "IsMachineTarget", application.IsMachineTarget },
+                { "EnforcePreference", (uint)application.EnforcePreference },
+                { "Priority", priority },
+                { "IsRebootIfNeeded", reboot }
+            });
+
+            return result?.ReturnValue ?? uint.MaxValue;
         }
     }
 }

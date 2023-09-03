@@ -189,25 +189,25 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return GetInstance(@$"CCM_Application.Id=""{id}"",Revision=""{revision}"",IsMachineTarget={(isMachineTarget ? "true" : "false")}", new ManagementScope(@"ROOT\ccm\ClientSDK"));
         }
 
-        public uint InstallApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Install", application, priority, reboot);
-        public uint RepairApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Repair", application, priority, reboot);
-        public uint UninstallApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Uninstall", application, priority, reboot);
+        //public uint InstallApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Install", application, priority, reboot);
+        //public uint RepairApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Repair", application, priority, reboot);
+        //public uint UninstallApplication(Application application, Priority priority, bool reboot = false) => InvokeApplicationMethod("Uninstall", application, priority, reboot);
 
-        private uint InvokeApplicationMethod(string method, Application application, Priority priority, bool reboot)
-        {
-            var applicationClass = new ManagementClass(@"ROOT\ccm\ClientSDK", "CCM_Application", null);
+        //private uint InvokeApplicationMethod(string method, Application application, Priority priority, bool reboot)
+        //{
+        //    var applicationClass = new ManagementClass(@"ROOT\ccm\ClientSDK", "CCM_Application", null);
 
-            var parameters = applicationClass.GetMethodParameters(method);
-            parameters["Id"] = application.Id;
-            parameters["Revision"] = application.Revision;
-            parameters["IsMachineTarget"] = application.IsMachineTarget;
-            parameters["EnforcePreference"] = (uint)application.EnforcePreference;
-            parameters["Priority"] = priority.ToString();
-            parameters["IsRebootIfNeeded"] = reboot;
+        //    var parameters = applicationClass.GetMethodParameters(method);
+        //    parameters["Id"] = application.Id;
+        //    parameters["Revision"] = application.Revision;
+        //    parameters["IsMachineTarget"] = application.IsMachineTarget;
+        //    parameters["EnforcePreference"] = (uint)application.EnforcePreference;
+        //    parameters["Priority"] = priority.ToString();
+        //    parameters["IsRebootIfNeeded"] = reboot;
 
-            var result = applicationClass.InvokeMethod(method, parameters, null);
-            return Convert.ToUInt32(result["ReturnValue"]);
-        }
+        //    var result = applicationClass.InvokeMethod(method, parameters, null);
+        //    return Convert.ToUInt32(result["ReturnValue"]);
+        //}
 
         public ManagementObjectCollection GetPrograms()
         {

@@ -2,27 +2,26 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Messages;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Management;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
     public partial class ApplicationsPageViewModel : ObservableObject, IDisposable
     {
-        private ObservableCollection<Application> _applications = new();
-        public ObservableCollection<Application> Applications => _applications;
+        [ObservableProperty]
+        private ObservableCollection<CCM_Application> _applications = new();
 
-        private WMIConfigurationManagerClientService _clientService;
+        private IConfigurationManagerClientService _clientService;
 
         [ObservableProperty]
         private DateTime _lastUpdated;
 
-        public ApplicationsPageViewModel(WMIConfigurationManagerClientService clientService)
+        public ApplicationsPageViewModel(IConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 
@@ -37,11 +36,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             GC.SuppressFinalize(this);
         }
 
-        public ManagementBaseObject GetApplication(string id, string revision, bool isMachineTarget) => _clientService.GetApplication(id, revision, isMachineTarget);
-
         private void OnApplicationMessage(object recipient, CCMApplicationMessage message)
         {
-            if(message.Value == null)
+            if(message.Value == null || string.IsNullOrEmpty(message.Value.TargetInstancePath))
             {
                 return;
             }
@@ -57,22 +54,17 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
             App.Current.DispatcherQueue.TryEnqueue(() =>
             {
-                application.UpdateInstance(true);
+                _clientService.UpdateInstance<CCM_Application>(application);
             });
         }
 
         [RelayCommand]
         private void UpdateApplications()
         {
-            var applications = new List<Application>();
-            foreach(ManagementObject application in _clientService.GetApplications())
-            {
-                applications.Add(new Application(this, application));
-            }
-
             Applications.Clear();
-            foreach(var application in applications.OrderBy(a => a.Name))
+            foreach(var application in _clientService.GetApplications().OrderBy(a => a.Name))
             {
+                application.ViewModel = this;
                 Applications.Add(application);
             }
 
@@ -80,19 +72,19 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         }
 
         [RelayCommand]
-        private void Install(Application application)
+        private void Install(CCM_Application application)
         {
             _clientService.InstallApplication(application, Priority.Foreground);
         }
 
         [RelayCommand]
-        private void Repair(Application application)
+        private void Repair(CCM_Application application)
         {
             _clientService.RepairApplication(application, Priority.Foreground);
         }
 
         [RelayCommand]
-        private void Uninstall(Application application)
+        private void Uninstall(CCM_Application application)
         {
             _clientService.UninstallApplication(application, Priority.Foreground);
         }

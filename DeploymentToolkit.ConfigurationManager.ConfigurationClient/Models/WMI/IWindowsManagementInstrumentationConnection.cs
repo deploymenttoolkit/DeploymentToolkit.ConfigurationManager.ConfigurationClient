@@ -12,6 +12,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI
         public Result Disconnect();
 
         public T? GetInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : new();
+        public T PatchInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new();
 
         public T? GetStaticInstance<T>(IWindowsManagementInstrumentationStaticInstance instance) where T : new();
         public T? GetStaticInstance<T>(string managementClass, string? managementScope = null) where T : new();
@@ -24,5 +25,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI
 
         public IEnumerable<string>? GetChildNamespaces(IWindowsManagementInstrumentationStaticInstance instance);
         public IEnumerable<string>? GetChildClasses(IWindowsManagementInstrumentationStaticInstance instance);
+
+        public T? InvokeMethod<T>(IWindowsManagementInstrumentationStaticInstance instance, string method, Dictionary<string, object> parameters) where T : IMethodResult, new();
     }
 }

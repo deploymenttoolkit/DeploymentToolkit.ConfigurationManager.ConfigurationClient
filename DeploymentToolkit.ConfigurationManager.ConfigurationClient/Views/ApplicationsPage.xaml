@@ -8,8 +8,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models"
+    xmlns:clientsdk="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK"
+    xmlns:converters="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <converters:ApplicationGroupVisibilityConverter x:Key="ApplicationGroupVisibilityConverter" />
+    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -50,11 +55,11 @@
                            x:DefaultBindMode="OneWay"
                            IsReadOnly="True">
             <controls:DataGrid.RowDetailsTemplate>
-                <DataTemplate x:DataType="models:Application">
+                <DataTemplate x:DataType="clientsdk:CCM_Application">
                     <StackPanel Margin="10">
                         <ListView ItemsSource="{x:Bind Properties}" Margin="0, 5" Padding="0, 0, 0, 10">
                             <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="models:BasicProperty">
+                                <DataTemplate x:DataType="models:ReferenceProperty">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="0.3*"/>
@@ -68,14 +73,14 @@
                             </ListView.ItemTemplate>
                         </ListView>
 
-                        <StackPanel Visibility="{Binding EmbeddedApplicationVisibility}">
+                        <StackPanel Visibility="{Binding ApplicationType, Converter={StaticResource ApplicationGroupVisibilityConverter}}">
                             <TextBlock Style="{StaticResource SubheaderTextBlockStyle}" Text="Applications in this Group"/>
-                            <ListView ItemsSource="{x:Bind Applications}" Margin="0, 5" Padding="0, 0, 0, 10">
+                            <ListView ItemsSource="{x:Bind AppDTs}" Margin="0, 5" Padding="0, 0, 0, 10">
                                 <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="models:Application">
+                                    <DataTemplate x:DataType="clientsdk:CCM_Application">
                                         <ListView ItemsSource="{x:Bind Properties}" Margin="0, 5" Padding="0, 0, 0, 10">
                                             <ListView.ItemTemplate>
-                                                <DataTemplate x:DataType="models:BasicProperty">
+                                                <DataTemplate x:DataType="models:ReferenceProperty">
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="0.3*"/>

@@ -1,14 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Extensions;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using FluentResults;
 using Microsoft.Extensions.Logging;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
+using System.Reflection;
+using WinRT;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
@@ -110,14 +113,14 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return Result.Ok();
         }
 
-        private T? ConvertManagementObject<T>(ManagementBaseObject managementObject) where T : new()
+        private T? ConvertManagementObject<T>(ManagementBaseObject managementObject, T? instance = default) where T : new()
         {
             if(managementObject == null)
             {
                 return default;
             }
 
-            var newElement = new T();
+            var newInstance = instance ?? new T();
             var properties = typeof(T).GetProperties();
 
             foreach(var wmiProperty in managementObject.Properties)
@@ -133,13 +136,20 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
                 if(wmiProperty.Value != null && wmiProperty.Value.GetType() == property.PropertyType)
                 {
-                    property.SetValue(newElement, wmiProperty.Value);
+                    property.SetValue(newInstance, wmiProperty.Value);
                 }
                 else if (wmiProperty.Value != null && property.PropertyType.IsEnum)
                 {
                     if (Enum.IsDefined(property.PropertyType, wmiProperty.Value))
                     {
-                        property.SetValue(newElement, Enum.ToObject(property.PropertyType, wmiProperty.Value));
+                        if (uint.TryParse(wmiProperty.Value.ToString(), out _))
+                        {
+                            property.SetValue(newInstance, Enum.ToObject(property.PropertyType, wmiProperty.Value));
+                        }
+                        else
+                        {
+                            property.SetValue(newInstance, Enum.Parse(property.PropertyType, wmiProperty.Value.ToString()!));
+                        }
                     }
                     else
                     {
@@ -150,22 +160,63 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                 {
                     if (wmiProperty.Value == null || wmiProperty.Value.ToString() == "00000000000000.000000+000")
                     {
-                        property.SetValue(newElement, DateTime.MinValue);
+                        property.SetValue(newInstance, DateTime.MinValue);
                     }
                     else
                     {
-                        property.SetValue(newElement, ManagementDateTimeConverter.ToDateTime(wmiProperty.Value as string));
+                        property.SetValue(newInstance, ManagementDateTimeConverter.ToDateTime(wmiProperty.Value as string));
+                    }
+                }
+                else if(property.PropertyType.IsObservableCollection())
+                {
+                    var currentValue = property.GetValue(newInstance);
+                    if (wmiProperty.Value == null && currentValue == null)
+                    {
+                        property.SetValue(newInstance, Activator.CreateInstance(property.PropertyType)!);
+                    }
+                    else if(wmiProperty.Value != null)
+                    {
+                        if(currentValue == null)
+                        {
+                            currentValue = Activator.CreateInstance(property.PropertyType)!;
+                            property.SetValue(newInstance, currentValue);
+                        }
+
+                        var itemType = property.PropertyType.GetGenericArguments()[0];
+                        if (itemType.IsPrimitive || itemType == typeof(string))
+                        {
+                            foreach(var value in wmiProperty.Value as dynamic[])
+                            {
+                                (currentValue as dynamic).Add(value);
+                            }
+                        }
+                        else
+                        {
+                            // TODO: This should be handeled externally
+                            switch (wmiProperty.Name)
+                            {
+                                case "AppDTs":
+                                    foreach(ManagementBaseObject childApplication in wmiProperty.Value as ManagementBaseObject[])
+                                    {
+                                        (currentValue as dynamic).Add(ConvertManagementObject<CCM_Application>(childApplication));
+                                    }
+                                    break;
+
+                                default:
+                                    throw new NotImplementedException("SubType not implemented");
+                            }
+                        }
                     }
                 }
                 else if(wmiProperty.Value != null)
                 {
-                    property.SetValue(newElement, wmiProperty.Value);
+                    property.SetValue(newInstance, wmiProperty.Value);
                 }
 
-                _logger.LogDebug("Set {name} to '{value}'", wmiProperty.Name, property.GetValue(newElement));
+                _logger.LogDebug("Set {name} to '{value}'", wmiProperty.Name, property.GetValue(newInstance));
             }
 
-            return newElement;
+            return newInstance;
         }
 
         public T? GetInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : new()
@@ -175,6 +226,15 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             var managementObject = new ManagementObject(managementPath);
             managementObject.Get();
             return ConvertManagementObject<T>(managementObject);
+        }
+
+        public T PatchInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new()
+        {
+            var managementScope = GetManagementScope(instance.Namespace);
+            var managementPath = new ManagementPath($"{managementScope.Path}:{instance.Class}.{instance.Key}");
+            var managementObject = new ManagementObject(managementPath);
+            managementObject.Get();
+            return ConvertManagementObject<T>(managementObject, instance as T)!;
         }
 
         public T? GetStaticInstance<T>(IWindowsManagementInstrumentationStaticInstance instance) where T : new()
@@ -253,6 +313,34 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
                 yield return child.ClassPath.ClassName;
             }
+        }
+
+        public T? InvokeMethod<T>(IWindowsManagementInstrumentationStaticInstance instance, string method, Dictionary<string, object> parameters) where T : IMethodResult, new()
+        {
+            var managementClass = new ManagementClass(instance.Namespace, instance.Class, null!);
+
+            var wmiParameters = managementClass.GetMethodParameters(method);
+            foreach(var parameter in parameters)
+            {
+                wmiParameters[parameter.Key] = parameter.Value;
+            }
+
+            var result = managementClass.InvokeMethod(method, wmiParameters, null!);
+
+            var resultInstance = new T();
+            var classProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach(var property in result.Properties)
+            {
+                var classProperty = classProperties.FirstOrDefault(p => p.Name == property.Name);
+                if(classProperty == null)
+                {
+                    continue;
+                }
+
+                classProperty.SetValue(resultInstance, property.Value);
+            }
+
+            return resultInstance;
         }
     }
 }
