@@ -8,6 +8,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         public string Namespace => CCM_Constants.ClientSoftMgmtAgentNamespace;
         public string Class => nameof(CacheConfig);
         public string Key => $@"ConfigKey=""{ConfigKey}""";
+        public bool QueryByFilter => false;
 
         [ObservableProperty]
         private string _configKey;

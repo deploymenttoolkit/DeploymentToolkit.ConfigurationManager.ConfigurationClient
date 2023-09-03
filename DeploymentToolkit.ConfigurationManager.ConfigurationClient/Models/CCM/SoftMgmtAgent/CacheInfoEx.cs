@@ -9,6 +9,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         public string Namespace => CCM_Constants.ClientSoftMgmtAgentNamespace;
         public string Class => nameof(CacheInfoEx);
         public string Key => $@"CacheId=""{CacheId}""";
+        public bool QueryByFilter => false;
 
         [ObservableProperty]
         private string _cacheId;

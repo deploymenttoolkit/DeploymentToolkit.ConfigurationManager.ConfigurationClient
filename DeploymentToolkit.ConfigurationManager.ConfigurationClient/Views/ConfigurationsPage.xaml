@@ -18,7 +18,7 @@
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Header="DisplayName" Binding="{Binding DisplayName}"/>
                 <controls:DataGridTextColumn Header="Version" Binding="{Binding Version}"/>
-                <controls:DataGridTextColumn Header="LastEvaluation" Binding="{Binding LastEvaluationTime}"/>
+                <controls:DataGridTextColumn Header="LastEvaluation" Binding="{Binding LastEvalTime}"/>
                 <controls:DataGridTextColumn Header="LastComplianceStatus" Binding="{Binding LastComplianceStatus}"/>
                 <controls:DataGridTextColumn Header="Status" Binding="{Binding Status}"/>
                 <controls:DataGridTemplateColumn Header="">

@@ -21,6 +21,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         public string Namespace => CCM_Constants.ClientSDKNamespace;
         public string Class => nameof(CCM_Program);
         public string Key => @$"PackageID=""{PackageID}"",ProgramID=""{ProgramID}""";
+        public bool QueryByFilter => false;
 
         internal ProgramPageViewModel ViewModel { get; set; }
 

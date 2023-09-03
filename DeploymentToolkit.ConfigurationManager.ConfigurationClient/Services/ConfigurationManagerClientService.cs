@@ -1,6 +1,7 @@
 ﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.dcm;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.SoftMgmtAgent;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
@@ -37,6 +38,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         private static readonly Lazy<CCM_Application> _defaultApplication = new(() => new CCM_Application());
 
         private static readonly Lazy<CCM_SoftwareUpdate> _defaultSoftwareUpdate = new(() => new CCM_SoftwareUpdate());
+
+        private static readonly Lazy<SMS_DesiredConfiguration> _defaultDesiredConfiguration = new(() => new SMS_DesiredConfiguration());
 
         public ConfigurationManagerClientService(ClientConnectionManager clientConnectionManager)
         {
@@ -246,6 +249,34 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             {
                 yield return instance;
             }
+        }
+
+        public IEnumerable<SMS_DesiredConfiguration> GetDesiredStateConfiguration()
+        {
+            var instances = _remoteManagementClient.GetInstances<SMS_DesiredConfiguration>(_defaultDesiredConfiguration.Value);
+            if (instances == null)
+            {
+                yield break;
+            }
+
+            foreach (var instance in instances)
+            {
+                yield return instance;
+            }
+        }
+
+        public uint EvaluateDesiredStateConfiguration(SMS_DesiredConfiguration configuration)
+        {
+            var result = _remoteManagementClient.InvokeMethod<InvokeDesiredConfigurationEvaluationResult>(configuration, "TriggerEvaluation", new Dictionary<string, object>()
+            {
+                { "Name", configuration.Name },
+                { "Version", configuration.Version },
+                { "IsMachineTarget", configuration.IsMachineTarget },
+                { "IsEnforced", true },
+                { "PolicyType", (uint)configuration.PolicyType }
+            });
+
+            return result?.ReturnValue ?? uint.MaxValue;
         }
     }
 }

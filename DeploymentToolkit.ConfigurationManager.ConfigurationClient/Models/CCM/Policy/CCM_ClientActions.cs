@@ -25,6 +25,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         }
         public string Class => nameof(CCM_ClientActions);
         public string Key => $@"ActionID=""{ActionID}""";
+        public bool QueryByFilter => false;
 
         [ObservableProperty]
         private string _displayName;

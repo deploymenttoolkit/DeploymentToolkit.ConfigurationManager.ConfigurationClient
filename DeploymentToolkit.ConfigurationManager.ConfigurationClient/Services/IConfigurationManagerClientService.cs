@@ -1,6 +1,7 @@
 ﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.dcm;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.SoftMgmtAgent;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
@@ -39,5 +40,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         public uint UninstallApplication(CCM_Application application, Priority priority, bool reboot = false);
 
         public IEnumerable<CCM_SoftwareUpdate> GetSoftwareUpdates();
+
+        public IEnumerable<SMS_DesiredConfiguration> GetDesiredStateConfiguration();
+        public uint EvaluateDesiredStateConfiguration(SMS_DesiredConfiguration configuration);
     }
 }

@@ -8,6 +8,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM
         public string Namespace => CCM_Constants.ClientNamespace;
         public string Class => nameof(SMS_LookupMP);
         public string Key => @$"Name=""{Name}""";
+        public bool QueryByFilter => false;
 
         [ObservableProperty]
         private string _capabilities;

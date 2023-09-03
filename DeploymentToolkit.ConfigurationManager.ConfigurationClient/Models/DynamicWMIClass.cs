@@ -12,13 +12,15 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
         public string Namespace { get; }
 
         public string Class { get; }
+        public bool QueryByFilter { get; }
 
         public ObservableCollection<WindowsManagementInstrumentationProperty> Properties { get; } = new();
 
-        public DynamicWMIClass(string namespaceName, string className)
+        public DynamicWMIClass(string namespaceName, string className, bool queryByFilter = false)
         {
             Namespace = namespaceName;
             Class = className;
+            QueryByFilter = queryByFilter;
         }
     }
 }

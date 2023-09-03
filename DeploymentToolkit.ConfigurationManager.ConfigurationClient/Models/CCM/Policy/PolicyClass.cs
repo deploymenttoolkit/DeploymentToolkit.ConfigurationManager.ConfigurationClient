@@ -26,6 +26,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         }
         public string Class => DisplayName;
         public string Key => throw new NotImplementedException();
+        public bool QueryByFilter => false;
 
         [ObservableProperty]
         private string _displayName;

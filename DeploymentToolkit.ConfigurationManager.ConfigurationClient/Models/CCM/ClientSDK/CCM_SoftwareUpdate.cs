@@ -16,6 +16,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         public string Namespace => CCM_Constants.ClientSDKNamespace;
         public string Class => nameof(CCM_SoftwareUpdate);
         public string Key => @$"UpdateID=""{UpdateID}""";
+        public bool QueryByFilter => false;
 
         internal SoftwareUpdatesPageViewModel ViewModel { get; set; }
         internal ObservableCollection<ReferenceProperty> Properties { get; private set; } = new();

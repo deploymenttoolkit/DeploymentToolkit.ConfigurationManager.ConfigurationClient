@@ -3,5 +3,6 @@
     public interface IWindowsManagementInstrumentationInstance : IWindowsManagementInstrumentationStaticInstance
     {
         public string Key { get; }
+        public bool QueryByFilter { get; }
     }
 }

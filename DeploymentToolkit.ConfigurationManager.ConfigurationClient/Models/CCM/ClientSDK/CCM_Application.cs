@@ -7,7 +7,6 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using System.Xml.Serialization;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK
 {
@@ -104,6 +103,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         public string Namespace => CCM_Constants.ClientSDKNamespace;
         public string Class => nameof(CCM_Application);
         public string Key => @$"Id=""{Id}"",Revision=""{Revision}"",IsMachineTarget={(IsMachineTarget ? "true" : "false")}";
+        public bool QueryByFilter => false;
 
         public ApplicationsPageViewModel ViewModel { get; set; }
 

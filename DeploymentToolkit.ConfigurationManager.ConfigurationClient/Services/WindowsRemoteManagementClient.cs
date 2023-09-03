@@ -145,6 +145,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         
         internal string? ExecuteQuery(string uri)
         {
+            _logger.LogTrace("Executing {uri}", uri);
+
             if(!IsConnected)
             {
                 return string.Empty;
@@ -208,7 +210,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                 return $"{_windowsRemoteManagementSchema}/{managementScope}/{managementClass}";
             }
 
-            var webQuery = UrlEncoder.Default.Encode(key.Replace("\"", ""));
+            var webQuery = key
+                .Replace("\"", "")
+                .Replace(",", "+");
+
             return $"{_windowsRemoteManagementSchema}/{managementScope}/{managementClass}?{webQuery}";
         }
 
@@ -412,10 +417,37 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
             try
             {
-                var uri = BuildUri(instance.Namespace, instance.Class, instance.Key);
-                _logger.LogTrace("Getting instance of {uri}", uri);
-                var response = ExecuteQuery(uri);
-                return ParseXmlElement<T>(response, instance as T)!;
+                if (instance.QueryByFilter)
+                {
+                    var uri = BuildUri("*", instance.Namespace);
+                    _logger.LogTrace("Getting instance of {uri} by filter (slow)", uri);
+
+                    var query = $"SELECT * FROM {instance.Class} WHERE ";
+                    var split = instance.Key.Split(",");
+                    foreach(var keyValuePair in split)
+                    {
+                        query += $"{keyValuePair} AND ";
+                    }
+                    query = query.Substring(0, query.Length - 5);
+
+                    _logger.LogTrace("Build query '{query}'", query);
+
+                    var enumeration = Enumerate(uri, query);
+                    if(enumeration == null || enumeration.AtEndOfStream)
+                    {
+                        _logger.LogWarning("Failed to find instance");
+                        return (instance as T)!;
+                    }
+
+                    return ParseXmlElement(enumeration.ReadItem(), instance as T)!;
+                }
+                else
+                {
+                    var uri = BuildUri(instance.Class, instance.Namespace, instance.Key);
+                    _logger.LogTrace("Getting instance of {uri}", uri);
+                    var response = ExecuteQuery(uri);
+                    return ParseXmlElement(response, instance as T)!;
+                }
             }
             catch(Exception ex)
             {
