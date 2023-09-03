@@ -46,7 +46,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
 
                     services.AddTransient<IConfigurationManagerClientService, ConfigurationManagerClientService>();
 
-                    services.AddSingleton<WMIConfigurationManagerClientService>();
                     services.AddSingleton<ClientEventsService>();
 
                     services.AddTransient<ClientEventsPageViewModel>();
