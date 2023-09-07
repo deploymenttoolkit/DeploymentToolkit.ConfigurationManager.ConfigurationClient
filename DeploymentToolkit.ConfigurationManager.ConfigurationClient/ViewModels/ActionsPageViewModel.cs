@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI.UI.Controls.TextToolbarSymbols;
 using CPAPPLETLib;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,22 +13,28 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
     public partial class ActionsPageViewModel : ObservableObject
     {
-        private ObservableCollection<ClientActionWrapper> _actions = new();
-        public ObservableCollection<ClientActionWrapper> Actions => _actions;
+        [ObservableProperty]
+        private ObservableCollection<CCM_ClientAction> _actions = new();
 
-        private WMIConfigurationManagerClientService _clientService;
+        private IConfigurationManagerClientService _clientService;
 
-        public ActionsPageViewModel(WMIConfigurationManagerClientService clientService)
+        public ActionsPageViewModel(IConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 
-            var actions = new List<ClientActionWrapper>();
-            foreach (ClientAction action in _clientService.GetClientActions())
+            UpdateActions();
+        }
+
+        private void UpdateActions()
+        {
+            Actions.Clear();
+            var actions = _clientService.GetClientActions();
+            if(actions == null)
             {
-                actions.Add(new ClientActionWrapper(this, action));
+                return;
             }
 
-            foreach(var action in actions.OrderBy(a => a.ActionId))
+            foreach (var action in actions.OrderBy(a => a.ActionID))
             {
                 Actions.Add(action);
             }
@@ -36,13 +43,13 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [RelayCommand]
         public void RunAction(string id)
         {
-            var action = Actions.FirstOrDefault(a => a.ActionId == id);
+            var action = Actions.FirstOrDefault(a => a.ActionID == id);
             if(action == null)
             {
                 return;
             }
 
-            action.PerformAction();
+            _clientService.PerformClientAction(action);
         }
     }
 }

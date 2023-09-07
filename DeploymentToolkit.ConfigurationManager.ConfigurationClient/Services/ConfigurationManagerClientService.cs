@@ -16,7 +16,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
     {
         private readonly IWindowsManagementInstrumentationConnection _remoteManagementClient;
 
-        private static readonly Lazy<CCM_ClientActions> _defaultClientAction = new(() => new CCM_ClientActions(false, PolicyTarget.Machine, ConfigState.Actual));
+        private static readonly Lazy<CCM_ClientAction> _defaultClientAction = new(() => new CCM_ClientAction(false, PolicyTarget.Machine, ConfigState.Actual));
 
         private static readonly Lazy<CCM_InstalledComponent> _defaultInstalledComponent = new(() => new CCM_InstalledComponent());
 
@@ -51,9 +51,18 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return _remoteManagementClient.PatchInstance<T>(instance);
         }
 
-        public IEnumerable<CCM_ClientActions>? GetClientActions()
+        public IEnumerable<CCM_ClientAction>? GetClientActions()
         {
-            return _remoteManagementClient.GetInstances<CCM_ClientActions>(_defaultClientAction.Value.Class, _defaultClientAction.Value.Namespace);
+            return _remoteManagementClient.GetInstances<CCM_ClientAction>(_defaultClientAction.Value.Class, _defaultClientAction.Value.Namespace);
+        }
+
+        public uint PerformClientAction(CCM_ClientAction clientAction)
+        {
+            var result = _remoteManagementClient.InvokeMethod<ReturnCodeOnlyResult>(_defaultSMSClient.Value, "TriggerSchedule", new()
+            {
+                { "sScheduleID", clientAction.ActionID }
+            });
+            return result?.ReturnValue ?? uint.MaxValue;
         }
 
         public IEnumerable<CCM_InstalledComponent>? GetInstalledComponents()

@@ -15,7 +15,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         public IEnumerable<CCM_InstalledComponent>? GetInstalledComponents();
 
-        public IEnumerable<CCM_ClientActions>? GetClientActions();
+        public IEnumerable<CCM_ClientAction>? GetClientActions();
+
+        public uint PerformClientAction(CCM_ClientAction clientAction);
 
         public IEnumerable<CacheInfoEx>? GetClientCache();
         public CacheConfig? GetClientCacheConfig();

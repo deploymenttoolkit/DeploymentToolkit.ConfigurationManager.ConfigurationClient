@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy
 {
-    public partial class CCM_ClientActions : ObservableObject, IPolicy, IWindowsManagementInstrumentationInstance
+    public partial class CCM_ClientAction : ObservableObject, IPolicy, IWindowsManagementInstrumentationInstance
     {
         public string Namespace
         {
@@ -23,7 +23,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
                 return $@"{CCM_Constants.ClientPolicyNamespace}\{SID}\{ConfigState}Config";
             }
         }
-        public string Class => nameof(CCM_ClientActions);
+        public string Class => nameof(CCM_ClientAction);
         public string Key => $@"ActionID=""{ActionID}""";
         public bool QueryByFilter => false;
 
@@ -37,12 +37,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         public ConfigState? ConfigState { get; }
         public string? SID { get; }
 
-        public CCM_ClientActions()
+        public CCM_ClientAction()
         {
 
         }
 
-        public CCM_ClientActions(bool defaultPolicy, PolicyTarget policyTarget, ConfigState configState, string? securityID = null)
+        public CCM_ClientAction(bool defaultPolicy, PolicyTarget policyTarget, ConfigState configState, string? securityID = null)
         {
             Default = defaultPolicy;
             PolicyTarget = policyTarget;
