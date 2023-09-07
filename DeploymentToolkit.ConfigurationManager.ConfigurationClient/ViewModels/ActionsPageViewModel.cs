@@ -36,6 +36,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
             foreach (var action in actions.OrderBy(a => a.ActionID))
             {
+                action.ViewModel = this;
                 Actions.Add(action);
             }
         }

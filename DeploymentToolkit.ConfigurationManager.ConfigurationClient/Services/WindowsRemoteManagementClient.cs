@@ -187,7 +187,15 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             }
             requestXml += $@"</p:{methodName}_INPUT>";
 
-            return _session.Invoke(methodName, uri, requestXml);
+            try
+            {
+                return _session.Invoke(methodName, uri, requestXml);
+            }
+            catch(COMException ex)
+            {
+                _logger.LogError(ex, "Failed to invoke method {method} on {uri}", methodName, uri);
+                return null;
+            }
         }
 
         const string _windowsRemoteManagementSchema = "http://schemas.microsoft.com/wbem/wsman/1/wmi";

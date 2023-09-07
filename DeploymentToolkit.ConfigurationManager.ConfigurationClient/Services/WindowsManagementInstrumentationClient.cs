@@ -332,22 +332,30 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                 wmiParameters[parameter.Key] = parameter.Value;
             }
 
-            var result = managementClass.InvokeMethod(method, wmiParameters, null!);
-
-            var resultInstance = new T();
-            var classProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach(var property in result.Properties)
+            try
             {
-                var classProperty = classProperties.FirstOrDefault(p => p.Name == property.Name);
-                if(classProperty == null)
+                var result = managementClass.InvokeMethod(method, wmiParameters, null!);
+
+                var resultInstance = new T();
+                var classProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                foreach (var property in result.Properties)
                 {
-                    continue;
+                    var classProperty = classProperties.FirstOrDefault(p => p.Name == property.Name);
+                    if (classProperty == null)
+                    {
+                        continue;
+                    }
+
+                    classProperty.SetValue(resultInstance, property.Value);
                 }
 
-                classProperty.SetValue(resultInstance, property.Value);
+                return resultInstance;
             }
-
-            return resultInstance;
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Failed to execute {method} on {class}", method, instance.Class);
+                return default;
+            }
         }
     }
 }

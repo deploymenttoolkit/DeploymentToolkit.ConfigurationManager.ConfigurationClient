@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using System.Collections.ObjectModel;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy
@@ -23,7 +24,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
                 return $@"{CCM_Constants.ClientPolicyNamespace}\{SID}\{ConfigState}Config";
             }
         }
-        public string Class => nameof(CCM_ClientAction);
+        public string Class => "CCM_ClientActions";
         public string Key => $@"ActionID=""{ActionID}""";
         public bool QueryByFilter => false;
 
@@ -36,6 +37,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
         public PolicyTarget? PolicyTarget { get; }
         public ConfigState? ConfigState { get; }
         public string? SID { get; }
+        public ActionsPageViewModel ViewModel { get; set; }
 
         public CCM_ClientAction()
         {

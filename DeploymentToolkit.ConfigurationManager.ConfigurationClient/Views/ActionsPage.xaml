@@ -18,8 +18,8 @@
                            x:DefaultBindMode="OneWay"
                            IsReadOnly="True">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="ActionID" Binding="{Binding ActionId}"/>
-                <controls:DataGridTextColumn Header="Name" Binding="{Binding DisplayName}"/>
+                <controls:DataGridTextColumn Header="ActionID" Binding="{Binding ActionID}"/>
+                <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <controls:DataGridTemplateColumn Header="">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -27,7 +27,7 @@
                                         Background="{StaticResource SystemFillColorSuccessBackground}"
                                         Foreground="{StaticResource SystemFillColorSuccess}"
                                         Command="{Binding ViewModel.RunActionCommand}"
-                                        CommandParameter="{Binding ActionId}">
+                                        CommandParameter="{Binding ActionID}">
                                 <SymbolIcon Symbol="Refresh"/>
                             </Button>
                         </DataTemplate>
