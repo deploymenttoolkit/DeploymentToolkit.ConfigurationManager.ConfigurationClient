@@ -4,16 +4,20 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Clie
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.dcm;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.SoftMgmtAgent;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.cimv2;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Web.Syndication;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
     public class ConfigurationManagerClientService : IConfigurationManagerClientService
     {
+        private readonly ILogger<ConfigurationManagerClientService> _logger;
         private readonly IWindowsManagementInstrumentationConnection _remoteManagementClient;
 
         private static readonly Lazy<CCM_ClientAction> _defaultClientAction = new(() => new CCM_ClientAction(false, PolicyTarget.Machine, ConfigState.Actual));
@@ -41,14 +45,22 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         private static readonly Lazy<SMS_DesiredConfiguration> _defaultDesiredConfiguration = new(() => new SMS_DesiredConfiguration());
 
-        public ConfigurationManagerClientService(ClientConnectionManager clientConnectionManager)
+        private static readonly Lazy<Win32_Service> _ccmexecService = new(() => new Win32_Service() { Name = "ccmexec" } );
+
+        public ConfigurationManagerClientService(ILogger<ConfigurationManagerClientService> logger, ClientConnectionManager clientConnectionManager)
         {
+            _logger = logger;
             _remoteManagementClient = clientConnectionManager.Connection;
         }
 
         public T UpdateInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new()
         {
-            return _remoteManagementClient.PatchInstance<T>(instance);
+            return _remoteManagementClient.UpdateInstance<T>(instance);
+        }
+
+        public T PutInstance<T>(IWindowsManagementInstrumentationInstance instance, params string[] updatedProperties) where T : class, IWindowsManagementInstrumentationInstance, new()
+        {
+            return _remoteManagementClient.PutInstance<T>(instance, updatedProperties);
         }
 
         public IEnumerable<CCM_ClientAction>? GetClientActions()
@@ -58,7 +70,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         public uint PerformClientAction(CCM_ClientAction clientAction)
         {
-            var result = _remoteManagementClient.InvokeMethod<ReturnCodeOnlyResult>(_defaultSMSClient.Value, "TriggerSchedule", new()
+            var result = _remoteManagementClient.InvokeStaticMethod<ReturnCodeOnlyResult>(_defaultSMSClient.Value, "TriggerSchedule", new()
             {
                 { "sScheduleID", clientAction.ActionID }
             });
@@ -233,7 +245,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         private uint InvokeApplicationMethod(string method, CCM_Application application, Priority priority, bool reboot)
         {
-            var result = _remoteManagementClient.InvokeMethod<InvokeApplicationMethodResult>(application, method, new Dictionary<string, object>()
+            var result = _remoteManagementClient.InvokeStaticMethod<InvokeApplicationMethodResult>(application, method, new Dictionary<string, object>()
             {
                 { "Id", application.Id },
                 { "Revision", application.Revision },
@@ -276,7 +288,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         public uint EvaluateDesiredStateConfiguration(SMS_DesiredConfiguration configuration)
         {
-            var result = _remoteManagementClient.InvokeMethod<InvokeDesiredConfigurationEvaluationResult>(configuration, "TriggerEvaluation", new Dictionary<string, object>()
+            var result = _remoteManagementClient.InvokeStaticMethod<InvokeDesiredConfigurationEvaluationResult>(configuration, "TriggerEvaluation", new Dictionary<string, object>()
             {
                 { "Name", configuration.Name },
                 { "Version", configuration.Version },
@@ -286,6 +298,48 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             });
 
             return result?.ReturnValue ?? uint.MaxValue;
+        }
+
+        public async Task RestartServiceAsync()
+        {
+            var cancellationToken = new CancellationTokenSource(30000);
+
+            var service = _remoteManagementClient.GetInstance<Win32_Service>(_ccmexecService.Value);
+            if(service == null)
+            {
+                return;
+            }
+
+            if (service.State == ServiceState.Running)
+            {
+                _logger.LogDebug("Stopping Service ...");
+                _remoteManagementClient.InvokeMethod<ReturnCodeOnlyResult>(service, "StopService");
+            }
+
+            do
+            {
+                _logger.LogDebug("Waiting for service to stop ...");
+                await Task.Delay(1000, cancellationToken.Token);
+
+                service = _remoteManagementClient.GetInstance<Win32_Service>(_ccmexecService.Value);
+                if(service == null)
+                {
+                    return;
+                }
+            }
+            while (service.State != ServiceState.Stopped && !cancellationToken.IsCancellationRequested);
+            
+            if(cancellationToken.IsCancellationRequested)
+            {
+                _logger.LogWarning("Failed to wait for service to stop");
+                throw new TimeoutException();
+            }
+
+            if(service.State == ServiceState.Stopped)
+            {
+                _logger.LogDebug("Starting service ...");
+                _remoteManagementClient.InvokeMethod<ReturnCodeOnlyResult>(service, "StartService");
+            }
         }
     }
 }

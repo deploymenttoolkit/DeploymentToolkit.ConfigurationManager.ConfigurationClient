@@ -6,12 +6,14 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Poli
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.SoftMgmtAgent;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
     public interface IConfigurationManagerClientService
     {
         public T UpdateInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new();
+        public T PutInstance<T>(IWindowsManagementInstrumentationInstance instance, params string[] updatedProperties) where T : class, IWindowsManagementInstrumentationInstance, new();
 
         public IEnumerable<CCM_InstalledComponent>? GetInstalledComponents();
 
@@ -45,5 +47,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         public IEnumerable<SMS_DesiredConfiguration> GetDesiredStateConfiguration();
         public uint EvaluateDesiredStateConfiguration(SMS_DesiredConfiguration configuration);
+
+        public Task RestartServiceAsync();
     }
 }

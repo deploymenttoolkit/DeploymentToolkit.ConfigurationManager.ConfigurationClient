@@ -8,7 +8,8 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using Windows.Storage.Pickers;
 using System.Collections.ObjectModel;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.SoftMgmtAgent;
+using System.Linq;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
@@ -28,14 +29,13 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [ObservableProperty]
         private uint _cacheSize;
 
-        private ObservableCollection<CacheElement> _cacheElements = new();
-        public ObservableCollection<CacheElement> CacheElements => _cacheElements;
-
+        [ObservableProperty]
+        private ObservableCollection<CacheInfoEx> _cacheElements = new();
         
         private readonly UACService _uacService;
-        private readonly WMIConfigurationManagerClientService _clientService;
+        private readonly IConfigurationManagerClientService _clientService;
 
-        public CachePageViewModel(UACService uacService, WMIConfigurationManagerClientService clientService)
+        public CachePageViewModel(UACService uacService, IConfigurationManagerClientService clientService)
         {
             this._uacService = uacService;
             this._clientService = clientService;
@@ -49,7 +49,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 return;
             }
 
-            CacheSize = _clientService.GetCacheSize();
+            var clientConfig = clientService.GetClientCacheConfig();
+            if(clientConfig != null )
+            {
+                CacheSize = clientConfig.Size;
+            }
 
             RefreshCache();
         }
@@ -57,27 +61,23 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private void RefreshCache()
         {
             CacheElements.Clear();
-            foreach(UIRESOURCELib.CacheElement element in _clientService.GetCache())
+            var cacheItems = _clientService.GetClientCache();
+            if(cacheItems == null)
             {
-                CacheElements.Add(new CacheElement()
-                {
-                    ViewModel = this,
+                return;
+            }
 
-                    Location = element.Location,
-                    ContentId = element.ContentId,
-                    ContentVersion = element.ContentVersion,
-                    ContentSize = element.ContentSize,
-                    LastReferenceTime = element.LastReferenceTime,
-                    ReferenceCount = element.ReferenceCount,
-                    CacheElementId = element.CacheElementId
-                });
+            foreach (var element in cacheItems)
+            {
+                CacheElements.Add(element);
             }
         }
 
         [RelayCommand]
         private void DeleteFromCache(string cacheElementId)
         {
-            _clientService.DeleteFromCache(cacheElementId);
+            // TODO: Implement
+            //_clientService.DeleteFromCache(cacheElementId);
 
             App.Current.DispatcherQueue.TryEnqueue(() =>
             {
@@ -127,7 +127,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             var dialog = new ContentDialog
             {
                 XamlRoot = Page.XamlRoot,
-                Style = Microsoft.UI.Xaml.Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
                 Title = "Delete Cache?",
                 PrimaryButtonText = "Delete",
                 CloseButtonText = "Cancel",
@@ -139,24 +139,32 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             var result = await dialog.ShowAsync();
             if(result == ContentDialogResult.Primary)
             {
-                var deletePersistent = (dialog.Content as CacheDeleteDialog).DeletePersistentContent;
+                var deletePersistent = (dialog.Content as CacheDeleteDialog)!.DeletePersistentContent;
             }
         }
 
         [RelayCommand]
         private async void ApplyCacheSize()
         {
-            if(CacheSize  <= 0)
+            if(CacheSize <= 0)
             {
                 return;
             }
 
-            _clientService.SetCacheSize(CacheSize);
+            var cacheConfig = _clientService.GetClientCacheConfig();
+            if(cacheConfig == null || cacheConfig.Size == CacheSize)
+            {
+                return;
+            }
+
+            cacheConfig.Size = CacheSize;
+            cacheConfig = _clientService.PutInstance<CacheConfig>(cacheConfig, nameof(cacheConfig.Size));
+            CacheSize = cacheConfig.Size;
 
             var dialog = new ContentDialog
             {
                 XamlRoot = Page.XamlRoot,
-                Style = Microsoft.UI.Xaml.Application.Current.Resources["DefaultContentDialogStyle"] as Style,
+                Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style,
                 Title = "Restart Service?",
                 PrimaryButtonText = "Restart",
                 CloseButtonText = "Do not restart",
@@ -168,7 +176,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                _clientService.RestartService();
+                try
+                {
+                    await _clientService.RestartServiceAsync();
+                }
+                catch (TimeoutException) { }
             }
         }
     }

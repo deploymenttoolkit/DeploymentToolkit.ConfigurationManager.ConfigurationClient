@@ -1,4 +1,4 @@
-﻿namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM
+﻿namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
 {
     public class ReturnCodeOnlyResult : IMethodResult
     {

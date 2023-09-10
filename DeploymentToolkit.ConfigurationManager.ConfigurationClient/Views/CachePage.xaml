@@ -23,7 +23,7 @@
             </InfoBar>
         </Grid>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Padding="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -49,7 +49,7 @@
 
                 <Button Grid.Column="0" Content="Apply Cache Size" Command="{x:Bind ViewModel.ApplyCacheSizeCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
                 <Button Grid.Column="1" Content="Change Location" Command="{x:Bind ViewModel.ChangeLocationCommand}" IsEnabled="False"/>
-                <Button Grid.Column="2" Content="Delete Files" Command="{x:Bind ViewModel.DeleteFilesCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
+                <Button Grid.Column="2" Content="Delete Files" Command="{x:Bind ViewModel.DeleteFilesCommand}" IsEnabled="False"/>
             </Grid>
         </Grid>
 
@@ -63,9 +63,9 @@
                 <controls:DataGrid.Columns>
                     <controls:DataGridTextColumn Header="Location" Binding="{Binding Location}"/>
                     <controls:DataGridTextColumn Header="ContentId" Binding="{Binding ContentId}"/>
-                    <controls:DataGridTextColumn Header="ContentVersion" Binding="{Binding ContentVersion}"/>
+                    <controls:DataGridTextColumn Header="ContentVersion" Binding="{Binding ContentVer}"/>
                     <controls:DataGridTextColumn Header="ContentSize" Binding="{Binding ContentSize}"/>
-                    <controls:DataGridTextColumn Header="LastReferenceTime" Binding="{Binding LastReferenceTime}"/>
+                    <controls:DataGridTextColumn Header="LastReferenceTime" Binding="{Binding LastReferenced}"/>
                     <controls:DataGridTextColumn Header="ReferenceCount" Binding="{Binding ReferenceCount}"/>
                     <controls:DataGridTemplateColumn Header="">
                         <controls:DataGridTemplateColumn.CellTemplate>

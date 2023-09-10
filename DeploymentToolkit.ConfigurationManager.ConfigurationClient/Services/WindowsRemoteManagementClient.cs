@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Cryptography;
@@ -198,12 +200,52 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             }
         }
 
-        const string _windowsRemoteManagementSchema = "http://schemas.microsoft.com/wbem/wsman/1/wmi";
+        internal string? Put(string uri, Dictionary<string, object> properties)
+        {
+            if(!IsConnected)
+            {
+                return null;
+            }
 
+            var className = uri.Split('/').Last();
+            if(className.Contains('?'))
+            {
+                className = className.Split('?')[0];
+            }
+
+            var classPath = uri;
+            if(classPath.Contains('?'))
+            {
+                classPath = classPath.Split('?')[0];
+            }
+
+            var putXml = $@"<p:{className} xmlns:p=""{classPath}"">";
+            foreach(var property in properties)
+            {
+                putXml += $@"<p:{property.Key}>{SecurityElement.Escape(property.Value.ToString())}</p:{property.Key}>";
+            }
+            putXml += $@"</p:{className}>";
+
+            try
+            {
+                return _session.Put(uri, putXml);
+            }
+            catch(COMException ex)
+            {
+                _logger.LogError(ex, "Failed to patch instance on {uri}", uri);
+                return null;
+            }
+        }
+        const string _windowsRemoteManagementSchema = "http://schemas.microsoft.com/wbem/wsman/1/wmi";
         const string _defaultConfigurationManagerScope = "ROOT/ccm";
 
         private static string BuildUri(string managementClass, string? managementScope = null, string? key = null)
         {
+            if(managementClass.Contains("\\") || managementClass.Contains("/"))
+            {
+                throw new FormatException($"Invalid class {managementClass}");
+            }
+
             if(managementScope != null)
             {
                 managementScope = managementScope.Replace("\\", "/");
@@ -269,7 +311,13 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                     }
                     else if(property.PropertyType.IsEnum)
                     {
-                        if(Enum.TryParse(property.PropertyType, element.Value, out var parsed))
+                        var enumValue = element.Value;
+                        if(enumValue.Contains(' '))
+                        {
+                            enumValue = enumValue.Replace(" ", "");
+                        }
+
+                        if (Enum.TryParse(property.PropertyType, enumValue, out var parsed))
                         {
                             value = parsed!;
                         }
@@ -404,7 +452,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         {
             try
             {
-                var uri = BuildUri(instance.Namespace, instance.Class, instance.Key);
+                var uri = BuildUri(instance.Class, instance.Namespace, instance.Key);
                 _logger.LogTrace("Getting instance of {uri}", uri);
                 var response = ExecuteQuery(uri);
                 return ParseXmlElement<T>(response);
@@ -416,7 +464,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             }
         }
 
-        public T PatchInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new()
+        public T UpdateInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new()
         {
             if(instance == null)
             {
@@ -460,6 +508,41 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             catch(Exception ex)
             {
                 _logger.LogError(ex, "Failed to update instance of {namespace}->{name}->{key}", instance.Namespace, instance.Class, instance.Key);
+                return (instance as T)!;
+            }
+        }
+
+        public T PutInstance<T>(IWindowsManagementInstrumentationInstance instance, params string[] updatedProperties) where T : class, IWindowsManagementInstrumentationInstance, new()
+        {
+            if(instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            try
+            {
+                var uri = BuildUri(instance.Class, instance.Namespace, instance.Key);
+                _logger.LogTrace("Patching instance of {uri} with properties {properties}", uri, string.Join(',', updatedProperties));
+
+                var properties = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => updatedProperties.Contains(p.Name));
+                if(properties.Count() != updatedProperties.Length)
+                {
+                    throw new InvalidOperationException($"Expected {updatedProperties.Length} but got {properties.Count()}");
+                }
+
+                var propertiesToUpdate = new Dictionary<string, object>();
+                foreach(var property in properties)
+                {
+                    var value = property.GetValue(instance);
+                    propertiesToUpdate.Add(property.Name, value!);
+                }
+
+                var response = Put(uri, propertiesToUpdate);
+                return ParseXmlElement(response, instance as T)!;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Failed to patch instance of {namespace}->{name}->{key}", instance.Namespace, instance.Class, instance.Key);
                 return (instance as T)!;
             }
         }
@@ -579,9 +662,17 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             }
         }
 
-        public T? InvokeMethod<T>(IWindowsManagementInstrumentationStaticInstance instance, string method, Dictionary<string, object> parameters) where T : IMethodResult, new()
+        public T? InvokeStaticMethod<T>(IWindowsManagementInstrumentationStaticInstance instance, string method, Dictionary<string, object>? parameters = null) where T : IMethodResult, new()
         {
             var uri = BuildUri(instance.Class, instance.Namespace);
+
+            var result = InvokeMethod(uri, method, parameters);
+            return ParseXmlElement<T>(result);
+        }
+
+        public T? InvokeMethod<T>(IWindowsManagementInstrumentationInstance instance, string method, Dictionary<string, object>? parameters = null) where T : IMethodResult, new()
+        {
+            var uri = BuildUri(instance.Class, instance.Namespace, instance.Key);
 
             var result = InvokeMethod(uri, method, parameters);
             return ParseXmlElement<T>(result);

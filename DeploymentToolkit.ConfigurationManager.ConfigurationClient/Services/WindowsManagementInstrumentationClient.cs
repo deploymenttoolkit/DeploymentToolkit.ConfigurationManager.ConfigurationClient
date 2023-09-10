@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management;
 using System.Reflection;
+using Vanara.PInvoke;
 using WinRT;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
@@ -235,13 +236,46 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return ConvertManagementObject<T>(managementObject);
         }
 
-        public T PatchInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new()
+        public T UpdateInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new()
         {
+            if (instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
             var managementScope = GetManagementScope(instance.Namespace);
             var managementPath = new ManagementPath($"{managementScope.Path}:{instance.Class}.{instance.Key}");
             var managementObject = new ManagementObject(managementPath);
             managementObject.Get();
-            return ConvertManagementObject<T>(managementObject, instance as T)!;
+            return ConvertManagementObject(managementObject, instance as T)!;
+        }
+
+        public T PutInstance<T>(IWindowsManagementInstrumentationInstance instance, params string[] updatedProperties) where T : class, IWindowsManagementInstrumentationInstance, new()
+        {
+            if(instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
+
+            var properties = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => updatedProperties.Contains(p.Name));
+            if (properties.Count() != updatedProperties.Length)
+            {
+                throw new InvalidOperationException($"Expected {updatedProperties.Length} but got {properties.Count()}");
+            }
+
+            var managementScope = GetManagementScope(instance.Namespace);
+            var managementPath = new ManagementPath($"{managementScope.Path}:{instance.Class}.{instance.Key}");
+            var managementObject = new ManagementObject(managementPath);
+
+            foreach(var property in properties)
+            {
+                managementObject.SetPropertyValue(property.Name, property.GetValue(instance)!);
+            }
+            managementObject.Put();
+
+            managementObject.Get();
+
+            return ConvertManagementObject(managementObject, instance as T)!;
         }
 
         public T? GetStaticInstance<T>(IWindowsManagementInstrumentationStaticInstance instance) where T : new()
@@ -322,14 +356,27 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             }
         }
 
-        public T? InvokeMethod<T>(IWindowsManagementInstrumentationStaticInstance instance, string method, Dictionary<string, object> parameters) where T : IMethodResult, new()
+        public T? InvokeStaticMethod<T>(IWindowsManagementInstrumentationStaticInstance instance, string method, Dictionary<string, object>? parameters = null) where T : IMethodResult, new()
         {
             var managementClass = new ManagementClass(instance.Namespace, instance.Class, null!);
+            return InvokeMethod<T>(managementClass, method, parameters);
+        }
 
+        public T? InvokeMethod<T>(IWindowsManagementInstrumentationInstance instance, string method, Dictionary<string, object>? parameters = null) where T : IMethodResult, new()
+        {
+            var managementClass = new ManagementClass(instance.Namespace, $"{instance.Class}.{instance.Key}", null!);
+            return InvokeMethod<T>(managementClass, method, parameters);
+        }
+
+        public T? InvokeMethod<T>(ManagementClass managementClass, string method, Dictionary<string, object>? parameters) where T : IMethodResult, new()
+        {
             var wmiParameters = managementClass.GetMethodParameters(method);
-            foreach(var parameter in parameters)
+            if (parameters != null)
             {
-                wmiParameters[parameter.Key] = parameter.Value;
+                foreach (var parameter in parameters)
+                {
+                    wmiParameters[parameter.Key] = parameter.Value;
+                }
             }
 
             try
@@ -351,9 +398,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
                 return resultInstance;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to execute {method} on {class}", method, instance.Class);
+                _logger.LogError(ex, "Failed to execute {method} on {class}", method, managementClass.Path);
                 return default;
             }
         }

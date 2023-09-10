@@ -1,11 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI.UI.Controls.TextToolbarSymbols;
-using CPAPPLETLib;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
