@@ -35,5 +35,7 @@
                 </controls:DataGridTemplateColumn>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
+
+        <controls:Loading IsLoading="{x:Bind ViewModel.IsLoading, Mode=OneWay}" ContentTemplate="{StaticResource LoadingScreen}" />
     </Grid>
 </Page>

@@ -2,8 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
+using Microsoft.UI.Dispatching;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
@@ -11,30 +13,43 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
     {
         [ObservableProperty]
         private ObservableCollection<CCM_ClientAction> _actions = new();
+        [ObservableProperty]
+        private bool _isLoading = true;
 
-        private IConfigurationManagerClientService _clientService;
+        private readonly IConfigurationManagerClientService _clientService;
 
         public ActionsPageViewModel(IConfigurationManagerClientService clientService)
         {
             _clientService = clientService;
 
-            UpdateActions();
+            Task.Factory.StartNew(() => UpdateActions());
         }
 
         private void UpdateActions()
         {
-            Actions.Clear();
+            App.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                Actions.Clear();
+                IsLoading = true;
+            });
+            
+
             var actions = _clientService.GetClientActions();
             if(actions == null)
             {
                 return;
             }
 
-            foreach (var action in actions.OrderBy(a => a.ActionID))
+            App.Current.DispatcherQueue.TryEnqueue(() =>
             {
-                action.ViewModel = this;
-                Actions.Add(action);
-            }
+                foreach (var action in actions.OrderBy(a => a.ActionID))
+                {
+                    action.ViewModel = this;
+                    Actions.Add(action);
+                }
+
+                IsLoading = false;
+            });
         }
 
         [RelayCommand]

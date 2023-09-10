@@ -8,6 +8,7 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
@@ -15,11 +16,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
     {
         [ObservableProperty]
         private ObservableCollection<CCM_Application> _applications = new();
-
-        private IConfigurationManagerClientService _clientService;
-
+        [ObservableProperty]
+        private bool _isLoading = true;
         [ObservableProperty]
         private DateTime _lastUpdated;
+
+        private readonly IConfigurationManagerClientService _clientService;
 
         public ApplicationsPageViewModel(IConfigurationManagerClientService clientService)
         {
@@ -27,7 +29,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
             WeakReferenceMessenger.Default.Register<CCMApplicationMessage>(this, OnApplicationMessage);
 
-            UpdateApplications();
+            Task.Factory.StartNew(() => UpdateApplications());
         }
 
         public void Dispose()
@@ -61,14 +63,26 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [RelayCommand]
         private void UpdateApplications()
         {
-            Applications.Clear();
+            App.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                IsLoading = true;
+                Applications.Clear();
+            });
+
             foreach(var application in _clientService.GetApplications().OrderBy(a => a.Name))
             {
                 application.ViewModel = this;
-                Applications.Add(application);
+                App.Current.DispatcherQueue.TryEnqueue(() =>
+                {
+                    Applications.Add(application);
+                });
             }
 
-            LastUpdated = DateTime.Now;
+            App.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                LastUpdated = DateTime.Now;
+                IsLoading = false;
+            });
         }
 
         [RelayCommand]
