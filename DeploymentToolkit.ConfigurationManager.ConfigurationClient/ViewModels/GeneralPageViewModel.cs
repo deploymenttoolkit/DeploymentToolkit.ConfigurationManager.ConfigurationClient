@@ -5,10 +5,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Collections.Generic;
 using System;
-using System.Management;
 using Microsoft.UI.Xaml.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
+using System.Threading.Tasks;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
@@ -22,6 +22,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         {
             IsSourceGrouped = true
         };
+
+        [ObservableProperty]
+        private bool _isLoading = true;
 
         private readonly IConfigurationManagerClientService _clientService;
 
@@ -49,11 +52,17 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 { "ClientUpgradeStatus", _clientService.GetClientUpgradeStatus },
             };
 
-            Update();
+            Task.Factory.StartNew(() => Update());
         }
 
         private void Update()
         {
+            App.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                CollectionViewSource.Source = null;
+                IsLoading = true;
+            });
+
             Properties.Clear();
 
             foreach (var pair in _updateActions)
@@ -86,7 +95,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 }
             }
 
-            CollectionViewSource.Source = Properties.GroupBy(p => p.Group);
+            App.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                CollectionViewSource.Source = Properties.GroupBy(p => p.Group);
+                IsLoading = false;
+            });
         }
     }
 }

@@ -6,6 +6,7 @@
     xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -40,5 +41,12 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <controls:Loading IsLoading="{x:Bind ViewModel.IsLoading, Mode=OneWay}">
+            <StackPanel>
+                <ProgressRing IsActive="True" Height="100" Width="100"/>
+                <TextBlock Text="Loading" TextAlignment="Center" Padding="10" FontSize="30"/>
+            </StackPanel>
+        </controls:Loading>
     </Grid>
 </Page>

@@ -33,6 +33,7 @@
             </NavigationView.Header>
             
             <NavigationView.MenuItems>
+                <NavigationViewItemHeader Content="Troubleshooting"/>
                 <NavigationViewItem Icon="Home" Tag="GeneralPage" Content="General" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
                 <NavigationViewItem Icon="Library" Tag="ComponentsPage" Content="Components" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
                 <NavigationViewItem Icon="Admin"  Tag="ActionsPage" Content="Actions" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
@@ -46,10 +47,12 @@
                 <NavigationViewItem Icon="Remote" Tag="DeviceRegistrationPage" Content="Device Registration"/>
                 <NavigationViewItem Icon="OpenFile" Tag="ClientEventsPage" Content="Events" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
                 <NavigationViewItemSeparator/>
+                <NavigationViewItemHeader Content="Software Center"/>
                 <NavigationViewItem Icon="AllApps" Tag="ApplicationsPage" Content="Applications" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
                 <NavigationViewItem Icon="AllApps" Tag="ProgramsPage" Content="Programs" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
                 <NavigationViewItem Icon="PostUpdate" Tag="SoftwareUpdatesPage" Content="Software Updates" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
                 <NavigationViewItemSeparator/>
+                <NavigationViewItemHeader Content="Debug"/>
                 <NavigationViewItem Icon="Globe" Tag="WinRMDebugPage" Content="WinRM Debug Client"/>
             </NavigationView.MenuItems>
 
