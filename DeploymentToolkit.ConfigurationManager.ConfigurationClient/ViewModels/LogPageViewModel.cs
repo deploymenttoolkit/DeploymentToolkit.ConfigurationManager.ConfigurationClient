@@ -19,7 +19,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
     public partial class LogPageViewModel : ObservableObject, IDisposable
     {
         [ObservableProperty]
-        private bool _isUpdating = true;
+        private bool _isLoading = true;
 
 #if DEBUG
         public bool EnableTabs { get; set; } = true;
@@ -110,7 +110,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
                     App.Current.DispatcherQueue.TryEnqueue(() =>
                     {
-                        IsUpdating = false;
+                        IsLoading = false;
                         SelectedIndex = 0;
                         // Databinding currently does not work in WinUI3
                         // https://github.com/microsoft/microsoft-ui-xaml/issues/3907

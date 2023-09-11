@@ -13,13 +13,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <controls:Loading x:Name="LoadingControl" IsLoading="{x:Bind ViewModel.IsUpdating, Mode=OneWay}">
-            <StackPanel>
-                <ProgressRing IsActive="{x:Bind ViewModel.IsUpdating, Mode=OneWay}" Background="LightGray" Height="100" Width="100"/>
-                <TextBlock Text="Parsing logs" TextAlignment="Center" Padding="0, 10" Style="{StaticResource TitleTextBlockStyle}"/>
-            </StackPanel>
-        </controls:Loading>
-
         <TabView IsAddTabButtonVisible="False" CanDrag="False" CanDragTabs="False"
                  HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  TabItemsSource="{x:Bind ViewModel.Tabs, Mode=OneWay}" SelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}"
@@ -30,5 +23,7 @@
                 </core:EventTriggerBehavior>
             </interactivity:Interaction.Behaviors>
         </TabView>
+
+        <controls:Loading IsLoading="{x:Bind ViewModel.IsLoading, Mode=OneWay}" ContentTemplate="{StaticResource LoadingScreen}" />
     </Grid>
 </Page>

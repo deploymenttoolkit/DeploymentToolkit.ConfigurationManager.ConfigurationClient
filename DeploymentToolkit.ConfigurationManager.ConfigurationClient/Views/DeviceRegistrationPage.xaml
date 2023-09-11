@@ -11,79 +11,76 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-
-        <controls:Loading x:Name="LoadingControl" IsLoading="{x:Bind ViewModel.IsUpdating, Mode=OneWay}" Grid.RowSpan="3" Grid.ColumnSpan="2">
-            <StackPanel>
-                <ProgressRing IsActive="{x:Bind ViewModel.IsUpdating, Mode=OneWay}" Background="LightGray" Height="100" Width="100"/>
-                <TextBlock Text="Executing dsregcmd.exe" TextAlignment="Center" Padding="0, 10" Style="{StaticResource TitleTextBlockStyle}"/>
-            </StackPanel>
-        </controls:Loading>
-
-        <Grid Grid.Row="0" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.ContentVisibility, Mode=OneWay}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                <TextBlock TextAlignment="Right" Text="Last Updated" Padding="5"/>
-                <TextBlock TextAlignment="Right" Text="{x:Bind ViewModel.LastUpdated, Mode=OneWay}" Padding="5"/>
-            </StackPanel>
+            <Grid Grid.Row="0" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.ContentVisibility, Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1"
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock TextAlignment="Right" Text="Last Updated" Padding="5"/>
+                    <TextBlock TextAlignment="Right" Text="{x:Bind ViewModel.LastUpdated, Mode=OneWay}" Padding="5"/>
+                </StackPanel>
+
+                <Button Grid.Column="1"
                             Background="{StaticResource SystemFillColorSuccessBackground}"
                             Foreground="{StaticResource SystemFillColorSuccess}"
                             Command="{x:Bind ViewModel.UpdatePropertiesCommand}"
                             Padding="10" Margin="5">
-                <SymbolIcon Symbol="Refresh"/>
-            </Button>
+                    <SymbolIcon Symbol="Refresh"/>
+                </Button>
+            </Grid>
+
+            <ListView Grid.Row="1" Grid.Column="0" Visibility="{x:Bind ViewModel.ContentVisibility, Mode=OneWay}" ItemsSource="{x:Bind ViewModel.PropertiesViewSource.View, Mode=OneWay}" SelectionMode="Single">
+                <ListView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Key}"/>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListView.GroupStyle>
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="5, 0"/>
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="0.3*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="{Binding Name}"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <Grid Grid.Row="1" Grid.Column="1" Visibility="{x:Bind ViewModel.ContentVisibility, Mode=OneWay}">
+                <Border BorderThickness="5,0,0,0" BorderBrush="Transparent">
+                    <TextBox IsReadOnly="True" Padding="5" TextWrapping="Wrap" Text="{x:Bind ViewModel.ProcessOutput, Mode=OneWay}"/>
+                </Border>
+            </Grid>
         </Grid>
 
-        <ListView Grid.Row="1" Grid.Column="0" Visibility="{x:Bind ViewModel.ContentVisibility, Mode=OneWay}" ItemsSource="{x:Bind ViewModel.PropertiesViewSource.View, Mode=OneWay}" SelectionMode="Single">
-            <ListView.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Key}"/>
-                        </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-            </ListView.GroupStyle>
-
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="Padding" Value="5, 0"/>
-                            </Style>
-                        </Grid.Resources>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.3*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" Text="{Binding Name}"/>
-                        <TextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap"/>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-
-        <Grid Grid.Row="1" Grid.Column="1" Visibility="{x:Bind ViewModel.ContentVisibility, Mode=OneWay}">
-            <Border BorderThickness="5,0,0,0" BorderBrush="Transparent">
-                <TextBox IsReadOnly="True" Padding="5" TextWrapping="Wrap" Text="{x:Bind ViewModel.ProcessOutput, Mode=OneWay}"/>
-            </Border>
-        </Grid>
+        <controls:Loading IsLoading="{x:Bind ViewModel.IsLoading, Mode=OneWay}" ContentTemplate="{StaticResource LoadingScreen}" />
     </Grid>
 </Page>

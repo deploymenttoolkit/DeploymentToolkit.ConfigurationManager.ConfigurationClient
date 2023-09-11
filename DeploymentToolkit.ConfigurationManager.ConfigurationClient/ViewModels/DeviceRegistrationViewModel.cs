@@ -29,7 +29,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private DateTime _lastUpdated;
 
         [ObservableProperty]
-        private bool _isUpdating = true;
+        private bool _isLoading = true;
 
         [ObservableProperty]
         private Visibility _contentVisibility = Visibility.Collapsed;
@@ -44,7 +44,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         {
             App.Current.DispatcherQueue.TryEnqueue(() =>
             {
-                IsUpdating = true;
+                IsLoading = true;
                 ContentVisibility = Visibility.Collapsed;
             });
 
@@ -105,7 +105,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
                 PropertiesViewSource.Source = Properties.GroupBy(p => p.Group);
                 LastUpdated = DateTime.Now;
-                IsUpdating = false;
+                IsLoading = false;
                 ContentVisibility = Visibility.Visible;
             });
         }
