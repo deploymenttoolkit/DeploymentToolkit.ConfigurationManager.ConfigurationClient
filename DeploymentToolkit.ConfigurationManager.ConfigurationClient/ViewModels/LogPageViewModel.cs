@@ -53,8 +53,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         public ObservableCollection<TabViewItem> Tabs { get; set; } = new();
         public int SelectedIndex { get; set; }
 
-        private static Regex _logFileRegex = new Regex(@"(.*)-(\d*)-(\d*)\.log");
-        private static Regex _userLogFileRegex = new Regex(@"(?:_)?(.*)_(.{3})@(.*)_\d\.log");
+        private static readonly Regex _logFileRegex = new(@"(.*)-(\d*)-(\d*)\.log");
+        private static readonly Regex _userLogFileRegex = new(@"(?:_)?(.*)_(.{3})@(.*)_\d\.log");
 
         private List<LogFile> _logFiles;
         private IEnumerable<IGrouping<string, LogFile>> _groupedLogFiles;

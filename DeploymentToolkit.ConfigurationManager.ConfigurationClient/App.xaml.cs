@@ -44,6 +44,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
 
                     services.AddSingleton<ClientConnectionManager>();
 
+                    services.AddSingleton<SMBClient>();
+
                     services.AddTransient<IConfigurationManagerClientService, ConfigurationManagerClientService>();
 
                     services.AddSingleton<ClientEventsService>();
@@ -62,6 +64,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
                     services.AddSingleton<SettingsPageViewModel>();
 
                     services.AddSingleton<WinRMDebugPageViewModel>();
+                    services.AddSingleton<SMBDebugPageViewModel>();
 
                     services.AddTransient<ApplicationsPageViewModel>();
                     services.AddTransient<ProgramPageViewModel>();

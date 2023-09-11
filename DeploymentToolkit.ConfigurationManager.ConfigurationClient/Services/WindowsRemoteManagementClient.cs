@@ -1,5 +1,4 @@
-﻿using CCMEXEC;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Extensions;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
@@ -8,14 +7,10 @@ using FluentResults;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Security.Cryptography;
-using System.Text.Encodings.Web;
 using System.Xml.Linq;
 using WSManAutomation;
 
