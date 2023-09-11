@@ -1,9 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using System;
 using System.Collections.ObjectModel;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI
 {
     public partial class DynamicWMIClass : ObservableObject, IWindowsManagementInstrumentationInstance
     {

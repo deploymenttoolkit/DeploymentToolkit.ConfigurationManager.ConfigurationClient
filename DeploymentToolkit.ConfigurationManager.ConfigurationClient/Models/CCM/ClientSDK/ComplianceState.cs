@@ -1,4 +1,4 @@
-﻿namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models
+﻿namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK
 {
     public enum ComplianceState : uint
     {
