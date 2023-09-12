@@ -20,6 +20,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.SMB
         [ObservableProperty]
         private DateTime _changeTime;
 
+        public object ViewModel { get; set; }
+
         private string _fullPath;
 
         public LocalFileDirectoryInformation(string path)

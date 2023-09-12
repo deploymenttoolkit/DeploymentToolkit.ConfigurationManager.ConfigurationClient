@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.SMB;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views.Frames;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -28,10 +30,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 #endif
 
         private object _logFileLock = new();
-        private List<LogFile> _logNames = new();
+        private List<IFileDirectoryInformation> _logNames = new();
         public CollectionViewSource LogNames = new();
 
-        private const string _registryLogPath = @"SOFTWARE\Microsoft\CCM\Logging\@Global";
+        private const string _ccmLogPath = @"C:\Windows\CCM\Logs";
         private const string _registryInstallPath = @"SOFTWARE\Microsoft\SMS\Client\Configuration\Client Properties";
 
         private string _installPath;
@@ -53,16 +55,20 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         public ObservableCollection<TabViewItem> Tabs { get; set; } = new();
         public int SelectedIndex { get; set; }
 
-        private static readonly Regex _logFileRegex = new(@"(.*)-(\d*)-(\d*)\.log");
-        private static readonly Regex _userLogFileRegex = new(@"(?:_)?(.*)_(.{3})@(.*)_\d\.log");
+        //private static readonly Regex _logFileRegex = new(@"(.*)-(\d*)-(\d*)\.log");
+        //private static readonly Regex _userLogFileRegex = new(@"(?:_)?(.*)_(.{3})@(.*)_\d\.log");
 
-        private List<LogFile> _logFiles;
-        private IEnumerable<IGrouping<string, LogFile>> _groupedLogFiles;
+        private readonly List<IFileDirectoryInformation> _logFiles = new();
+        private IEnumerable<IGrouping<string, IFileDirectoryInformation>> _groupedLogFiles;
 
-        private FileSystemWatcher _watcher;
+        //private FileSystemWatcher _watcher;
 
-        public LogPageViewModel()
+        private readonly IFileExplorer _fileExplorer;
+
+        public LogPageViewModel(ClientConnectionManager clientConnectionManager)
         {
+            _fileExplorer = clientConnectionManager.FileExplorerConnection;
+
             Task.Run(() => Setup());
         }
 
@@ -72,28 +78,27 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             {
                 await Task.Delay(5);
 
-                var loggingKey = Registry.LocalMachine.OpenSubKey(_registryLogPath, false);
-                var logDirectory = loggingKey.GetValue("LogDirectory") as string;
+                _logFiles.Clear();
 
-                _logFiles = new List<LogFile>();
-                var files = Directory.GetFiles(logDirectory, "*.log");
+                var files = _fileExplorer.GetFilesAndFolderInDirectory(_ccmLogPath).Where(f => f.Name.EndsWith(".log"));
                 foreach (var file in files)
                 {
-                    _logFiles.Add(ParseLogFile(file));
+                    file.ViewModel = this;
+                    _logFiles.Add(file);
                 }
 
                 _groupedLogFiles = _logFiles.GroupBy(f => f.Name);
 
                 foreach (var log in _groupedLogFiles)
                 {
-                    _logNames.Add(log.OrderByDescending(l => l.LastModified).First());
+                    _logNames.Add(log.OrderByDescending(l => l.LastWriteTime).First());
                 }
 
-                _watcher = new FileSystemWatcher(logDirectory, "*.log");
-                _watcher.Created += OnFileCreated;
-                _watcher.Deleted += OnFileDeleted;
-                _watcher.Changed += OnFileChanged;
-                _watcher.EnableRaisingEvents = true;
+                //_watcher = new FileSystemWatcher(logDirectory, "*.log");
+                //_watcher.Created += OnFileCreated;
+                //_watcher.Deleted += OnFileDeleted;
+                //_watcher.Changed += OnFileChanged;
+                //_watcher.EnableRaisingEvents = true;
 
                 App.Current.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
                 {
@@ -122,101 +127,68 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             catch { }
         }
 
-        private void OnFileCreated(object sender, FileSystemEventArgs e)
-        {
-            App.Current.DispatcherQueue.TryEnqueue(() =>
-            {
-                var file = ParseLogFile(e.FullPath);
-                lock (_logFileLock)
-                {
-                    if (!_logNames.Contains(file))
-                    {
-                        _logNames.Add(file);
-                        LogNames.Source = _logNames.OrderBy(f => f.Name);
-                    }
-                    _logFiles.Add(file);
-                    _groupedLogFiles = _logFiles.GroupBy(f => f.Name);
-                }
-            });
-        }
+        //private void OnFileCreated(object sender, FileSystemEventArgs e)
+        //{
+        //    App.Current.DispatcherQueue.TryEnqueue(() =>
+        //    {
+        //        var file = ParseLogFile(e.FullPath);
+        //        lock (_logFileLock)
+        //        {
+        //            if (!_logNames.Contains(file))
+        //            {
+        //                _logNames.Add(file);
+        //                LogNames.Source = _logNames.OrderBy(f => f.Name);
+        //            }
+        //            _logFiles.Add(file);
+        //            _groupedLogFiles = _logFiles.GroupBy(f => f.Name);
+        //        }
+        //    });
+        //}
 
-        private void OnFileDeleted(object sender, FileSystemEventArgs e)
-        {
-            App.Current.DispatcherQueue.TryEnqueue(() =>
-            {
-                var file = ParseLogFile(e.FullPath, false);
-                lock (_logFileLock)
-                {
-                    if (_logNames.Contains(file) && _logFiles.Count(f => f.Name == file.Name) <= 1)
-                    {
-                        _logNames.Remove(file);
-                        LogNames.Source = _logNames.OrderBy(f => f.Name);
-                    }
-                    if (_logFiles.Contains(file))
-                    {
-                        _logFiles.Remove(file);
-                    }
-                    _groupedLogFiles = _logFiles.GroupBy(f => f.Name);
-                }
-            });
-        }
+        //private void OnFileDeleted(object sender, FileSystemEventArgs e)
+        //{
+        //    App.Current.DispatcherQueue.TryEnqueue(() =>
+        //    {
+        //        var file = ParseLogFile(e.FullPath, false);
+        //        lock (_logFileLock)
+        //        {
+        //            if (_logNames.Contains(file) && _logFiles.Count(f => f.Name == file.Name) <= 1)
+        //            {
+        //                _logNames.Remove(file);
+        //                LogNames.Source = _logNames.OrderBy(f => f.Name);
+        //            }
+        //            if (_logFiles.Contains(file))
+        //            {
+        //                _logFiles.Remove(file);
+        //            }
+        //            _groupedLogFiles = _logFiles.GroupBy(f => f.Name);
+        //        }
+        //    });
+        //}
 
-        private void OnFileChanged(object sender, FileSystemEventArgs e)
-        {
-            if(e.ChangeType != WatcherChangeTypes.Changed)
-            {
-                return;
-            }
+        //private void OnFileChanged(object sender, FileSystemEventArgs e)
+        //{
+        //    if(e.ChangeType != WatcherChangeTypes.Changed)
+        //    {
+        //        return;
+        //    }
 
-            App.Current.DispatcherQueue.TryEnqueue(() =>
-            {
-                lock (_logFileLock)
-                {
-                    var file = _logFiles.FirstOrDefault(f => f.Path == e.FullPath);
-                    if (file != null)
-                    {
-                        file.LastModified = (new FileInfo(e.FullPath)).LastWriteTime;
-                    }
-                }
-            });
-        }
-
-        private LogFile ParseLogFile(string filePath, bool includeProperties = true)
-        {
-            var fileInfo = includeProperties ? new FileInfo(filePath) : null;
-            var fileName = fileInfo?.Name ?? Path.GetFileNameWithoutExtension(filePath);
-            var fullName = fileInfo?.FullName ?? Path.GetFullPath(filePath);
-
-            var fileMatch = _logFileRegex.Match(fileName);
-            if (fileMatch.Success)
-            {
-                return new LogFile(this, fileMatch.Groups[1].Value, fullName)
-                {
-                    Created = fileInfo?.CreationTime ?? null,
-                    LastModified = fileInfo?.LastWriteTime ?? null
-                };
-            }
-
-            var userMatch = _userLogFileRegex.Match(fileName);
-            if(userMatch.Success)
-            {
-                return new LogFile(this, userMatch.Groups[1].Value, fullName)
-                {
-                    Created = fileInfo?.CreationTime ?? null,
-                    LastModified = fileInfo?.LastWriteTime ?? null
-                };
-            }
-
-            return new LogFile(this, Path.GetFileNameWithoutExtension(fileName), fullName)
-            {
-                Created = fileInfo?.CreationTime ?? null,
-                LastModified = fileInfo?.LastWriteTime ?? null
-            };
-        }
+        //    App.Current.DispatcherQueue.TryEnqueue(() =>
+        //    {
+        //        lock (_logFileLock)
+        //        {
+        //            var file = _logFiles.FirstOrDefault(f => f.Path == e.FullPath);
+        //            if (file != null)
+        //            {
+        //                file.LastModified = (new FileInfo(e.FullPath)).LastWriteTime;
+        //            }
+        //        }
+        //    });
+        //}
 
         public void Dispose()
         {
-            _watcher?.Dispose();
+            //_watcher?.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -225,7 +197,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         {
             var page = new CMTraceFrame(
                 Path.Combine(InstallPath, "CMTrace.exe"),
-                _groupedLogFiles.First(g => g.Key == logName).OrderByDescending(f => f.LastModified).First().Path
+                _groupedLogFiles.First(g => g.Key == logName).OrderByDescending(f => f.LastWriteTime).First().GetFullPath()
             );
 
             Tabs.Add(new TabViewItem()
@@ -244,7 +216,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                 StartInfo = new ProcessStartInfo()
                 {
                     FileName = Path.Combine(InstallPath, "CMTrace.exe"),
-                    Arguments = _groupedLogFiles.First(g => g.Key == logName).OrderByDescending(f => f.LastModified).First().Path
+                    Arguments = _groupedLogFiles.First(g => g.Key == logName).OrderByDescending(f => f.LastWriteTime).First().GetFullPath()
                 }
             }.Start();
         }
@@ -252,7 +224,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [RelayCommand]
         private void OpenLogFiles(string logName)
         {
-            foreach (var logFile in _groupedLogFiles.First(g => g.Key == logName).Select(f => f.Path))
+            foreach (var logFile in _groupedLogFiles.First(g => g.Key == logName).Select(f => f.GetFullPath()))
             {
                 new Process()
                 {

@@ -13,5 +13,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.SMB
         public DateTime ChangeTime { get; set; }
 
         public string GetFullPath();
+        public object ViewModel { get; set; }
     }
 }

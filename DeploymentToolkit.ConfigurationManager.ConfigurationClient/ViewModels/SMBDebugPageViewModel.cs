@@ -34,7 +34,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             _networkClient = networkClient;
         }
 
-        private FileExplorer GetClient()
+        private IFileExplorer GetClient()
         {
             return SelectedIndex == 0 ? _localClient : _networkClient;
         }

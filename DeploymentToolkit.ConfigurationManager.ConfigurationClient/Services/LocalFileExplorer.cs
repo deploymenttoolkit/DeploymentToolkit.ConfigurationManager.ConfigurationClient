@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
-    public partial class LocalFileExplorer : ObservableObject, FileExplorer, IDisposable
+    public partial class LocalFileExplorer : ObservableObject, IFileExplorer, IDisposable
     {
         [ObservableProperty]
         private bool _isConnected;

@@ -9,21 +9,31 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
     public partial class ClientConnectionManager : ObservableObject
     {
         [ObservableProperty]
-        public ConnectionMethod _connectionMethod = ConnectionMethod.Auto;
+        private ConnectionMethod _connectionMethod = ConnectionMethod.Auto;
 
         [ObservableProperty]
-        public IWindowsManagementInstrumentationConnection _connection;
+        private IWindowsManagementInstrumentationConnection _connection;
+
+        [ObservableProperty]
+        private IFileExplorer _fileExplorerConnection;
 
         private readonly ILogger<ClientConnectionManager> _logger;
 
         private readonly WindowsRemoteManagementClient _windowsRemoteManagementClient;
         private readonly WindowsManagementInstrumentationClient _windowsManagementInstrumentationClient;
 
-        public ClientConnectionManager(ILogger<ClientConnectionManager> logger, WindowsRemoteManagementClient windowsRemoteManagementClient, WindowsManagementInstrumentationClient windowsManagementInstrumentationClient)
+        private readonly LocalFileExplorer _localClient;
+        private readonly NetworkFileExplorer _networkClient;
+
+        public ClientConnectionManager(ILogger<ClientConnectionManager> logger, WindowsRemoteManagementClient windowsRemoteManagementClient, WindowsManagementInstrumentationClient windowsManagementInstrumentationClient, LocalFileExplorer localClient, NetworkFileExplorer networkClient)
         {
             _logger = logger;
             _windowsRemoteManagementClient = windowsRemoteManagementClient;
             _windowsManagementInstrumentationClient = windowsManagementInstrumentationClient;
+            _localClient = localClient;
+            _networkClient = networkClient;
+
+            FileExplorerConnection = _networkClient;
 
             Connection = windowsRemoteManagementClient;
         }

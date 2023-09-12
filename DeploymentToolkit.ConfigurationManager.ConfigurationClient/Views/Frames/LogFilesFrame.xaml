@@ -20,8 +20,8 @@
                     CanUserSortColumns="True">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <controls:DataGridTextColumn Header="Created" Binding="{Binding Created}"/>
-                <controls:DataGridTextColumn Header="Modified" Binding="{Binding LastModified}"/>
+                <controls:DataGridTextColumn Header="Created" Binding="{Binding CreationTime}"/>
+                <controls:DataGridTextColumn Header="Modified" Binding="{Binding LastWriteTime}"/>
                 <controls:DataGridTemplateColumn Header="">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

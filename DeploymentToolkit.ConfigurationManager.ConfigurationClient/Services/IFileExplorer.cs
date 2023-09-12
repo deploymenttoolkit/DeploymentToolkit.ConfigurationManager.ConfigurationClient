@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
-    public interface FileExplorer
+    public interface IFileExplorer
     {
         public bool IsConnected { get; set; }
 

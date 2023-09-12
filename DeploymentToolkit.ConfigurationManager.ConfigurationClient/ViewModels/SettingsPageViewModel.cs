@@ -99,10 +99,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             if(CredentialsEnabled)
             {
                 result = _clientConnectionManager.Connection.Connect(Host, Username, Password, !AllowUnencryptedConnections);
+                _clientConnectionManager.FileExplorerConnection.Connect(Host, Username, Password);
             }
             else
             {
-                result = _clientConnectionManager.Connection.Connect(Host, encrypted: !AllowUnencryptedConnections) ;
+                result = _clientConnectionManager.Connection.Connect(Host, encrypted: !AllowUnencryptedConnections);
+                _clientConnectionManager.FileExplorerConnection.Connect(null, null, null);
             }
 
             IsWMIConnected = result.IsSuccess;
@@ -121,6 +123,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private void Disconnect()
         {
             _clientConnectionManager.Connection.Disconnect();
+            _clientConnectionManager.FileExplorerConnection.Disconnect();
             IsWMIConnected = _clientConnectionManager.Connection.IsConnected;
         }
     }

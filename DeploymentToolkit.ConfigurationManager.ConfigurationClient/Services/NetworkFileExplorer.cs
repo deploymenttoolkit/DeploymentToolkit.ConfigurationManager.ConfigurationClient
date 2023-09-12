@@ -10,7 +10,7 @@ using Vanara.Extensions;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
-    public partial class NetworkFileExplorer : ObservableObject, FileExplorer, IDisposable
+    public partial class NetworkFileExplorer : ObservableObject, IFileExplorer, IDisposable
     {
         [ObservableProperty]
         private bool _isConnected;
@@ -18,6 +18,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         private readonly ILogger<NetworkFileExplorer> _logger;
 
         private SMB2Client? _client;
+        private string? _hostname;
 
         public NetworkFileExplorer(ILogger<NetworkFileExplorer> logger)
         {
@@ -69,6 +70,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             IsConnected = true;
 
             _logger.LogDebug("Successfully connected to {host}", hostname);
+            _hostname = hostname;
             return true;
         }
 
@@ -94,6 +96,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
             var driveLetter = directory.Split(':')[0];
             var path = directory.Substring(3, directory.Length - 3);
+            var remotePath = $"\\\\{_hostname}\\{driveLetter}$\\{path}";
 
             var fileStore = _client!.TreeConnect($"{driveLetter}$", out var shareStatus);
             if(shareStatus != NTStatus.STATUS_SUCCESS)
@@ -131,7 +134,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                             continue;
                         }
 
-                        yield return new NetworkSMBFileDirectoryInformation(directoryOrFile, directory);
+                        yield return new NetworkSMBFileDirectoryInformation(directoryOrFile, remotePath);
                     }
                 }
             }
