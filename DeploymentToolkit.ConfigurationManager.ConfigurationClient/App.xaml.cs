@@ -44,7 +44,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
 
                     services.AddSingleton<ClientConnectionManager>();
 
-                    services.AddSingleton<SMBClient>();
+                    services.AddSingleton<LocalFileExplorer>();
+                    services.AddSingleton<NetworkFileExplorer>();
 
                     services.AddTransient<IConfigurationManagerClientService, ConfigurationManagerClientService>();
 

@@ -1,6 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.SMB;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
+using System;
+using System.Collections.ObjectModel;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
@@ -12,26 +15,64 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [ObservableProperty]
         private string _hostname;
         [ObservableProperty]
-        private string _username;
+        private string _username = $"{Environment.GetEnvironmentVariable("Username")}@{Environment.GetEnvironmentVariable("USERDNSDOMAIN")}";
         [ObservableProperty]
         private string _password;
 
-        private readonly SMBClient _client;
+        [ObservableProperty]
+        private int _selectedIndex;
 
-        public SMBDebugPageViewModel(SMBClient client)
+        [ObservableProperty]
+        private ObservableCollection<IFileDirectoryInformation> _files = new();
+
+        private readonly LocalFileExplorer _localClient;
+        private readonly NetworkFileExplorer _networkClient;
+
+        public SMBDebugPageViewModel(LocalFileExplorer localClient, NetworkFileExplorer networkClient)
         {
-            _client = client;
+            _localClient = localClient;
+            _networkClient = networkClient;
+        }
+
+        private FileExplorer GetClient()
+        {
+            return SelectedIndex == 0 ? _localClient : _networkClient;
         }
 
         [RelayCommand]
         private void Connect()
         {
-            if(string.IsNullOrEmpty(DirectoryPath))
+            try
+            {
+                GetClient().Connect(Hostname, Username, Password);
+            }
+            catch (NotImplementedException) { }
+        }
+
+        [RelayCommand]
+        private void Disconnect()
+        {
+            GetClient().Disconnect();
+        }
+
+        [RelayCommand]
+        private void ListFiles()
+        {
+            if(string.IsNullOrEmpty(DirectoryPath) || !GetClient().IsConnected)
             {
                 return;
             }
 
-            _client.Connect(Hostname, Username, Password);
+            Files.Clear();
+
+            var files = GetClient().GetFilesAndFolderInDirectory(DirectoryPath);
+            if(files != null)
+            {
+                foreach(var file in files)
+                {
+                    Files.Add(file);
+                }
+            }
         }
     }
 }

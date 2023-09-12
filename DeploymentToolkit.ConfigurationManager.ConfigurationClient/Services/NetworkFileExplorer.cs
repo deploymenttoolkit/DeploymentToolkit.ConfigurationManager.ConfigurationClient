@@ -1,20 +1,25 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.SMB;
 using Microsoft.Extensions.Logging;
+using SMBLibrary;
 using SMBLibrary.Client;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Vanara.Extensions;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
-    public partial class SMBClient : ObservableObject, INetworkFileExplorer, IDisposable
+    public partial class NetworkFileExplorer : ObservableObject, FileExplorer, IDisposable
     {
         [ObservableProperty]
         private bool _isConnected;
 
-        private readonly ILogger<SMBClient> _logger;
+        private readonly ILogger<NetworkFileExplorer> _logger;
 
         private SMB2Client? _client;
 
-        public SMBClient(ILogger<SMBClient> logger)
+        public NetworkFileExplorer(ILogger<NetworkFileExplorer> logger)
         {
             _logger = logger;
         }
@@ -30,7 +35,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
             _logger.LogDebug("Trying to connect to {host} as {user}", hostname, username);
             _client = new SMB2Client();
-            if(!_client.Connect(hostname, SMBLibrary.SMBTransportType.DirectTCPTransport))
+            if(!_client.Connect(hostname, SMBTransportType.DirectTCPTransport))
             {
                 return false;
             }
@@ -55,7 +60,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             _logger.LogTrace("Domain: {domain}, User: {user}", domain, username);
             var status = _client.Login(domain, username, password);
 
-            if(status != SMBLibrary.NTStatus.STATUS_SUCCESS)
+            if(status != NTStatus.STATUS_SUCCESS)
             {
                 _logger.LogDebug("Failed to connected to {host}: {status}", hostname, status);
                 return false;
@@ -67,52 +72,67 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             return true;
         }
 
-        public void Dispose()
+        public void Disconnect()
         {
-            if(_client?.IsConnected ?? false)
+            if (_client?.IsConnected ?? false)
             {
                 _client.Disconnect();
             }
         }
 
-        public void GetFilesInDirectory(string directory)
+        public void Dispose()
         {
-            if(IsConnected)
+            Disconnect();
+        }
+
+        public IEnumerable<IFileDirectoryInformation> GetFilesAndFolderInDirectory(string directory)
+        {
+            if(!IsConnected)
             {
-                return;
+                yield break;
             }
 
             var driveLetter = directory.Split(':')[0];
+            var path = directory.Substring(3, directory.Length - 3);
 
             var fileStore = _client!.TreeConnect($"{driveLetter}$", out var shareStatus);
-            if(shareStatus != SMBLibrary.NTStatus.STATUS_SUCCESS)
+            if(shareStatus != NTStatus.STATUS_SUCCESS)
             {
-                return;
+                yield break;
             }
 
             var fileNTStatus = fileStore.CreateFile(
                 out var fileHandle,
                 out _,
-                "\\",
-                SMBLibrary.AccessMask.GENERIC_READ,
-                SMBLibrary.FileAttributes.Directory,
-                SMBLibrary.ShareAccess.Read,
-                SMBLibrary.CreateDisposition.FILE_OPEN,
-                SMBLibrary.CreateOptions.FILE_DIRECTORY_FILE,
+                path,
+                AccessMask.GENERIC_READ,
+                FileAttributes.Directory,
+                ShareAccess.Read | ShareAccess.Write,
+                CreateDisposition.FILE_OPEN,
+                CreateOptions.FILE_DIRECTORY_FILE,
                 null
             );
 
-            if(fileNTStatus != SMBLibrary.NTStatus.STATUS_SUCCESS)
+            if(fileNTStatus != NTStatus.STATUS_SUCCESS)
             {
-                return;
+                yield break;
             }
 
             try
             {
-                var directoryStatus = fileStore.QueryDirectory(out var fileList, fileHandle, "\\*", SMBLibrary.FileInformationClass.FileBasicInformation);
-                if (directoryStatus != SMBLibrary.NTStatus.STATUS_SUCCESS)
+                var directoryStatus = fileStore.QueryDirectory(out var fileList, fileHandle, "*", FileInformationClass.FileDirectoryInformation);
+                if (directoryStatus == NTStatus.STATUS_NO_MORE_FILES)
                 {
-                    return;
+                    foreach(var directoryOrFile in fileList.Cast<FileDirectoryInformation>())
+                    {
+                        _logger.LogTrace("{Type} - {Name}", directoryOrFile.FileAttributes.IsFlagSet(FileAttributes.Directory) ? "Dir" : "File", directoryOrFile.FileName);
+                        if(directoryOrFile.FileName == "." || directoryOrFile.FileName == "..")
+                        {
+                            continue;
+                        }
+
+                        yield return new NetworkSMBFileDirectoryInformation(directoryOrFile, directory);
+                    }
                 }
             }
             finally
