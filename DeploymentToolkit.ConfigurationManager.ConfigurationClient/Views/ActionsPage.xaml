@@ -24,7 +24,6 @@
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Button Grid.Column="6" Margin="2"
-                                        Background="{StaticResource SystemFillColorSuccessBackground}"
                                         Foreground="{StaticResource SystemFillColorSuccess}"
                                         Command="{Binding ViewModel.RunActionCommand}"
                                         CommandParameter="{Binding ActionID}">

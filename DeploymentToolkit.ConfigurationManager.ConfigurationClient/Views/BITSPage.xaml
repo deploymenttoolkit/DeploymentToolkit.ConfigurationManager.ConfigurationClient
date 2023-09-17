@@ -42,7 +42,6 @@
                 </StackPanel>
 
                 <Button Grid.Column="1"
-                            Background="{StaticResource SystemFillColorSuccessBackground}"
                             Foreground="{StaticResource SystemFillColorSuccess}"
                             Command="{x:Bind ViewModel.TryUpdateJobsCommand}"
                             IsEnabled="{Binding EnableContent}"
@@ -140,7 +139,6 @@
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Grid.Column="6" Margin="2"
-                                        Background="{StaticResource SystemFillColorCriticalBackground}"
                                         Foreground="{StaticResource SystemFillColorCritical}"
                                         Command="{Binding ViewModel.CancelJobCommand}"
                                         CommandParameter="{Binding Id}"

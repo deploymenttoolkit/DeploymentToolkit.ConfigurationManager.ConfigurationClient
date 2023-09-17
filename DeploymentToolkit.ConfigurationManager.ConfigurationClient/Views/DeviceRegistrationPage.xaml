@@ -35,7 +35,6 @@
                 </StackPanel>
 
                 <Button Grid.Column="1"
-                            Background="{StaticResource SystemFillColorSuccessBackground}"
                             Foreground="{StaticResource SystemFillColorSuccess}"
                             Command="{x:Bind ViewModel.UpdatePropertiesCommand}"
                             Padding="10" Margin="5">

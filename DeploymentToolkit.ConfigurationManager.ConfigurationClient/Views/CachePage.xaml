@@ -71,7 +71,6 @@
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Grid.Column="6"
-                                        Background="{StaticResource SystemFillColorCriticalBackground}"
                                         Foreground="{StaticResource SystemFillColorCritical}"
                                         Command="{Binding ViewModel.DeleteFromCacheCommand}"
                                         CommandParameter="{Binding CacheElementId}">
