@@ -232,6 +232,7 @@
     <EditorConfigFiles Remove="C:\Users\admincm\source\repos\DeploymentToolkit\DeploymentToolkit.ConfigurationManager.ConfigurationClient\Models\CCM\.editorconfig" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="C:\Users\admincm\source\repos\DeploymentToolkit\DeploymentToolkit.ConfigurationManager.ConfigurationClient\.editorconfig" />
     <None Include="C:\Users\admincm\source\repos\DeploymentToolkit\DeploymentToolkit.ConfigurationManager.ConfigurationClient\Models\CCM\.editorconfig" />
   </ItemGroup>
   <ItemGroup>
@@ -248,5 +249,8 @@
     <Page Update="Views\SMBDebugPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\admincm\source\repos\DeploymentToolkit\DeploymentToolkit.ConfigurationManager.ConfigurationClient\.editorconfig" />
   </ItemGroup>
 </Project>

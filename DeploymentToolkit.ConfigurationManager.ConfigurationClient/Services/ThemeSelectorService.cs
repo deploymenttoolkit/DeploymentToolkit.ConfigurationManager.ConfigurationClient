@@ -1,30 +1,45 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Helpers;
 using Microsoft.UI.Xaml;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
+
+public class ThemeSelectorService
 {
-    public class ThemeSelectorService
+    public ElementTheme Theme { get; set; } = ElementTheme.Default;
+
+    public event EventHandler? ThemeChanged;
+
+    private readonly LocalSettingsService _localSettingsService;
+
+    public ThemeSelectorService(LocalSettingsService settingsService)
     {
-        public ElementTheme Theme { get; set; } = ElementTheme.Default;
+        _localSettingsService = settingsService;
 
-        public async Task SetThemeAsync(ElementTheme theme)
+        Theme = _localSettingsService.UserSettings.Theme;
+    }
+
+    public async Task SetThemeAsync(ElementTheme theme)
+    {
+        Theme = theme;
+        _localSettingsService.UserSettings.Theme = theme;
+
+        await SetRequestedThemeAsync();
+        await _localSettingsService.SaveSettingsAsync();
+
+        ThemeChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private async Task SetRequestedThemeAsync()
+    {
+        if (App.Current.GetActiveWindow().Content is FrameworkElement rootElement)
         {
-            Theme = theme;
+            rootElement.RequestedTheme = Theme;
 
-            await SetRequestedThemeAsync();
+            TitleBarHelper.UpdateTitleBar(Theme);
         }
 
-        public async Task SetRequestedThemeAsync()
-        {
-            if (App.Current.GetActiveWindow().Content is FrameworkElement rootElement)
-            {
-                rootElement.RequestedTheme = Theme;
-
-                TitleBarHelper.UpdateTitleBar(Theme);
-            }
-
-            await Task.CompletedTask;
-        }
+        await Task.CompletedTask;
     }
 }

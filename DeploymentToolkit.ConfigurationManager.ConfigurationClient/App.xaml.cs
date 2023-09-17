@@ -123,6 +123,12 @@ public partial class App : Application
                 HostedService.Services.GetRequiredService<LocalSettingsService>()!.SaveSettingsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             };
             AppTitlebar = (m_window as MainWindow)!.GetAppTitleBar();
+
+            var themeService = Current.Services.GetService<ThemeSelectorService>()!;
+            if (themeService.Theme != ElementTheme.Default)
+            {
+                themeService.SetThemeAsync(themeService.Theme).ConfigureAwait(false).GetAwaiter().GetResult();
+            }
         };
     }
 

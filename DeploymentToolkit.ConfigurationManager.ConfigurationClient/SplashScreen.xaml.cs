@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 
@@ -14,6 +15,11 @@ public sealed partial class SplashScreen : WinUIEx.SplashScreen
     public SplashScreen(Type window) : base(window)
     {
         this.InitializeComponent();
+
+        if(Debugger.IsAttached)
+        {
+            IsAlwaysOnTop = false;
+        }
     }
 
     protected async override Task OnLoading()

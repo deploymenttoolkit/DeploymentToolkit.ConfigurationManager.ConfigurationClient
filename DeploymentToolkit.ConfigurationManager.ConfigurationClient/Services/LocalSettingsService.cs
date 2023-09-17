@@ -30,13 +30,26 @@ public class LocalSettingsService
 
     public async Task<UserSettings> LoadSettingsAsync()
     {
-        if(!File.Exists(_localsettingsFile))
+        if(!Directory.Exists(_localApplicationPath) || !File.Exists(_localsettingsFile))
         {
             return new();
         }
 
-        using var stream = new FileStream(_localsettingsFile, FileMode.Open);
-        return await System.Text.Json.JsonSerializer.DeserializeAsync<UserSettings>(stream) ?? new();
+        try
+        {
+            var text = File.ReadAllText(_localsettingsFile);
+            var result = System.Text.Json.JsonSerializer.Deserialize<UserSettings>(text);
+            // Doing it async throws no exception for me but also doesn't convert shit
+            // I don't know whats happening here
+            //using var stream = new FileStream(_localsettingsFile, FileMode.Open, FileAccess.ReadWrite);
+            //var result = await System.Text.Json.JsonSerializer.DeserializeAsync<UserSettings>(stream);
+            return result ?? throw new Exception("Failed to parse");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex, "Failed to load settings from {path}", _localsettingsFile);
+            return new();
+        }
     }
 
     public async Task SaveSettingsAsync()

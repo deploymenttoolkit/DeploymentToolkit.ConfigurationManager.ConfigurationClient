@@ -52,6 +52,23 @@
                 <win:EntranceThemeTransition FromVerticalOffset="50" />
                 <win:RepositionThemeTransition IsStaggeringEnabled="False" />
             </win:StackPanel.ChildrenTransitions>
+            
+            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="Application Settings" />
+            
+            <labs:SettingsCard Description="Theme" Header="Host">
+                <labs:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xe703;" />
+                </labs:SettingsCard.HeaderIcon>
+
+                <ComboBox MinWidth="{StaticResource TextBoxMinWidth}" ItemsSource="{x:Bind ViewModel.Themes}" SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="SelectionChanged">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ThemeChangedCommand}"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </ComboBox>
+            </labs:SettingsCard>
+            
 
             <!-- Remote Settings -->
             <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="Remote Connection Settings" />
