@@ -49,6 +49,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
 
                     services.AddTransient<IConfigurationManagerClientService, ConfigurationManagerClientService>();
 
+                    services.AddSingleton<LocalProcessExecuter>();
+
                     services.AddSingleton<ClientEventsService>();
 
                     services.AddTransient<ClientEventsPageViewModel>();
@@ -64,8 +66,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
 
                     services.AddSingleton<SettingsPageViewModel>();
 
+#if DEBUG
                     services.AddSingleton<WinRMDebugPageViewModel>();
                     services.AddSingleton<SMBDebugPageViewModel>();
+                    services.AddSingleton<ProcessDebugPageViewModel>();
+#endif
 
                     services.AddTransient<ApplicationsPageViewModel>();
                     services.AddTransient<ProgramPageViewModel>();

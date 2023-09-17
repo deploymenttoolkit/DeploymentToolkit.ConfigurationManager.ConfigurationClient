@@ -29,6 +29,7 @@
     <None Remove="Views\GeneralPage.xaml" />
     <None Remove="Views\LogPage.xaml" />
     <None Remove="Views\PolicyPage.xaml" />
+    <None Remove="Views\ProcessDebugPage.xaml" />
     <None Remove="Views\ProgramsPage.xaml" />
     <None Remove="Views\SettingsPage.xaml" />
     <None Remove="Views\SMBDebugPage.xaml" />
@@ -230,6 +231,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="C:\Users\admincm\source\repos\DeploymentToolkit\DeploymentToolkit.ConfigurationManager.ConfigurationClient\Models\CCM\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ProcessDebugPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\SMBDebugPage.xaml">

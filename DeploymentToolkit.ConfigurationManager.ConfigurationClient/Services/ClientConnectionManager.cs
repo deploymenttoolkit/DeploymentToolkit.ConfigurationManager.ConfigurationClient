@@ -33,7 +33,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             _localClient = localClient;
             _networkClient = networkClient;
 
-            FileExplorerConnection = _networkClient;
+            FileExplorerConnection = _localClient;
 
             Connection = windowsRemoteManagementClient;
         }

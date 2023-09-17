@@ -55,10 +55,11 @@
                 <NavigationViewItem Icon="PostUpdate" Tag="SoftwareUpdatesPage" Content="Software Updates" IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}"/>
                 
                 <!-- Debug Pages -->
-                <NavigationViewItemSeparator Visibility="{x:Bind ViewModel.IsBackButtonEnabled}"/>
-                <NavigationViewItemHeader Content="Debug" Visibility="{x:Bind ViewModel.IsBackButtonEnabled}"/>
-                <NavigationViewItem Icon="Globe" Tag="WinRMDebugPage" Content="WinRM Debug Client" Visibility="{x:Bind ViewModel.IsBackButtonEnabled}"/>
-                <NavigationViewItem Icon="Globe" Tag="SMBDebugPage" Content="SMB Debug Client" Visibility="{x:Bind ViewModel.IsBackButtonEnabled}"/>
+                <NavigationViewItemSeparator Visibility="{x:Bind ViewModel.DebugVisibility}"/>
+                <NavigationViewItemHeader Content="Debug" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
+                <NavigationViewItem Icon="Globe" Tag="WinRMDebugPage" Content="WinRM Debug Client" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
+                <NavigationViewItem Icon="Globe" Tag="SMBDebugPage" Content="SMB Debug Client" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
+                <NavigationViewItem Icon="Globe" Tag="ProcessDebugPage" Content="Process Debug Client" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
             </NavigationView.MenuItems>
 
             <ScrollViewer>
