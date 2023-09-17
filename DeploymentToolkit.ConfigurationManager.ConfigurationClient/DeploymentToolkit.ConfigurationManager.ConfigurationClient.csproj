@@ -111,6 +111,7 @@
     <PackageReference Include="System.Management" Version="7.0.2" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="7.0.1" />
     <PackageReference Include="Vanara.BITS" Version="3.4.16" />
+    <PackageReference Include="WinUIEx" Version="2.3.0" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 

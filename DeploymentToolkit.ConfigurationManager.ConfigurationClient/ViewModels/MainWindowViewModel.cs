@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using Microsoft.UI.Xaml;
@@ -29,11 +30,13 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
         private readonly NavigationService _navigationService;
         private readonly ClientConnectionManager _connectionManager;
+        private readonly ThemeSelectorService _themeSelectorService;
 
-        public MainWindowViewModel(NavigationService navigationService, ClientConnectionManager connectionManager)
+        public MainWindowViewModel(NavigationService navigationService, ClientConnectionManager connectionManager, ThemeSelectorService themeSelectorService)
         {
             _navigationService = navigationService;
             _connectionManager = connectionManager;
+            _themeSelectorService = themeSelectorService;
 
             _navigationService.Navigate("Settings");
 
@@ -71,6 +74,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private void OnNavigated(NavigationEventArgs navigationEventArgs)
         {
             IsBackButtonEnabled = _navigationService.CanGoBack();
+        }
+
+        [RelayCommand]
+        private async Task ChangeThemeButtonClicked()
+        {
+            await _themeSelectorService.SetThemeAsync(_themeSelectorService.Theme == ElementTheme.Dark ? ElementTheme.Light : ElementTheme.Dark);
         }
     }
 }

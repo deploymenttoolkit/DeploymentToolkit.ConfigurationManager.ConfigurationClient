@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using System;
+using WinUIEx;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -36,6 +37,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
                 .ConfigureServices(services =>
                 {
                     services.AddSingleton<NavigationService>();
+                    services.AddSingleton<ThemeSelectorService>();
 
                     services.AddSingleton<UACService>();
 
@@ -108,13 +110,16 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient
 
             m_window = new MainWindow();
             m_window.Activate();
+            AppTitlebar = (m_window as MainWindow)!.GetAppTitleBar();
         }
 
-        private Window m_window;
+        private WindowEx m_window;
 
-        internal Window GetActiveWindow()
+        internal WindowEx GetActiveWindow()
         {
             return m_window;
         }
+
+        internal static UIElement AppTitlebar { get; set; }
     }
 }
