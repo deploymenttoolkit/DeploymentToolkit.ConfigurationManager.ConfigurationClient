@@ -28,12 +28,14 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [ObservableProperty]
         private string _pageTitle;
 
+        private readonly LocalSettingsService _settings;
         private readonly NavigationService _navigationService;
         private readonly ClientConnectionManager _connectionManager;
         private readonly ThemeSelectorService _themeSelectorService;
 
-        public MainWindowViewModel(NavigationService navigationService, ClientConnectionManager connectionManager, ThemeSelectorService themeSelectorService)
+        public MainWindowViewModel(LocalSettingsService settings, NavigationService navigationService, ClientConnectionManager connectionManager, ThemeSelectorService themeSelectorService)
         {
+            _settings = settings;
             _navigationService = navigationService;
             _connectionManager = connectionManager;
             _themeSelectorService = themeSelectorService;

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<winuiex:SplashScreen
+    x:Class="DeploymentToolkit.ConfigurationManager.ConfigurationClient.SplashScreen"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:winuiex="using:WinUIEx"
+    mc:Ignorable="d"
+    IsAlwaysOnTop="True">
+    <winuiex:SplashScreen.SystemBackdrop>
+        <MicaBackdrop />
+    </winuiex:SplashScreen.SystemBackdrop>
+    <Grid>
+        <Image Source="ms-appx:///Assets/StoreLogo.png" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="1" Width="200" />
+        <StackPanel VerticalAlignment="Bottom">
+            <TextBlock Text="Configuration Manager Client" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,25"
+                       Foreground="#215A9D" FontWeight="Black"
+                       Style="{StaticResource TitleTextBlockStyle}"  />
+            <TextBlock x:Name="status" Text="Loading..." HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</winuiex:SplashScreen>

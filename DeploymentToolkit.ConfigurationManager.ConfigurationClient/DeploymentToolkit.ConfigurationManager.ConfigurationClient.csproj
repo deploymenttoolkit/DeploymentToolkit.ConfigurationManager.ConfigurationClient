@@ -14,6 +14,7 @@
 	<Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="SplashScreen.xaml" />
     <None Remove="Views\ActionsPage.xaml" />
     <None Remove="Views\ApplicationsPage.xaml" />
     <None Remove="Views\BITSPage.xaml" />
@@ -232,6 +233,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="C:\Users\admincm\source\repos\DeploymentToolkit\DeploymentToolkit.ConfigurationManager.ConfigurationClient\Models\CCM\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="SplashScreen.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\ProcessDebugPage.xaml">
