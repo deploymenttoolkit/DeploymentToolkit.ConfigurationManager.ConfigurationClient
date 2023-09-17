@@ -1,15 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using Windows.Management.Policies;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
+#if DEBUG
+        public Visibility DebugVisibility { get; set; } = Visibility.Visible;
+#else
+        public Visibility DebugVisibility { get; set; } = Visibility.Collapsed;
+#endif
+
         [ObservableProperty]
         private bool _isBackButtonEnabled;
 
