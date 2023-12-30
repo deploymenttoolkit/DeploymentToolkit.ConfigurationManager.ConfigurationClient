@@ -89,5 +89,7 @@
                 <controls:DataGridTextColumn Header="NextUserScheduledTime" Binding="{Binding NextUserScheduledTime}"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
+
+        <controls:Loading IsLoading="{x:Bind ViewModel.IsLoading, Mode=OneWay}" ContentTemplate="{StaticResource LoadingScreen}" />
     </Grid>
 </Page>

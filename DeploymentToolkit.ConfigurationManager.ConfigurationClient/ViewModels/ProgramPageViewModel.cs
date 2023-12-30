@@ -4,11 +4,15 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Clie
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
     public partial class ProgramPageViewModel : ObservableObject
     {
+        [ObservableProperty]
+        private bool _isLoading = true;
+
         [ObservableProperty]
         private ObservableCollection<CCM_Program> _programs = new();
 
@@ -18,18 +22,32 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         {
             _clientService = clientService;
 
-            UpdatePrograms();
+            Task.Factory.StartNew(() => UpdatePrograms());
         }
 
         [RelayCommand]
         private void UpdatePrograms()
         {
-            Programs.Clear();
+            App.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                IsLoading = true;
+                Programs.Clear();
+            });
+
             foreach(var program in _clientService.GetPrograms().OrderBy(p => p.PackageName))
             {
                 program.ViewModel = this;
-                Programs.Add(program);
+                App.Current.DispatcherQueue.TryEnqueue(() =>
+                {
+                    Programs.Add(program);
+                });
             }
+
+            App.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                IsLoading = false;
+                Programs.Clear();
+            });
         }
     }
 }
