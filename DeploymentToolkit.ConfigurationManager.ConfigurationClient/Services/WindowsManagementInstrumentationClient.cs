@@ -55,9 +55,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                 scopeName = @$"\\{_host}\{scope}";
             }
 
-            _logger.LogDebug("Getting scope {scope}", scope);
+            _logger.LogDebug("Getting scope {scope}", scopeName);
 
-            var managementScope = new ManagementScope(scope, _connectionOptions);
+            var managementScope = new ManagementScope(scopeName, _connectionOptions);
             managementScope.Connect();
             return managementScope;
         }
