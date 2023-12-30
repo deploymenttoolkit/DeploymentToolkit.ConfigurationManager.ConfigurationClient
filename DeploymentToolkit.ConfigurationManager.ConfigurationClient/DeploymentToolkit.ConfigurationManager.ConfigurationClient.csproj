@@ -253,4 +253,7 @@
   <ItemGroup>
     <EditorConfigFiles Remove="C:\Users\admincm\source\repos\DeploymentToolkit\DeploymentToolkit.ConfigurationManager.ConfigurationClient\.editorconfig" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Debug\" />
+  </ItemGroup>
 </Project>
