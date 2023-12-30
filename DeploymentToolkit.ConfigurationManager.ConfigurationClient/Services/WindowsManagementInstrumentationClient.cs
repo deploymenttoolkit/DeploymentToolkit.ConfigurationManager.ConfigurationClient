@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management;
 using System.Reflection;
-using Vanara.PInvoke;
-using WinRT;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
@@ -22,15 +20,17 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         private bool _isConnected;
 
         private readonly ILogger<WindowsManagementInstrumentationClient> _logger;
+        private readonly ClientEventsService _clientEventsService;
 
         private ManagementScope? _clientManagementScope;
 
         private string? _host;
-        private ConnectionOptions _connectionOptions = new();
+        private readonly ConnectionOptions _connectionOptions = new();
 
-        public WindowsManagementInstrumentationClient(ILogger<WindowsManagementInstrumentationClient> logger)
+        public WindowsManagementInstrumentationClient(ILogger<WindowsManagementInstrumentationClient> logger, ClientEventsService clientEventsService)
         {
             _logger = logger;
+            _clientEventsService = clientEventsService;
         }
 
         public void Dispose()
@@ -90,6 +90,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             try
             {
                 _clientManagementScope = GetManagementScope(CCM_Constants.ClientNamespace);
+                _clientEventsService.Connect(GetManagementScope(CCM_Constants.ClientEventsNamespace), GetManagementScope(CCM_Constants.ClientSDKNamespace));
                 IsConnected = true;
                 return Result.Ok();
             }
@@ -111,6 +112,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         {
             IsConnected = false;
             _clientManagementScope = null;
+            _clientEventsService.Disconnect();
             return Result.Ok();
         }
 

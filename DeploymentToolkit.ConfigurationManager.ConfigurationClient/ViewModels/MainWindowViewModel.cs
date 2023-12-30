@@ -21,7 +21,10 @@ public partial class MainWindowViewModel : ObservableObject
     private bool _isBackButtonEnabled;
 
     [ObservableProperty]
-    private bool _isWMIConnected;
+    private bool _isConnected;
+
+    [ObservableProperty]
+    private bool _isEventsConnected;
 
     [ObservableProperty]
     private NavigationViewItem _selectedItem;
@@ -33,20 +36,23 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly NavigationService _navigationService;
     private readonly ClientConnectionManager _connectionManager;
     private readonly ThemeSelectorService _themeSelectorService;
+    private readonly ClientEventsService _clientEventsService;
 
     private readonly UISettings _uiSettings;
 
-    public MainWindowViewModel(LocalSettingsService settings, NavigationService navigationService, ClientConnectionManager connectionManager, ThemeSelectorService themeSelectorService)
+    public MainWindowViewModel(LocalSettingsService settings, NavigationService navigationService, ClientConnectionManager connectionManager, ThemeSelectorService themeSelectorService, ClientEventsService clientEventsService)
     {
         _settings = settings;
         _navigationService = navigationService;
         _connectionManager = connectionManager;
         _themeSelectorService = themeSelectorService;
+        _clientEventsService = clientEventsService;
 
         _navigationService.Navigate("Settings");
 
         _connectionManager.PropertyChanged += ConnectionPropertyChanged;
         _connectionManager.Connection.PropertyChanged += ConnectionPropertyChanged;
+        _clientEventsService.PropertyChanged += ConnectionPropertyChanged;
 
         _uiSettings = new UISettings();
         _uiSettings.ColorValuesChanged += ColorValuesChanged;
@@ -65,13 +71,11 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void ConnectionPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if(e.PropertyName == nameof(_connectionManager.Connection.IsConnected))
+        IsConnected = _connectionManager.Connection.IsConnected;
+        IsEventsConnected = _clientEventsService.IsConnected;
+
+        if(e.PropertyName == nameof(_connectionManager.Connection))
         {
-            IsWMIConnected = _connectionManager.Connection.IsConnected;
-        }
-        else if(e.PropertyName == nameof(_connectionManager.Connection))
-        {
-            IsWMIConnected = _connectionManager.Connection.IsConnected;
             _connectionManager.Connection.PropertyChanged -= ConnectionPropertyChanged;
             _connectionManager.Connection.PropertyChanged += ConnectionPropertyChanged;
         }

@@ -1,4 +1,6 @@
-﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -6,37 +8,72 @@ using System.Management;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
-    public class ClientEventsService : IDisposable
+    public partial class ClientEventsService : ObservableObject, IDisposable
     {
         private const string _wmiQuery = "SELECT * FROM CCM_Event";
-        private const string _namespace = @"root\CCM\Events";
 
         private const string _clientSDKwmiQuery = "SELECT * FROM CCM_InstanceEvent";
-        private const string _clientSDKNamespace = @"root\CCM\ClientSDK";
 
-        private readonly ManagementEventWatcher _eventWatcher;
-        private readonly ManagementEventWatcher _clientSDKEventWatcher;
+        private ManagementEventWatcher? _eventWatcher;
+        private ManagementEventWatcher? _clientSDKEventWatcher;
+
+        private readonly ILogger<ClientEventsService> _logger;
         private readonly UACService _uacService;
+
+        [ObservableProperty]
+        private bool _isConnected;
 
         public ObservableCollection<CcmEvent> Events { get; private set; } = new(); 
         public ObservableCollection<InstanceEvent> InstanceEvents { get; private set; } = new();
 
-        public ClientEventsService(UACService uacService)
+        public ClientEventsService(ILogger<ClientEventsService> logger, UACService uacService)
         {
+            _logger = logger;
             _uacService = uacService;
-            if(!_uacService.IsElevated)
+        }
+
+        internal bool Connect(ManagementScope clientEventsNamespace, ManagementScope clientSDKNamespace)
+        {
+            if (!_uacService.IsElevated)
             {
-                return;
+                return false;
             }
 
-            _eventWatcher = new ManagementEventWatcher(new ManagementScope(_namespace), new EventQuery(_wmiQuery));
-            _eventWatcher.EventArrived += OnEventArrived;
+            try
+            {
+                _eventWatcher = new ManagementEventWatcher(clientEventsNamespace, new EventQuery(_wmiQuery));
+                _eventWatcher.EventArrived += OnEventArrived;
 
-            _clientSDKEventWatcher = new ManagementEventWatcher(new ManagementScope(_clientSDKNamespace), new EventQuery(_clientSDKwmiQuery));
-            _clientSDKEventWatcher.EventArrived += OnInstanceEventArrived;
+                _clientSDKEventWatcher = new ManagementEventWatcher(clientSDKNamespace, new EventQuery(_clientSDKwmiQuery));
+                _clientSDKEventWatcher.EventArrived += OnInstanceEventArrived;
 
-            _eventWatcher.Start();
-            _clientSDKEventWatcher.Start();
+                _eventWatcher.Start();
+                _clientSDKEventWatcher.Start();
+
+                IsConnected = true;
+
+                return true;
+            }
+            catch(ManagementException ex)
+            {
+                _logger.LogError(ex, "Failed to connect to events wmi");
+                return false;
+            }
+        }
+
+        internal bool Disconnect()
+        {
+            _eventWatcher?.Stop();
+            _eventWatcher?.Dispose();
+            _eventWatcher = null;
+
+            _clientSDKEventWatcher?.Stop();
+            _clientSDKEventWatcher?.Dispose();
+            _clientSDKEventWatcher = null;
+
+            IsConnected = false;
+
+            return true;
         }
 
         private void OnInstanceEventArrived(object sender, EventArrivedEventArgs e)

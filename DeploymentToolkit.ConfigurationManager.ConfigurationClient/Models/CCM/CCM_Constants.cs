@@ -7,5 +7,6 @@
         internal const string ClientSoftMgmtAgentNamespace = @"ROOT\ccm\SoftMgmtAgent";
         internal const string ClientPolicyNamespace = @"ROOT\ccm\Policy";
         internal const string ClientDesiredStateConfigurationNamespaace = @"ROOT\ccm\dcm";
+        internal const string ClientEventsNamespace = @"root\CCM\Events";
     }
 }
