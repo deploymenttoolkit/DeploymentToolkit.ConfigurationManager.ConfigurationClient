@@ -25,6 +25,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         [ObservableProperty]
         private ObservableCollection<IFileDirectoryInformation> _files = new();
 
+        [ObservableProperty]
+        private string _fileContent;
+
         private readonly LocalFileExplorer _localClient;
         private readonly NetworkFileExplorer _networkClient;
 
@@ -60,7 +63,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         {
             if(string.IsNullOrEmpty(DirectoryPath) || !GetClient().IsConnected)
             {
-                return;
+                return; 
             }
 
             Files.Clear();
@@ -73,6 +76,18 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
                     Files.Add(file);
                 }
             }
+        }
+
+        [RelayCommand]
+        private void GetContent()
+        {
+            if (string.IsNullOrEmpty(DirectoryPath) || !GetClient().IsConnected)
+            {
+                return;
+            }
+
+            var content = GetClient().GetFileContent(DirectoryPath).Result;
+            FileContent = content;
         }
     }
 }

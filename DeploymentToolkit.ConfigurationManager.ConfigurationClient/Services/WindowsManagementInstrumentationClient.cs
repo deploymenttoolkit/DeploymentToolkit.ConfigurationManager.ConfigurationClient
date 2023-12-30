@@ -77,7 +77,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                 _host = host;
             }
 
-            if(username != null && password != null)
+            if(_host != null && username != null && password != null)
             {
                 _connectionOptions.Username = username;
                 _connectionOptions.Password = password;
@@ -176,7 +176,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                     return false;
                 }
 
-                // TODO: Get output and delete temp file
+                output = _networkFileExplorer.GetFileContent(outputFile).Result;
+                // TODO: Remove file if exist
 
                 return true;
             }

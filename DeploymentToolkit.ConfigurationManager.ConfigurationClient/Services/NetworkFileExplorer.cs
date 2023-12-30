@@ -6,6 +6,7 @@ using SMBLibrary.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Vanara.Extensions;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
@@ -57,6 +58,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                     username = split[1];
                 }
             }
+            else
+            {
+                username = string.Empty;
+                password = string.Empty;
+            }
 
             _logger.LogTrace("Domain: {domain}, User: {user}", domain, username);
             var status = _client.Login(domain, username, password);
@@ -85,6 +91,80 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         public void Dispose()
         {
             Disconnect();
+        }
+
+        public async Task<string> GetFileContent(string path)
+        {
+            if(!IsConnected)
+            {
+                return string.Empty;
+            }
+
+            var driveLetter = path.Split(':')[0];
+            var filePath = path.Substring(3, path.Length - 3);
+
+            var fileStore = _client!.TreeConnect($"{driveLetter}$", out var shareStatus);
+            if (shareStatus != NTStatus.STATUS_SUCCESS)
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                var file = fileStore.CreateFile(
+                    out var fileHandle,
+                    out var fileStatus,
+                    filePath,
+                    AccessMask.GENERIC_READ | AccessMask.SYNCHRONIZE,
+                    FileAttributes.Normal,
+                    ShareAccess.Read,
+                    CreateDisposition.FILE_OPEN,
+                    CreateOptions.FILE_NON_DIRECTORY_FILE | CreateOptions.FILE_SYNCHRONOUS_IO_ALERT,
+                    null
+                );
+
+                if (file != NTStatus.STATUS_SUCCESS)
+                {
+                    return string.Empty;
+                }
+
+                try
+                {
+                    var stream = new System.IO.MemoryStream();
+                    var bytesRead = 0L;
+                    while(true)
+                    {
+                        var readStatus = fileStore.ReadFile(out var data, fileHandle, bytesRead, (int)_client.MaxReadSize);
+                        if(readStatus != NTStatus.STATUS_SUCCESS && readStatus != NTStatus.STATUS_END_OF_FILE)
+                        {
+                            _logger.LogError("Failed to read file with status {status}", readStatus);
+                            return string.Empty;
+                        }
+
+                        if (readStatus != NTStatus.STATUS_END_OF_FILE && data.Length > 0)
+                        {
+                            bytesRead += data.Length;
+                            stream.Write(data, 0, data.Length);
+                        }
+
+                        if(readStatus == NTStatus.STATUS_END_OF_FILE)
+                        {
+                            await stream.FlushAsync();
+                            stream.Position = 0;
+                            var streamReader = new System.IO.StreamReader(stream, true);
+                            return await streamReader.ReadToEndAsync();
+                        }
+                    }
+                }
+                finally
+                {
+                    fileStore.CloseFile(fileHandle);
+                }
+            }
+            finally
+            {
+                fileStore.Disconnect();
+            }
         }
 
         public IEnumerable<IFileDirectoryInformation> GetFilesAndFolderInDirectory(string directory)

@@ -33,7 +33,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             _localClient = localClient;
             _networkClient = networkClient;
 
-            FileExplorerConnection = _localClient;
+            FileExplorerConnection = _networkClient;
 
             Connection = windowsRemoteManagementClient;
         }
@@ -58,10 +58,12 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                 try
                 {
                     Connection.Connect("127.0.0.1");
+                    FileExplorerConnection = _networkClient;
                 }
                 catch(Exception)
                 {
                     Connection = _windowsManagementInstrumentationClient;
+                    FileExplorerConnection = _localClient;
                 }
             }
 

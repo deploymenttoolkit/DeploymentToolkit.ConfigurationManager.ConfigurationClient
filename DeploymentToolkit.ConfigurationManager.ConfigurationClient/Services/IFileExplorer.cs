@@ -1,5 +1,6 @@
 ﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.SMB;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
@@ -11,5 +12,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         public void Disconnect();
 
         public IEnumerable<IFileDirectoryInformation> GetFilesAndFolderInDirectory(string directory);
+        public Task<string> GetFileContent(string path);
     }
 }

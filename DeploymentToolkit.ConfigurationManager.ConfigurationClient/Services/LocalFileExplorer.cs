@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
@@ -13,9 +14,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         [ObservableProperty]
         private bool _isConnected;
 
-        private readonly ILogger<NetworkFileExplorer> _logger;
+        private readonly ILogger<LocalFileExplorer> _logger;
 
-        public LocalFileExplorer(ILogger<NetworkFileExplorer> logger)
+        public LocalFileExplorer(ILogger<LocalFileExplorer> logger)
         {
             _logger = logger;
         }
@@ -41,6 +42,17 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         {
             Disconnect();
             GC.SuppressFinalize(this);
+        }
+
+        public async Task<string> GetFileContent(string path)
+        {
+            var filePath = Path.GetFullPath(path);
+            if(!File.Exists(filePath))
+            {
+                return string.Empty;
+            }
+
+            return File.ReadAllText(filePath);
         }
 
         public IEnumerable<IFileDirectoryInformation> GetFilesAndFolderInDirectory(string directory)
