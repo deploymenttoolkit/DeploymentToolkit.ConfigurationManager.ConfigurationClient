@@ -3,6 +3,7 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Extensions;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.cimv2;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using FluentResults;
 using Microsoft.Extensions.Logging;
@@ -11,26 +12,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management;
 using System.Reflection;
+using System.Threading;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
-    public partial class WindowsManagementInstrumentationClient : ObservableObject, IDisposable, IWindowsManagementInstrumentationConnection
+    public partial class WindowsManagementInstrumentationClient : ObservableObject, IDisposable, IWindowsManagementInstrumentationConnection, IProcessExecuter
     {
         [ObservableProperty]
         private bool _isConnected;
 
         private readonly ILogger<WindowsManagementInstrumentationClient> _logger;
         private readonly ClientEventsService _clientEventsService;
+        private readonly NetworkFileExplorer _networkFileExplorer;
 
         private ManagementScope? _clientManagementScope;
 
         private string? _host;
         private readonly ConnectionOptions _connectionOptions = new();
 
-        public WindowsManagementInstrumentationClient(ILogger<WindowsManagementInstrumentationClient> logger, ClientEventsService clientEventsService)
+        public WindowsManagementInstrumentationClient(ILogger<WindowsManagementInstrumentationClient> logger, ClientEventsService clientEventsService, NetworkFileExplorer networkFileExplorer)
         {
             _logger = logger;
             _clientEventsService = clientEventsService;
+            _networkFileExplorer = networkFileExplorer;
         }
 
         public void Dispose()
@@ -90,6 +94,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             try
             {
                 _clientManagementScope = GetManagementScope(CCM_Constants.ClientNamespace);
+                _networkFileExplorer.Connect(host, username, password);
                 _clientEventsService.Connect(GetManagementScope(CCM_Constants.ClientEventsNamespace), GetManagementScope(CCM_Constants.ClientSDKNamespace));
                 IsConnected = true;
                 return Result.Ok();
@@ -112,8 +117,74 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         {
             IsConnected = false;
             _clientManagementScope = null;
+            _networkFileExplorer.Disconnect();
             _clientEventsService.Disconnect();
             return Result.Ok();
+        }
+
+        public bool TryExecute(string filePath, string? arguments, out string output, int timeout = 30000)
+        {
+            output = string.Empty;
+
+            try
+            {
+                var outputFile = $@"C:\Windows\Temp\dtk_{Guid.NewGuid()}.txt";
+
+                var scope = GetManagementScope(@"root\cimv2");
+                var parameters = new ManagementClass(scope, new ManagementPath("Win32_ProcessStartup"), null!).CreateInstance();
+                parameters["ShowWindow"] = 0;
+
+                var result = InvokeStaticMethod<InvokeWin32ProcessCreateResult>(new Win32_Process(), "Create", new()
+                {
+                    { "CommandLine", $@"CMD.EXE /S /C "" ""{filePath}"" {arguments}  > ""{outputFile}"" """ },
+                    { "ProcessStartupInformation", parameters }
+                });
+
+                if(result == null)
+                {
+                    _logger.LogWarning("Failed to start process {filePath}", filePath);
+                    return false;
+                }
+
+                _logger.LogDebug("Started Process with id {Id}", result.ProcessId);
+
+                var process = new Win32_Process()
+                {
+                    Handle = result.ProcessId.ToString()
+                };
+
+                for(var i = 0; i < timeout; i+=1000)
+                {
+                    try
+                    {
+                        process = UpdateInstance<Win32_Process>(process);
+                        _logger.LogDebug("Checking if process {processId} is still alive", result.ProcessId);
+                        Thread.Sleep(1000);
+                    }
+                    catch(ManagementException ex)
+                    {
+                        process = null;
+                        _logger.LogTrace("Exception: {ex}", ex);
+                        break;
+                    }
+                }
+                
+                if(process != null)
+                {
+                    // Timeout
+                    _logger.LogWarning("Process with id {processId} timed out", result.ProcessId);
+                    return false;
+                }
+
+                // TODO: Get output and delete temp file
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to execute process");
+                return false;
+            }
         }
 
         private T? ConvertManagementObject<T>(ManagementBaseObject managementObject, T? instance = default) where T : new()

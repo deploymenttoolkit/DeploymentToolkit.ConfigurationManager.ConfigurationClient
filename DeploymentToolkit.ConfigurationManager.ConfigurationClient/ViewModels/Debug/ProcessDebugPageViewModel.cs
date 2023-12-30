@@ -30,15 +30,17 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private int _selectedIndex;
 
         private readonly LocalProcessExecuter _localProcessExecuter;
+        private readonly WindowsManagementInstrumentationClient _windowsManagementInstrumentationClient;
 
-        public ProcessDebugPageViewModel(LocalProcessExecuter localProcessExecuter)
+        public ProcessDebugPageViewModel(LocalProcessExecuter localProcessExecuter, WindowsManagementInstrumentationClient windowsManagementInstrumentationClient)
         {
             _localProcessExecuter = localProcessExecuter;
+            _windowsManagementInstrumentationClient = windowsManagementInstrumentationClient;
         }
 
         private IProcessExecuter GetClient()
         {
-            return SelectedIndex == 0 ? _localProcessExecuter : throw new NotImplementedException();
+            return SelectedIndex == 0 ? _localProcessExecuter : SelectedIndex == 1 ? _windowsManagementInstrumentationClient : throw new NotImplementedException();
         }
 
         [RelayCommand]
