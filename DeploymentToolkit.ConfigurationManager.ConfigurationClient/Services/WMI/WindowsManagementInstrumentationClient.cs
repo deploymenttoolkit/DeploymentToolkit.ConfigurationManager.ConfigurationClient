@@ -23,14 +23,14 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         private readonly ILogger<WindowsManagementInstrumentationClient> _logger;
         private readonly ClientEventsService _clientEventsService;
-        private readonly NetworkFileExplorer _networkFileExplorer;
+        private readonly SMBClientFileExplorer _networkFileExplorer;
 
         private ManagementScope? _clientManagementScope;
 
         private string? _host;
         private readonly ConnectionOptions _connectionOptions = new();
 
-        public WindowsManagementInstrumentationClient(ILogger<WindowsManagementInstrumentationClient> logger, ClientEventsService clientEventsService, NetworkFileExplorer networkFileExplorer)
+        public WindowsManagementInstrumentationClient(ILogger<WindowsManagementInstrumentationClient> logger, ClientEventsService clientEventsService, SMBClientFileExplorer networkFileExplorer)
         {
             _logger = logger;
             _clientEventsService = clientEventsService;

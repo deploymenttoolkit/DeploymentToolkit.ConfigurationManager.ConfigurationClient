@@ -29,9 +29,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private string _fileContent;
 
         private readonly LocalFileExplorer _localClient;
-        private readonly NetworkFileExplorer _networkClient;
+        private readonly SMBClientFileExplorer _networkClient;
 
-        public SMBDebugPageViewModel(LocalFileExplorer localClient, NetworkFileExplorer networkClient)
+        public SMBDebugPageViewModel(LocalFileExplorer localClient, SMBClientFileExplorer networkClient)
         {
             _localClient = localClient;
             _networkClient = networkClient;

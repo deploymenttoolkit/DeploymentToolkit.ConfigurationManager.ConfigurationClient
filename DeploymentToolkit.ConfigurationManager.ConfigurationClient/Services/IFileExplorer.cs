@@ -13,5 +13,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         public IEnumerable<IFileDirectoryInformation> GetFilesAndFolderInDirectory(string directory);
         public Task<string> GetFileContent(string path);
+        public bool RemoveFile(string path);
     }
 }

@@ -4,72 +4,73 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
+
+public partial class ClientConnectionManager : ObservableObject
 {
-    public partial class ClientConnectionManager : ObservableObject
+    [ObservableProperty]
+    private ConnectionMethod _connectionMethod = ConnectionMethod.Auto;
+
+    [ObservableProperty]
+    private IWindowsManagementInstrumentationConnection _connection;
+
+    [ObservableProperty]
+    private IFileExplorer _fileExplorerConnection;
+
+    private readonly ILogger<ClientConnectionManager> _logger;
+
+    private readonly WindowsRemoteManagementClient _windowsRemoteManagementClient;
+    private readonly WindowsManagementInstrumentationClient _windowsManagementInstrumentationClient;
+
+    private readonly LocalFileExplorer _localClient;
+    private readonly SMBClientFileExplorer _smbFileExplorer;
+    private readonly WindowsFileExplorer _windowsFileExplorer;
+
+    public ClientConnectionManager(ILogger<ClientConnectionManager> logger, WindowsRemoteManagementClient windowsRemoteManagementClient, WindowsManagementInstrumentationClient windowsManagementInstrumentationClient, LocalFileExplorer localClient, SMBClientFileExplorer networkClient, WindowsFileExplorer windowsFileExplorer)
     {
-        [ObservableProperty]
-        private ConnectionMethod _connectionMethod = ConnectionMethod.Auto;
+        _logger = logger;
+        _windowsRemoteManagementClient = windowsRemoteManagementClient;
+        _windowsManagementInstrumentationClient = windowsManagementInstrumentationClient;
+        _localClient = localClient;
+        _smbFileExplorer = networkClient;
+        _windowsFileExplorer = windowsFileExplorer;
 
-        [ObservableProperty]
-        private IWindowsManagementInstrumentationConnection _connection;
+        FileExplorerConnection = _windowsFileExplorer;
 
-        [ObservableProperty]
-        private IFileExplorer _fileExplorerConnection;
+        Connection = windowsRemoteManagementClient;
+    }
 
-        private readonly ILogger<ClientConnectionManager> _logger;
-
-        private readonly WindowsRemoteManagementClient _windowsRemoteManagementClient;
-        private readonly WindowsManagementInstrumentationClient _windowsManagementInstrumentationClient;
-
-        private readonly LocalFileExplorer _localClient;
-        private readonly NetworkFileExplorer _networkClient;
-
-        public ClientConnectionManager(ILogger<ClientConnectionManager> logger, WindowsRemoteManagementClient windowsRemoteManagementClient, WindowsManagementInstrumentationClient windowsManagementInstrumentationClient, LocalFileExplorer localClient, NetworkFileExplorer networkClient)
+    public void SetConnectionMethod(ConnectionMethod connectionMethod)
+    {
+        if(ConnectionMethod == connectionMethod)
         {
-            _logger = logger;
-            _windowsRemoteManagementClient = windowsRemoteManagementClient;
-            _windowsManagementInstrumentationClient = windowsManagementInstrumentationClient;
-            _localClient = localClient;
-            _networkClient = networkClient;
-
-            FileExplorerConnection = _networkClient;
-
-            Connection = windowsRemoteManagementClient;
+            return;
         }
 
-        public void SetConnectionMethod(ConnectionMethod connectionMethod)
+        Connection = connectionMethod switch
         {
-            if(ConnectionMethod == connectionMethod)
+            ConnectionMethod.Auto => _windowsRemoteManagementClient,
+            ConnectionMethod.WMI => _windowsManagementInstrumentationClient,
+            ConnectionMethod.WinRM => _windowsRemoteManagementClient,
+            _ => throw new ArgumentException(null, nameof(connectionMethod)),
+        };
+
+        if(connectionMethod == ConnectionMethod.Auto)
+        {
+            try
             {
-                return;
+                Connection.Connect("127.0.0.1");
+                FileExplorerConnection = _windowsFileExplorer;
             }
-
-            Connection = connectionMethod switch
+            catch(Exception)
             {
-                ConnectionMethod.Auto => _windowsRemoteManagementClient,
-                ConnectionMethod.WMI => _windowsManagementInstrumentationClient,
-                ConnectionMethod.WinRM => _windowsRemoteManagementClient,
-                _ => throw new ArgumentException(null, nameof(connectionMethod)),
-            };
-
-            if(connectionMethod == ConnectionMethod.Auto)
-            {
-                try
-                {
-                    Connection.Connect("127.0.0.1");
-                    FileExplorerConnection = _networkClient;
-                }
-                catch(Exception)
-                {
-                    Connection = _windowsManagementInstrumentationClient;
-                    FileExplorerConnection = _localClient;
-                }
+                Connection = _windowsManagementInstrumentationClient;
+                FileExplorerConnection = _localClient;
             }
-
-            ConnectionMethod = connectionMethod;
-
-            _logger.LogInformation("Connection method changed to {method}", ConnectionMethod);
         }
+
+        ConnectionMethod = connectionMethod;
+
+        _logger.LogInformation("Connection method changed to {method}", ConnectionMethod);
     }
 }

@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services.ProcessExecuter
 {
     public class LocalProcessExecuter : IProcessExecuter
     {
@@ -16,7 +16,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         public bool TryExecute(string filePath, string? arguments, out string output, int timeout = 30000)
         {
-            if(!File.Exists(filePath))
+            if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException();
             }
@@ -46,7 +46,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
             process.Start();
 
-            if(!process.WaitForExit(timeout))
+            if (!process.WaitForExit(timeout))
             {
                 _logger.LogError("Failed to wait for process to finish after {seconds} seconds. Killing process", timeout / 1000);
                 process.Kill();
@@ -55,7 +55,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             }
 
             output = process.StandardOutput.ReadToEnd();
-            if(!process.StandardError.EndOfStream)
+            if (!process.StandardError.EndOfStream)
             {
                 output = process.StandardError.ReadToEnd() + Environment.NewLine + output;
             }

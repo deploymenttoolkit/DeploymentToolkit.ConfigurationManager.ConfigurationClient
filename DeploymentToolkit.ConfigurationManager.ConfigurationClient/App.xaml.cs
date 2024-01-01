@@ -3,14 +3,13 @@
 
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Helpers;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.HostedServices;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services.ProcessExecuter;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
-using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using System;
 using WinUIEx;
@@ -50,7 +49,8 @@ public partial class App : Application
                 services.AddSingleton<ClientConnectionManager>();
 
                 services.AddSingleton<LocalFileExplorer>();
-                services.AddSingleton<NetworkFileExplorer>();
+                services.AddSingleton<SMBClientFileExplorer>();
+                services.AddSingleton<WindowsFileExplorer>();
 
                 services.AddTransient<IConfigurationManagerClientService, ConfigurationManagerClientService>();
 
