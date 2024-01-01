@@ -28,7 +28,7 @@
 
                         <TextBlock Grid.Column="0" Text="{x:Bind DisplayName}"/>
                         <TextBlock Grid.Column="1" Text="{x:Bind Version}"/>
-                        <TextBlock Grid.Column="2" Text="Unknown"/>
+                        <TextBlock Grid.Column="2" Text="{x:Bind Status, Mode=OneWay}"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

@@ -23,6 +23,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         private static readonly Lazy<CCM_ClientAction> _defaultClientAction = new(() => new CCM_ClientAction(false, PolicyTarget.Machine, ConfigState.Actual));
 
         private static readonly Lazy<CCM_InstalledComponent> _defaultInstalledComponent = new(() => new CCM_InstalledComponent());
+        private static readonly Lazy<CCM_ComponentClientConfig> _defaultComponentClientConfig = new(() => new CCM_ComponentClientConfig());
 
         private static readonly Lazy<CacheInfoEx> _defaultCacheInfo = new(() => new CacheInfoEx());
         private static readonly Lazy<CacheConfig> _defaultCacheConfig = new(() => new CacheConfig() { ConfigKey = "Cache" });
@@ -94,6 +95,11 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         public IEnumerable<CCM_InstalledComponent>? GetInstalledComponents()
         {
             return _remoteManagementClient.GetInstances<CCM_InstalledComponent>(_defaultInstalledComponent.Value.Class, _defaultInstalledComponent.Value.Namespace);
+        }
+
+        public IEnumerable<CCM_ComponentClientConfig>? GetComponentClientConfigs()
+        {
+            return _remoteManagementClient.GetInstances<CCM_ComponentClientConfig>(_defaultComponentClientConfig.Value.Class, _defaultComponentClientConfig.Value.Namespace);
         }
 
         public IEnumerable<CacheInfoEx>? GetClientCache()

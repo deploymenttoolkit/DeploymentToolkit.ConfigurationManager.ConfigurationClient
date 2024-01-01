@@ -18,6 +18,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         public T PutInstance<T>(IWindowsManagementInstrumentationInstance instance, params string[] updatedProperties) where T : class, IWindowsManagementInstrumentationInstance, new();
 
         public IEnumerable<CCM_InstalledComponent>? GetInstalledComponents();
+        public IEnumerable<CCM_ComponentClientConfig>? GetComponentClientConfigs();
 
         public IEnumerable<CCM_ClientAction>? GetClientActions();
 

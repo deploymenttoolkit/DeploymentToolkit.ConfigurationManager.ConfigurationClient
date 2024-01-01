@@ -20,5 +20,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM
         private string _name;
         [ObservableProperty]
         private string _version;
+
+        [ObservableProperty]
+        private string _status = "Installed";
     }
 }
