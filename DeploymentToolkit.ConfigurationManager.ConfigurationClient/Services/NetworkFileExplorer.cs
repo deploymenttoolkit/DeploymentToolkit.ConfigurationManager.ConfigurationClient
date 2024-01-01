@@ -35,6 +35,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
             IsConnected = false;
 
+            hostname ??= "127.0.0.1";
+
             _logger.LogDebug("Trying to connect to {host} as {user}", hostname, username);
             _client = new SMB2Client();
             if(!_client.Connect(hostname, SMBTransportType.DirectTCPTransport))
