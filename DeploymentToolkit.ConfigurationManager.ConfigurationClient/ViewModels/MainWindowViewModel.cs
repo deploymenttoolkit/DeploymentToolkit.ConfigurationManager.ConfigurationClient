@@ -1,6 +1,9 @@
 ﻿using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI.UI.Controls;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Messages;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -35,6 +38,8 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private string _pageTitle;
 
+    public InAppNotification Notification { get; internal set; }
+
     private readonly LocalSettingsService _settings;
     private readonly NavigationService _navigationService;
     private readonly ClientConnectionManager _connectionManager;
@@ -53,14 +58,22 @@ public partial class MainWindowViewModel : ObservableObject
         _clientEventsService = clientEventsService;
         _configurationManagerClientService = configurationManagerClientService;
 
-        _navigationService.Navigate("Settings");
-
         _connectionManager.PropertyChanged += ConnectionPropertyChanged;
         _connectionManager.Connection.PropertyChanged += ConnectionPropertyChanged;
         _clientEventsService.PropertyChanged += ConnectionPropertyChanged;
 
         _uiSettings = new UISettings();
         _uiSettings.ColorValuesChanged += ColorValuesChanged;
+
+        WeakReferenceMessenger.Default.Register<NotificationMessage>(this, OnNotificationRecieved);
+    }
+
+    private void OnNotificationRecieved(object recipient, NotificationMessage message)
+    {
+        App.Current.DispatcherQueue.TryEnqueue(() =>
+        {
+            Notification.Show(message.Value, 5000);
+        });
     }
 
     private void ColorValuesChanged(UISettings sender, object args)
@@ -104,19 +117,30 @@ public partial class MainWindowViewModel : ObservableObject
         }
 
         _navigationService.Navigate(item);
-        PageTitle = item.Content?.ToString() ?? nameof(item);
     }
 
     [RelayCommand]
     private void OnNavigated(NavigationEventArgs navigationEventArgs)
     {
         IsBackButtonEnabled = _navigationService.CanGoBack();
+
+        if (navigationEventArgs.Content == null || navigationEventArgs.Content is not Page page)
+        {
+            return;
+        }
+
+        PageTitle = page.GetType().Name;
     }
 
     [RelayCommand]
     private void BackRequested(NavigationViewBackRequestedEventArgs navigationViewBackRequestedEventArgs)
     {
         _navigationService.GoBack();
+        var currentItem = _navigationService.GetCurrentNavigationViewItem();
+        if (currentItem != null)
+        {
+            SelectedItem = currentItem;
+        }
     }
 
     [RelayCommand]

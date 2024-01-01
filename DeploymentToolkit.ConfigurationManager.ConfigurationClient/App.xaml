@@ -5,7 +5,8 @@
     x:Class="DeploymentToolkit.ConfigurationManager.ConfigurationClient.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient">
+    xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,6 +19,21 @@
                     <TextBlock Text="Loading" TextAlignment="Center" Padding="10" FontSize="32"/>
                 </StackPanel>
             </DataTemplate>
+
+            <Style TargetType="controls:InAppNotification">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <ContentPresenter x:Name="PART_Presenter"
+                                          HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                          HorizontalContentAlignment="Stretch"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          VerticalContentAlignment="Center"
+                                          TextWrapping="WrapWholeWords" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

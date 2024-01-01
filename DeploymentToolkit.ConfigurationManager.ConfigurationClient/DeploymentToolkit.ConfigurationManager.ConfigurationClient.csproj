@@ -22,6 +22,7 @@
     <None Remove="Views\ClientEventsPage.xaml" />
     <None Remove="Views\ComponentsPage.xaml" />
     <None Remove="Views\ConfigurationsPage.xaml" />
+    <None Remove="Views\ConnectPage.xaml" />
     <None Remove="Views\DeviceRegistrationPage.xaml" />
     <None Remove="Views\Dialogs\CacheDeleteDialog.xaml" />
     <None Remove="Views\Dialogs\RestartServiceDialog.xaml" />
@@ -255,5 +256,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Debug\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ConnectPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

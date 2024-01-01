@@ -16,9 +16,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views
 
         public SettingsPage()
         {
+            ViewModel = App.Current.Services.GetService<SettingsPageViewModel>()!;
             this.InitializeComponent();
-            ViewModel = App.Current.Services.GetService<SettingsPageViewModel>();
-            ViewModel.Notification = Notification;
         }
     }
 }

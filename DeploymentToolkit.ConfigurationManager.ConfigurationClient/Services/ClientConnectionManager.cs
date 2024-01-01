@@ -40,7 +40,7 @@ public partial class ClientConnectionManager : ObservableObject
         Connection = windowsRemoteManagementClient;
     }
 
-    public void SetConnectionMethod(ConnectionMethod connectionMethod, bool credentials)
+    public void SetConnectionMethod(ConnectionMethod connectionMethod)
     {
         Connection = connectionMethod switch
         {
@@ -48,12 +48,6 @@ public partial class ClientConnectionManager : ObservableObject
             ConnectionMethod.WMI => _windowsManagementInstrumentationClient,
             ConnectionMethod.WinRM => _windowsRemoteManagementClient,
             _ => throw new ArgumentException(null, nameof(connectionMethod)),
-        };
-
-        FileExplorerConnection = credentials switch
-        {
-            true => _smbFileExplorer,
-            false => _windowsFileExplorer,
         };
 
         if (ConnectionMethod == connectionMethod)
@@ -66,17 +60,25 @@ public partial class ClientConnectionManager : ObservableObject
             try
             {
                 Connection.Connect("127.0.0.1");
-                FileExplorerConnection = _windowsFileExplorer;
             }
             catch(Exception)
             {
                 Connection = _windowsManagementInstrumentationClient;
-                FileExplorerConnection = _localClient;
             }
         }
 
         ConnectionMethod = connectionMethod;
 
         _logger.LogInformation("Connection method changed to {method}", ConnectionMethod);
+    }
+
+    public void SetConnectionMethod(FileConnectionMethods connectionMethod)
+    {
+        FileExplorerConnection = connectionMethod switch
+        {
+            FileConnectionMethods.Windows => _windowsFileExplorer,
+            FileConnectionMethods.SMBClient => _smbFileExplorer,
+            _ => throw new ArgumentException(null, nameof(connectionMethod)),
+        }; 
     }
 }

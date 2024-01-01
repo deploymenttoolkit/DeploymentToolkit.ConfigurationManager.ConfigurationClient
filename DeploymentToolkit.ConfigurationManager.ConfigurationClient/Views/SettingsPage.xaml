@@ -28,33 +28,14 @@
                 <Setter Property="Margin" Value="1,29,0,5" />
             </Style.Setters>
         </Style>
-
-        <Style TargetType="controls:InAppNotification">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <ContentPresenter x:Name="PART_Presenter"
-                                          HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                                          HorizontalContentAlignment="Stretch"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          VerticalContentAlignment="Center"
-                                          TextWrapping="WrapWholeWords" />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
     </Page.Resources>
     
     <Grid Margin="10">
         <StackPanel HorizontalAlignment="Stretch"
                     Spacing="{StaticResource SettingsCardSpacing}">
-            <win:StackPanel.ChildrenTransitions>
-                <win:EntranceThemeTransition FromVerticalOffset="50" />
-                <win:RepositionThemeTransition IsStaggeringEnabled="False" />
-            </win:StackPanel.ChildrenTransitions>
-            
+
             <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="Application Settings" />
-            
+
             <labs:SettingsCard Description="Theme" Header="Host">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe703;" />
@@ -67,72 +48,6 @@
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </ComboBox>
-            </labs:SettingsCard>
-            
-
-            <!-- Remote Settings -->
-            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="Remote Connection Settings" />
-
-            <labs:SettingsCard Description="Connection Method" Header="Host">
-                <labs:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xe703;" />
-                </labs:SettingsCard.HeaderIcon>
-
-                <ComboBox MinWidth="{StaticResource TextBoxMinWidth}" ItemsSource="{x:Bind ViewModel.ConnectionMethods}" SelectedItem="{x:Bind ViewModel.SelectedConnectionMethod, Mode=TwoWay}">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="SelectionChanged">
-                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ConnectionMethodChangedCommand}"/>
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                </ComboBox>
-            </labs:SettingsCard>
-            <labs:SettingsCard Description="Host to connect remotely to" Header="Host">
-                <labs:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xe7ef;" />
-                </labs:SettingsCard.HeaderIcon>
-
-                <TextBox Text="{x:Bind ViewModel.Host, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
-            </labs:SettingsCard>
-            <labs:SettingsCard Description="Allow unencrypted WinRM connection (not recommended)" Header="Allow unencrypted" IsEnabled="{x:Bind ViewModel.IsEncryptionSupported, Mode=OneWay}">
-                <labs:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xeb59;" />
-                </labs:SettingsCard.HeaderIcon>
-
-                <ToggleSwitch IsOn="{x:Bind ViewModel.AllowUnencryptedConnections, Mode=TwoWay}" />
-            </labs:SettingsCard>
-            <labs:SettingsCard Description="Connect using different credentials" Header="Credentials">
-                <labs:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xe963;" />
-                </labs:SettingsCard.HeaderIcon>
-
-                <ToggleSwitch IsOn="{x:Bind ViewModel.CredentialsEnabled, Mode=TwoWay}" />
-            </labs:SettingsCard>
-            <labs:SettingsCard Description="Username to connect with" Header="Username"
-                               IsEnabled="{x:Bind ViewModel.CredentialsEnabled, Mode=OneWay}">
-                <labs:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xe910;" />
-                </labs:SettingsCard.HeaderIcon>
-
-                <TextBox Text="{x:Bind ViewModel.Username, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
-            </labs:SettingsCard>
-            <labs:SettingsCard Description="Password to connect with" Header="Password"
-                               IsEnabled="{x:Bind ViewModel.CredentialsEnabled, Mode=OneWay}">
-                <labs:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xf78d;" />
-                </labs:SettingsCard.HeaderIcon>
-
-                <PasswordBox Password="{x:Bind ViewModel.Password, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
-            </labs:SettingsCard>
-
-            <labs:SettingsCard Description="Test Connection to remote computer" Header="Test Connection">
-                <labs:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xe703;" />
-                </labs:SettingsCard.HeaderIcon>
-
-                <StackPanel Orientation="Horizontal">
-                    <Button Margin="10,0" IsEnabled="{x:Bind ViewModel.TestConnectEnabled, Mode=OneWay}" Command="{x:Bind ViewModel.TestConnectCommand}" Content="Test Connection"/>
-                    <Button IsEnabled="{x:Bind ViewModel.IsWMIConnected, Mode=OneWay}" Command="{x:Bind ViewModel.DisconnectCommand}" Content="Disconnect" Foreground="{StaticResource SystemFillColorCritical}" Background="{StaticResource SystemFillColorCriticalBackground}"/>
-                </StackPanel>
             </labs:SettingsCard>
 
             <!-- About Section -->
@@ -162,22 +77,5 @@
                 </labs:SettingsExpander.Items>
             </labs:SettingsExpander>
         </StackPanel>
-
-        <controls:InAppNotification x:Name="Notification"
-                                    ShowDismissButton="True"
-                                    AnimationDuration="00:00:00.1000000"
-                                    VerticalOffset="100"
-                                    HorizontalOffset="0"
-                                    StackMode="Replace">
-            <controls:InAppNotification.ContentTemplate>
-                <DataTemplate x:DataType="models:InAppNotificationData">
-                    <InfoBar Severity="{Binding Severity}" IsOpen="True" IsClosable="False" Title="{Binding Title}" Message="{Binding Message}" />
-                    <!--<StackPanel>
-                        <TextBlock Text="{Binding Name}" Margin="0,0,0,8" />
-                        <TextBlock Text="{Binding Value}" Style="{ThemeResource CaptionTextBlockStyle}" Opacity="0.8" />
-                    </StackPanel>-->
-                </DataTemplate>
-            </controls:InAppNotification.ContentTemplate>
-        </controls:InAppNotification>
     </Grid>
 </Page>

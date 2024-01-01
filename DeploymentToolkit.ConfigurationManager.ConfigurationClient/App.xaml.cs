@@ -58,8 +58,12 @@ public partial class App : Application
 
                 services.AddSingleton<ClientEventsService>();
 
+                services.AddSingleton<MainWindowViewModel>();
+
+                services.AddTransient<ConnectPageViewModel>();
+                services.AddTransient<SettingsPageViewModel>();
+
                 services.AddTransient<ClientEventsPageViewModel>();
-                services.AddTransient<MainWindowViewModel>();
                 services.AddTransient<ComponentsPageViewModel>();
                 services.AddTransient<CachePageViewModel>();
                 services.AddTransient<BITSPageViewModel>();
@@ -67,9 +71,7 @@ public partial class App : Application
                 services.AddTransient<ConfigurationsViewModel>();
                 services.AddTransient<PolicyPageViewModel>();
                 services.AddTransient<LogPageViewModel>();
-                services.AddTransient<DeviceRegistrationViewModel>();
-
-                services.AddSingleton<SettingsPageViewModel>();
+                services.AddTransient<DeviceRegistrationViewModel>();                
 
 #if DEBUG
                 services.AddSingleton<WinRMDebugPageViewModel>();

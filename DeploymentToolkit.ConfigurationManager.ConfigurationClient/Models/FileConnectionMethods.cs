@@ -1,8 +1,7 @@
 ﻿namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 
-public enum ConnectionMethod
+public enum FileConnectionMethods
 {
-    Auto,
-    WMI,
-    WinRM
+    Windows,
+    SMBClient
 }

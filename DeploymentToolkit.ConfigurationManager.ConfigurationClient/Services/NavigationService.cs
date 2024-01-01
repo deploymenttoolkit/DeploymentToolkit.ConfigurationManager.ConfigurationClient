@@ -1,6 +1,7 @@
 ﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views;
 using Microsoft.UI.Xaml.Controls;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,8 +10,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
     public class NavigationService
     {
+        private readonly Stack<NavigationViewItem> _navigationItems = new();
         private readonly Dictionary<string, Type> _windows = new();
-        private Frame _navigationFrame;
+        private Frame? _navigationFrame;
 
         public NavigationService()
         {
@@ -33,36 +35,49 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             _navigationFrame = navigationFrame;
         }
 
-        public void Navigate(string pageName)
+        public NavigationViewItem? GetCurrentNavigationViewItem()
         {
-            if (_windows.ContainsKey(pageName))
+            if(_navigationItems.Count == 0)
             {
-                _navigationFrame.Navigate(_windows[pageName]);
+                return null;
             }
+            return _navigationItems.Peek();
         }
 
         public void Navigate(NavigationViewItem item)
         {
-            if(item == null)
+            if (_navigationFrame == null)
+            {
+                throw new NullReferenceException(nameof(_navigationFrame));
+            }
+
+            if (item == null)
             {
                 return;
             }
 
             var pageName = item.Tag as string;
-            if(_windows.ContainsKey(pageName))
+            if(!string.IsNullOrEmpty(pageName) && _windows.ContainsKey(pageName))
             {
                 _navigationFrame.Navigate(_windows[pageName]);
+                _navigationItems.Push(item);
             }
         }
 
         public bool CanGoBack()
         {
-            return _navigationFrame.CanGoBack;
+            return _navigationFrame?.CanGoBack ?? false;
         }
 
         public void GoBack()
         {
+            if (_navigationFrame == null)
+            {
+                throw new NullReferenceException(nameof(_navigationFrame));
+            }
+
             _navigationFrame.GoBack();
+            _navigationItems.Pop();
         }
     }
 }
