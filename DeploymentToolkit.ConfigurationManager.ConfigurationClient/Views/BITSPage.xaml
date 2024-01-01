@@ -19,8 +19,8 @@
         </Grid.RowDefinitions>
         
         <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.ErrorMessageVisibility}">
-            <InfoBar IsOpen="True" Severity="Error" Title="Administrator rights required" Message="Please restart as Administrator to manage cache">
-                <Button Content="Restart as Administrator" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
+            <InfoBar x:Uid="InfoBar_AdminRequired" IsOpen="True" Severity="Error">
+                <Button x:Uid="InfoBar_AdminRequired_Restart" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
             </InfoBar>
         </Grid>
 
@@ -37,7 +37,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <TextBlock TextAlignment="Right" Text="Last Updated" Padding="5"/>
+                    <TextBlock x:Uid="/BITSPage/Text_LastUpdated" TextAlignment="Right" Text="Last Updated" Padding="5"/>
                     <TextBlock TextAlignment="Right" Text="{x:Bind ViewModel.LastUpdated,Mode=OneWay}" Padding="5"/>
                 </StackPanel>
 
@@ -87,8 +87,8 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    
-                                    <TextBlock Text="Description:" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+
+                                    <TextBlock x:Uid="/BITSPage/Text_Description" Text="Description:" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                                     <TextBlock Grid.Column="1" Text="{x:Bind Description}"/>
 
                                     <TextBlock Grid.Row="1" Text="State:" Style="{StaticResource BodyStrongTextBlockStyle}"/>
@@ -114,7 +114,7 @@
                                                         <ColumnDefinition Width="*"/>
                                                     </Grid.ColumnDefinitions>
 
-                                                    <TextBlock Text="Remote Path" Margin="0, 0, 10, 0" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                                    <TextBlock x:Uid="/BITSPage/Text_RemotePath" Margin="0, 0, 10, 0" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                                                     <TextBlock Grid.Column="1" Text="{x:Bind RemoteFilePath}" TextWrapping="Wrap"/>
 
                                                     <TextBlock Grid.Row="1" Text="Local Path" Margin="0, 0, 10, 0" Style="{StaticResource BodyStrongTextBlockStyle}"/>
@@ -129,12 +129,12 @@
                     </DataTemplate>
                 </controls:DataGrid.RowDetailsTemplate>
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Header="JobType" Binding="{Binding JobType}"/>
-                    <controls:DataGridTextColumn Header="GUID" Binding="{Binding Id}"/>
-                    <controls:DataGridTextColumn Header="DisplayName" Binding="{Binding DisplayName}"/>
-                    <controls:DataGridTextColumn Header="PercentComplete" Binding="{Binding PercentComplete}"/>
-                    <controls:DataGridTextColumn Header="CreationTime" Binding="{Binding CreationTime}"/>
-                    <controls:DataGridTextColumn Header="ModificationTime" Binding="{Binding ModificationTime}"/>
+                    <controls:DataGridTextColumn x:Uid="/BITSPage/Header_JobType" Binding="{Binding JobType}"/>
+                    <controls:DataGridTextColumn x:Uid="/BITSPage/Header_GUID" Binding="{Binding Id}"/>
+                    <controls:DataGridTextColumn x:Uid="/BITSPage/Header_DisplayName" Binding="{Binding DisplayName}"/>
+                    <controls:DataGridTextColumn x:Uid="/BITSPage/Header_PercentComplete" Binding="{Binding PercentComplete}"/>
+                    <controls:DataGridTextColumn x:Uid="/BITSPage/Header_CreationTime" Binding="{Binding CreationTime}"/>
+                    <controls:DataGridTextColumn x:Uid="/BITSPage/Header_ModificationTime" Binding="{Binding ModificationTime}"/>
                     <controls:DataGridTemplateColumn Header="">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
