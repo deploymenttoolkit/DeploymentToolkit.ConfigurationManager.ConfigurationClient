@@ -47,9 +47,9 @@
         <StackPanel HorizontalAlignment="Stretch" Spacing="{StaticResource SettingsCardSpacing}">
 
             <!-- Remote Settings -->
-            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="Connection Settings" />
+            <TextBlock x:Uid="/ConnectPage/Header_Connect" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
-            <labs:SettingsCard Header="Connection Method">
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_ConnectionMethod">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe703;" />
                 </labs:SettingsCard.HeaderIcon>
@@ -62,37 +62,40 @@
                     </interactivity:Interaction.Behaviors>
                 </ComboBox>
             </labs:SettingsCard>
-            <labs:SettingsCard Description="Host to connect remotely to" Header="Host">
+
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_Host">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe7ef;" />
                 </labs:SettingsCard.HeaderIcon>
 
                 <TextBox Text="{x:Bind ViewModel.Host, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
             </labs:SettingsCard>
-            <labs:SettingsCard Description="Allow unencrypted WinRM connection (not recommended)" Header="Allow unencrypted" IsEnabled="{x:Bind ViewModel.IsEncryptionSupported, Mode=OneWay}">
+
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_Encryption" IsEnabled="{x:Bind ViewModel.IsEncryptionSupported, Mode=OneWay}">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xeb59;" />
                 </labs:SettingsCard.HeaderIcon>
 
                 <ToggleSwitch IsOn="{x:Bind ViewModel.AllowUnencryptedConnections, Mode=TwoWay}" />
             </labs:SettingsCard>
-            <labs:SettingsCard Description="Connect using different credentials" Header="Credentials">
+
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_Credentials">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe963;" />
                 </labs:SettingsCard.HeaderIcon>
 
                 <ToggleSwitch IsOn="{x:Bind ViewModel.CredentialsEnabled, Mode=TwoWay}" />
             </labs:SettingsCard>
-            <labs:SettingsCard Description="Username to connect with" Header="Username"
-                       IsEnabled="{x:Bind ViewModel.CredentialsEnabled, Mode=OneWay}">
+
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_Username" IsEnabled="{x:Bind ViewModel.CredentialsEnabled, Mode=OneWay}">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe910;" />
                 </labs:SettingsCard.HeaderIcon>
 
                 <TextBox Text="{x:Bind ViewModel.Username, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
             </labs:SettingsCard>
-            <labs:SettingsCard Description="Password to connect with" Header="Password"
-                       IsEnabled="{x:Bind ViewModel.CredentialsEnabled, Mode=OneWay}">
+
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_Password" IsEnabled="{x:Bind ViewModel.CredentialsEnabled, Mode=OneWay}">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xf78d;" />
                 </labs:SettingsCard.HeaderIcon>
@@ -100,21 +103,21 @@
                 <PasswordBox Password="{x:Bind ViewModel.Password, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
             </labs:SettingsCard>
 
-            <labs:SettingsCard Description="Connect to remote computer" Header="Connect">
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_TestConnect">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe703;" />
                 </labs:SettingsCard.HeaderIcon>
 
                 <StackPanel Orientation="Horizontal">
-                    <Button Margin="10,0" IsEnabled="{x:Bind ViewModel.TestConnectEnabled, Mode=OneWay}" Command="{x:Bind ViewModel.TestConnectCommand}" Content="Test Connection"/>
-                    <Button IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}" Command="{x:Bind ViewModel.DisconnectCommand}" Content="Disconnect" Foreground="{StaticResource SystemFillColorCritical}" Background="{StaticResource SystemFillColorCriticalBackground}"/>
+                    <Button x:Uid="/ConnectPage/Button_TestConnect" Margin="10,0" IsEnabled="{x:Bind ViewModel.TestConnectEnabled, Mode=OneWay}" Command="{x:Bind ViewModel.TestConnectCommand}"/>
+                    <Button x:Uid="/ConnectPage/Button_Disconnect" IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}" Command="{x:Bind ViewModel.DisconnectCommand}" Foreground="{StaticResource SystemFillColorCritical}" Background="{StaticResource SystemFillColorCriticalBackground}"/>
                 </StackPanel>
             </labs:SettingsCard>
 
             <!-- Remote File Settings -->
-            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="SMB Settings" />
+            <TextBlock x:Uid="/ConnectPage/Header_File" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
-            <labs:SettingsCard Header="Connection Method">
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_FileConnectionMethod">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe703;" />
                 </labs:SettingsCard.HeaderIcon>
@@ -128,21 +131,23 @@
                 </ComboBox>
             </labs:SettingsCard>
 
-            <labs:SettingsCard Description="Connect using different credentials" Header="Credentials" IsEnabled="{x:Bind ViewModel.IsFileCredentialSupported, Mode=OneWay}">
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_Credentials" IsEnabled="{x:Bind ViewModel.IsFileCredentialSupported, Mode=OneWay}">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe963;" />
                 </labs:SettingsCard.HeaderIcon>
 
                 <ToggleSwitch IsOn="{x:Bind ViewModel.FileCredentialsEnabled, Mode=TwoWay}" />
             </labs:SettingsCard>
-            <labs:SettingsCard Description="Username to connect with" Header="Username" IsEnabled="{x:Bind ViewModel.FileCredentialsEnabled, Mode=OneWay}">
+
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_Username" IsEnabled="{x:Bind ViewModel.FileCredentialsEnabled, Mode=OneWay}">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe910;" />
                 </labs:SettingsCard.HeaderIcon>
 
                 <TextBox Text="{x:Bind ViewModel.FileUsername, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
             </labs:SettingsCard>
-            <labs:SettingsCard Description="Password to connect with" Header="Password" IsEnabled="{x:Bind ViewModel.FileCredentialsEnabled, Mode=OneWay}">
+
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_Password" IsEnabled="{x:Bind ViewModel.FileCredentialsEnabled, Mode=OneWay}">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xf78d;" />
                 </labs:SettingsCard.HeaderIcon>
@@ -150,14 +155,14 @@
                 <PasswordBox Password="{x:Bind ViewModel.FilePassword, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
             </labs:SettingsCard>
 
-            <labs:SettingsCard Description="Connect to remote computer" Header="Connect">
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_TestConnect">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe703;" />
                 </labs:SettingsCard.HeaderIcon>
 
                 <StackPanel Orientation="Horizontal">
-                    <Button Margin="10,0" IsEnabled="{x:Bind ViewModel.FileTestConnectEnabled, Mode=OneWay}" Command="{x:Bind ViewModel.FileTestConnectCommand}" Content="Test Connection"/>
-                    <Button IsEnabled="{x:Bind ViewModel.IsFileConnected, Mode=OneWay}" Command="{x:Bind ViewModel.FileDisconnectCommand}" Content="Disconnect" Foreground="{StaticResource SystemFillColorCritical}" Background="{StaticResource SystemFillColorCriticalBackground}"/>
+                    <Button x:Uid="/ConnectPage/Button_TestConnect" Margin="10,0" IsEnabled="{x:Bind ViewModel.FileTestConnectEnabled, Mode=OneWay}" Command="{x:Bind ViewModel.FileTestConnectCommand}"/>
+                    <Button x:Uid="/ConnectPage/Button_Disconnect" IsEnabled="{x:Bind ViewModel.IsFileConnected, Mode=OneWay}" Command="{x:Bind ViewModel.FileDisconnectCommand}" Foreground="{StaticResource SystemFillColorCritical}" Background="{StaticResource SystemFillColorCriticalBackground}"/>
                 </StackPanel>
             </labs:SettingsCard>
 
