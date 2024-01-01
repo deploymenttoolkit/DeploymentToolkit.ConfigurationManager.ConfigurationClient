@@ -18,8 +18,8 @@
                            x:DefaultBindMode="OneWay"
                            IsReadOnly="True">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="ActionID" Binding="{Binding ActionID}"/>
-                <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                <controls:DataGridTextColumn x:Uid="/ActionsPage/Header_ActionID" Binding="{Binding ActionID}"/>
+                <controls:DataGridTextColumn x:Uid="/ActionsPage/Header_Name" Binding="{Binding Name}"/>
                 <controls:DataGridTemplateColumn Header="">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
