@@ -45,8 +45,11 @@
                 <Core:EventTriggerBehavior EventName="SelectionChanged">
                     <Core:InvokeCommandAction Command="{x:Bind ViewModel.SelectionChangedCommand}"/>
                 </Core:EventTriggerBehavior>
+                <Core:EventTriggerBehavior EventName="BackRequested">
+                    <Core:InvokeCommandAction Command="{x:Bind ViewModel.BackRequestedCommand}"/>
+                </Core:EventTriggerBehavior>
             </Interactivity:Interaction.Behaviors>
-
+            
             <NavigationView.Header>
                 <TextBlock Text="{x:Bind ViewModel.PageTitle, Mode=OneWay}"/>
             </NavigationView.Header>

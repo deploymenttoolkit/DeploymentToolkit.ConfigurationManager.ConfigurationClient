@@ -114,6 +114,12 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void BackRequested(NavigationViewBackRequestedEventArgs navigationViewBackRequestedEventArgs)
+    {
+        _navigationService.GoBack();
+    }
+
+    [RelayCommand]
     private async Task ChangeThemeButtonClicked()
     {
         if(_themeSelectorService.Theme == ElementTheme.Default)

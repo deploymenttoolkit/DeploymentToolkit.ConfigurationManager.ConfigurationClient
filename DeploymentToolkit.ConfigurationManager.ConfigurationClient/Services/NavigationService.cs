@@ -59,5 +59,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         {
             return _navigationFrame.CanGoBack;
         }
+
+        public void GoBack()
+        {
+            _navigationFrame.GoBack();
+        }
     }
 }
