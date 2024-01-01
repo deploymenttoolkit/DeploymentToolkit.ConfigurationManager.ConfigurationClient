@@ -40,13 +40,8 @@ public partial class ClientConnectionManager : ObservableObject
         Connection = windowsRemoteManagementClient;
     }
 
-    public void SetConnectionMethod(ConnectionMethod connectionMethod)
+    public void SetConnectionMethod(ConnectionMethod connectionMethod, bool credentials)
     {
-        if(ConnectionMethod == connectionMethod)
-        {
-            return;
-        }
-
         Connection = connectionMethod switch
         {
             ConnectionMethod.Auto => _windowsRemoteManagementClient,
@@ -55,7 +50,18 @@ public partial class ClientConnectionManager : ObservableObject
             _ => throw new ArgumentException(null, nameof(connectionMethod)),
         };
 
-        if(connectionMethod == ConnectionMethod.Auto)
+        FileExplorerConnection = credentials switch
+        {
+            true => _smbFileExplorer,
+            false => _windowsFileExplorer,
+        };
+
+        if (ConnectionMethod == connectionMethod)
+        {
+            return;
+        }
+
+        if (connectionMethod == ConnectionMethod.Auto)
         {
             try
             {

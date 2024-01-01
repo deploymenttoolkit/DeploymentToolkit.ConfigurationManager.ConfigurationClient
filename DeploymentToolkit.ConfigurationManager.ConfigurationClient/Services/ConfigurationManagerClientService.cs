@@ -58,7 +58,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         {
             try
             {
-                GetClient();
+                if(GetClient() == null)
+                {
+                    return false;
+                }
                 return true;
             }
             catch(Exception ex)

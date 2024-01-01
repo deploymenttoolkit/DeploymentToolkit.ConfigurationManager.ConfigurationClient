@@ -110,7 +110,7 @@ public partial class SettingsPageViewModel : ObservableObject, IDisposable
             return;
         }
 
-        _clientConnectionManager.SetConnectionMethod(selectedConnectionMethod);
+        _clientConnectionManager.SetConnectionMethod(selectedConnectionMethod, CredentialsEnabled);
 
         switch (selectedConnectionMethod)
         {
@@ -132,6 +132,8 @@ public partial class SettingsPageViewModel : ObservableObject, IDisposable
     private void TestConnect()
     {
         Result result;
+
+        ConnectionMethodChanged(null!);
 
         if(CredentialsEnabled)
         {

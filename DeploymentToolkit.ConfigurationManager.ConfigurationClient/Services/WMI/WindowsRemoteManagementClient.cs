@@ -161,10 +161,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
             if(!string.IsNullOrEmpty(filter))
             {
-                return _session.Enumerate(uri, filter, @"http://schemas.microsoft.com/wbem/wsman/1/WQL");
+                return _session!.Enumerate(uri, filter, @"http://schemas.microsoft.com/wbem/wsman/1/WQL");
             }
             
-            return _session.Enumerate(uri);
+            return _session!.Enumerate(uri);
         }
 
         internal string? InvokeMethod(string uri, string methodName, Dictionary<string, object>? parameters = null)
@@ -186,7 +186,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
             try
             {
-                return _session.Invoke(methodName, uri, requestXml);
+                return _session!.Invoke(methodName, uri, requestXml);
             }
             catch(COMException ex)
             {
@@ -223,7 +223,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
             try
             {
-                return _session.Put(uri, putXml);
+                return _session!.Put(uri, putXml);
             }
             catch(COMException ex)
             {
