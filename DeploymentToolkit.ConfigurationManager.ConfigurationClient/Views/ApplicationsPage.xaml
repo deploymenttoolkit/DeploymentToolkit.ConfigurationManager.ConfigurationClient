@@ -35,7 +35,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                        <TextBlock TextAlignment="Right" Text="Last Updated" Padding="5"/>
+                        <TextBlock TextAlignment="Right" x:Uid="/ApplicationsPage/Text_LastUpdated" Padding="5"/>
                         <TextBlock TextAlignment="Right" Text="{x:Bind ViewModel.LastUpdated, Mode=OneWay}" Padding="5"/>
                     </StackPanel>
 
@@ -74,7 +74,7 @@
                             </ListView>
 
                             <StackPanel Visibility="{Binding ApplicationType, Converter={StaticResource ApplicationGroupVisibilityConverter}}">
-                                <TextBlock Style="{StaticResource SubheaderTextBlockStyle}" Text="Applications in this Group"/>
+                                <TextBlock Style="{StaticResource SubheaderTextBlockStyle}" x:Uid="/ApplicationsPage/Text_ApplicationGroup"/>
                                 <ListView ItemsSource="{x:Bind AppDTs}" Margin="0, 5" Padding="0, 0, 0, 10">
                                     <ListView.ItemTemplate>
                                         <DataTemplate x:DataType="clientsdk:CCM_Application">
@@ -102,26 +102,26 @@
                 </controls:DataGrid.RowDetailsTemplate>
             
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Header="ApplicationType" Binding="{Binding ApplicationType}"/>
-                    <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                    <controls:DataGridTextColumn Header="Revision" Binding="{Binding Revision}"/>
-                    <controls:DataGridTextColumn Header="EvaluationState" Binding="{Binding EvaluationStateText}"/>
+                    <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_ApplicationType" Binding="{Binding ApplicationType}"/>
+                    <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_Name" Binding="{Binding Name}"/>
+                    <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_Revision" Binding="{Binding Revision}"/>
+                    <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_EvaluationState" Binding="{Binding EvaluationStateText}"/>
 
-                    <controls:DataGridTemplateColumn Header="Machine Target">
+                    <controls:DataGridTemplateColumn x:Uid="/ApplicationsPage/Header_MachineTarget">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding IsMachineTarget}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
-                    <controls:DataGridTemplateColumn Header="Override MWI">
+                    <controls:DataGridTemplateColumn x:Uid="/ApplicationsPage/Header_OverrideMWI">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding OverrideServiceWindow}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
-                    <controls:DataGridTemplateColumn Header="Reboot o. MWI">
+                    <controls:DataGridTemplateColumn x:Uid="/ApplicationsPage/Header_RebootOutsideMWI">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding RebootOutsideServiceWindow}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
@@ -129,21 +129,21 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTemplateColumn Header="Installable">
+                    <controls:DataGridTemplateColumn x:Uid="/ApplicationsPage/Header_Installable" Header="Installable">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding Installable}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
-                    <controls:DataGridTemplateColumn Header="Uninstallable">
+                    <controls:DataGridTemplateColumn x:Uid="/ApplicationsPage/Header_Uninstallable" Header="">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding Uninstallable}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
-                    <controls:DataGridTemplateColumn Header="Repairable">
+                    <controls:DataGridTemplateColumn x:Uid="/ApplicationsPage/Header_Repairable" Header="">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox IsChecked="{Binding Repairable}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
@@ -151,13 +151,13 @@
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
 
-                    <controls:DataGridTextColumn Header="ApplicabilityState" Binding="{Binding ApplicabilityState}"/>
-                    <controls:DataGridTextColumn Header="InstallState" Binding="{Binding InstallState}"/>
-                    <controls:DataGridTextColumn Header="ResolvedState" Binding="{Binding ResolvedState}"/>
+                    <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_Applicability" Header="" Binding="{Binding ApplicabilityState}"/>
+                    <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_InstallState" Header="" Binding="{Binding InstallState}"/>
+                    <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_ResolvedState" Header="" Binding="{Binding ResolvedState}"/>
 
-                    <controls:DataGridTextColumn Header="LastInstallTime" Binding="{Binding LastInstallTime}"/>
+                    <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_LastInstall" Header="" Binding="{Binding LastInstallTime}"/>
 
-                    <controls:DataGridTemplateColumn Header="">
+                    <controls:DataGridTemplateColumn>
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -166,9 +166,9 @@
                                             <Setter Property="Margin" Value="0, 0, 5, 0"/>
                                         </Style>
                                     </StackPanel.Resources>
-                                    <Button Content="Install" IsEnabled="{Binding Installable}" Command="{Binding ViewModel.InstallCommand}" CommandParameter="{Binding}" Foreground="{StaticResource SystemFillColorSuccess}"/>
-                                    <Button Content="Repair" IsEnabled="{Binding Repairable}" Command="{Binding ViewModel.RepairCommand}" CommandParameter="{Binding}" />
-                                    <Button Content="Uninstall" IsEnabled="{Binding Uninstallable}" Command="{Binding ViewModel.UninstallCommand}" CommandParameter="{Binding}" Foreground="{StaticResource SystemFillColorCaution}" />
+                                    <Button x:Uid="/ApplicationsPage/Button_Install" Content="Install" IsEnabled="{Binding Installable}" Command="{Binding ViewModel.InstallCommand}" CommandParameter="{Binding}" Foreground="{StaticResource SystemFillColorSuccess}"/>
+                                    <Button x:Uid="/ApplicationsPage/Button_Repair" Content="Repair" IsEnabled="{Binding Repairable}" Command="{Binding ViewModel.RepairCommand}" CommandParameter="{Binding}" />
+                                    <Button x:Uid="/ApplicationsPage/Button_Uninstall" Content="Uninstall" IsEnabled="{Binding Uninstallable}" Command="{Binding ViewModel.UninstallCommand}" CommandParameter="{Binding}" Foreground="{StaticResource SystemFillColorCaution}" />
                                 </StackPanel>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
