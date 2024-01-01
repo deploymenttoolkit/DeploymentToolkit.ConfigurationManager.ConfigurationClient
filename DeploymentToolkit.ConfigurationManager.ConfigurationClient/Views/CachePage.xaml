@@ -7,9 +7,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     Name="CacheDisplay">
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -17,10 +21,14 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.ErrorMessageVisibility}">
+        <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.IsAdministrator, Mode=OneTime, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}">
             <InfoBar IsOpen="True" Severity="Error" Title="Administrator rights required" Message="Please restart as Administrator to manage cache">
                 <Button Content="Restart as Administrator" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
             </InfoBar>
+        </Grid>
+
+        <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.HasCache, Mode=OneTime, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}">
+            <InfoBar IsOpen="True" Severity="Error" Title="Failed to get Cache Contents" />
         </Grid>
 
         <Grid Grid.Row="1" Padding="10">
@@ -82,5 +90,7 @@
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
         </Grid>
+
+        <controls:Loading IsLoading="{x:Bind ViewModel.IsLoading, Mode=OneWay}" ContentTemplate="{StaticResource LoadingScreen}" />
     </Grid>
 </Page>

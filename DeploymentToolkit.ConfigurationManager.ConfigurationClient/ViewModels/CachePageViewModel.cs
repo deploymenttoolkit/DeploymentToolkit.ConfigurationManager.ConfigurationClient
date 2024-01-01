@@ -6,70 +6,100 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views.Dialogs;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
-using Windows.Storage.Pickers;
 using System.Collections.ObjectModel;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.SoftMgmtAgent;
-using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 {
     public partial class CachePageViewModel : ObservableObject
     {
+        [ObservableProperty]
+        private bool _isLoading = true;
+
         public CachePage Page { get; set; }
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(EnableContent))]
         private bool _isAdministrator;
 
         [ObservableProperty]
-        private bool _enableContent = true;
+        [NotifyPropertyChangedFor(nameof(EnableContent))]
+        private bool _hasCache;
 
-        [ObservableProperty]
-        private Visibility _errorMessageVisibility = Visibility.Collapsed;
+        public bool EnableContent => IsAdministrator && HasCache;
 
         [ObservableProperty]
         private uint _cacheSize;
 
         [ObservableProperty]
         private ObservableCollection<CacheInfoEx> _cacheElements = new();
-        
+
+        private readonly ILogger<CachePageViewModel> _logger;
         private readonly UACService _uacService;
         private readonly IConfigurationManagerClientService _clientService;
 
-        public CachePageViewModel(UACService uacService, IConfigurationManagerClientService clientService)
+        public CachePageViewModel(ILogger<CachePageViewModel> logger, UACService uacService, IConfigurationManagerClientService clientService)
         {
-            this._uacService = uacService;
-            this._clientService = clientService;
+            _logger = logger;
+            _uacService = uacService;
+            _clientService = clientService;
 
             IsAdministrator = _uacService.IsElevated;
 
             if(!IsAdministrator)
             {
-                _errorMessageVisibility = Visibility.Visible;
-                EnableContent = false;
                 return;
             }
 
-            var clientConfig = clientService.GetClientCacheConfig();
-            if(clientConfig != null )
-            {
-                CacheSize = clientConfig.Size;
-            }
-
-            RefreshCache();
+            Task.Factory.StartNew(() => RefreshCache());
         }
 
         private void RefreshCache()
         {
-            CacheElements.Clear();
-            var cacheItems = _clientService.GetClientCache();
-            if(cacheItems == null)
+            try
             {
-                return;
-            }
+                App.Current.DispatcherQueue.TryEnqueue(() =>
+                {
+                    IsLoading = true;
+                    CacheElements.Clear();
+                });
 
-            foreach (var element in cacheItems)
+                var clientConfig = _clientService.GetClientCacheConfig();
+                if (clientConfig != null)
+                {
+                    App.Current.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        CacheSize = clientConfig.Size;
+                    });
+                }
+
+                var cacheItems = _clientService.GetClientCache();
+                if (cacheItems == null)
+                {
+                    return;
+                }
+
+                foreach (var element in cacheItems)
+                {
+                    App.Current.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        CacheElements.Add(element);
+                    });
+                }
+            }
+            catch(Exception ex)
             {
-                CacheElements.Add(element);
+                _logger.LogWarning(ex, "Failed to update Cache");
+                HasCache = false;
+            }
+            finally
+            {
+                App.Current.DispatcherQueue.TryEnqueue(() =>
+                {
+                    IsLoading = false;
+                });
             }
         }
 
