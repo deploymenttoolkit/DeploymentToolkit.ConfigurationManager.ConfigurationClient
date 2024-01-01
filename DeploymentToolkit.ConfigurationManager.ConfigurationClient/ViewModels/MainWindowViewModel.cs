@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using CommunityToolkit.WinUI.UI.Controls;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Messages;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
@@ -129,7 +130,8 @@ public partial class MainWindowViewModel : ObservableObject
             return;
         }
 
-        PageTitle = page.GetType().Name;
+        var resourceName = $"Resources/MainWindow_Nav_{page.GetType().Name.Replace("Page", "")}/Content";
+        PageTitle = resourceName.GetLocalized();
     }
 
     [RelayCommand]

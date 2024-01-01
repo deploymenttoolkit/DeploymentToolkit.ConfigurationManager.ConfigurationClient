@@ -165,6 +165,9 @@
   <data name="MainWindow_Nav_Programs.Content" xml:space="preserve">
     <value>Programs</value>
   </data>
+  <data name="MainWindow_Nav_Settings.Content" xml:space="preserve">
+    <value>Settings</value>
+  </data>
   <data name="MainWindow_Nav_SoftwareCenter.Content" xml:space="preserve">
     <value>Software Center</value>
   </data>
