@@ -6,6 +6,7 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Clie
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.cimv2;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using FluentResults;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -23,18 +24,16 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 
         private readonly ILogger<WindowsManagementInstrumentationClient> _logger;
         private readonly ClientEventsService _clientEventsService;
-        private readonly SMBClientFileExplorer _networkFileExplorer;
 
         private ManagementScope? _clientManagementScope;
 
         private string? _host;
         private readonly ConnectionOptions _connectionOptions = new();
 
-        public WindowsManagementInstrumentationClient(ILogger<WindowsManagementInstrumentationClient> logger, ClientEventsService clientEventsService, SMBClientFileExplorer networkFileExplorer)
+        public WindowsManagementInstrumentationClient(ILogger<WindowsManagementInstrumentationClient> logger, ClientEventsService clientEventsService)
         {
             _logger = logger;
             _clientEventsService = clientEventsService;
-            _networkFileExplorer = networkFileExplorer;
         }
 
         public void Dispose()
@@ -94,7 +93,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             try
             {
                 _clientManagementScope = GetManagementScope(CCM_Constants.ClientNamespace);
-                _networkFileExplorer.Connect(host, username, password);
                 _clientEventsService.Connect(GetManagementScope(CCM_Constants.ClientEventsNamespace), GetManagementScope(CCM_Constants.ClientSDKNamespace));
                 IsConnected = true;
                 return Result.Ok();
@@ -117,7 +115,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         {
             IsConnected = false;
             _clientManagementScope = null;
-            _networkFileExplorer.Disconnect();
             _clientEventsService.Disconnect();
             return Result.Ok();
         }
@@ -164,7 +161,10 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                     catch(ManagementException ex)
                     {
                         process = null;
-                        _logger.LogTrace("Exception: {ex}", ex);
+                        if (ex.ErrorCode != ManagementStatus.NotFound)
+                        {
+                            _logger.LogWarning("Exception: {ex}", ex);
+                        }
                         break;
                     }
                 }
@@ -176,8 +176,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
                     return false;
                 }
 
-                output = _networkFileExplorer.GetFileContent(outputFile).Result;
-                // TODO: Remove file if exist
+                var networkFileExplorer = App.Current.Services.GetService<ClientConnectionManager>()!.FileExplorerConnection;
+                output = networkFileExplorer.GetFileContent(outputFile).Result;
+                networkFileExplorer.RemoveFile(outputFile);
 
                 return true;
             }

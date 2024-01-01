@@ -5,93 +5,97 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services.Proces
 using System;
 using System.Threading.Tasks;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
+
+public partial class ProcessDebugPageViewModel : ObservableObject
 {
-    public partial class ProcessDebugPageViewModel : ObservableObject
+    [ObservableProperty]
+    private bool _isLoading = false;
+
+    [ObservableProperty]
+    private string _filePath;
+    [ObservableProperty]
+    private string _arguments;
+
+    [ObservableProperty]
+    private string _output;
+
+    [ObservableProperty]
+    private string _hostname;
+    [ObservableProperty]
+    private string _username = $"{Environment.GetEnvironmentVariable("Username")}@{Environment.GetEnvironmentVariable("USERDNSDOMAIN")}";
+    [ObservableProperty]
+    private string _password;
+
+    [ObservableProperty]
+    private int _selectedIndex;
+
+    private readonly LocalProcessExecuter _localProcessExecuter;
+    private readonly WindowsManagementInstrumentationClient _windowsManagementInstrumentationClient;
+
+    public ProcessDebugPageViewModel(LocalProcessExecuter localProcessExecuter, WindowsManagementInstrumentationClient windowsManagementInstrumentationClient)
     {
-        [ObservableProperty]
-        private bool _isLoading = false;
+        _localProcessExecuter = localProcessExecuter;
+        _windowsManagementInstrumentationClient = windowsManagementInstrumentationClient;
+    }
 
-        [ObservableProperty]
-        private string _filePath;
-        [ObservableProperty]
-        private string _arguments;
-
-        [ObservableProperty]
-        private string _output;
-
-        [ObservableProperty]
-        private string _hostname;
-        [ObservableProperty]
-        private string _username = $"{Environment.GetEnvironmentVariable("Username")}@{Environment.GetEnvironmentVariable("USERDNSDOMAIN")}";
-        [ObservableProperty]
-        private string _password;
-
-        [ObservableProperty]
-        private int _selectedIndex;
-
-        private readonly LocalProcessExecuter _localProcessExecuter;
-        private readonly WindowsManagementInstrumentationClient _windowsManagementInstrumentationClient;
-
-        public ProcessDebugPageViewModel(LocalProcessExecuter localProcessExecuter, WindowsManagementInstrumentationClient windowsManagementInstrumentationClient)
+    private IProcessExecuter GetClient()
+    {
+        return SelectedIndex switch
         {
-            _localProcessExecuter = localProcessExecuter;
-            _windowsManagementInstrumentationClient = windowsManagementInstrumentationClient;
+            0 => _localProcessExecuter,
+            1 => _windowsManagementInstrumentationClient,
+            _ => throw new NotImplementedException()
+        };
+    }
+
+    [RelayCommand]
+    private void Execute()
+    {
+        if(string.IsNullOrEmpty(FilePath))
+        {
+            return;
         }
 
-        private IProcessExecuter GetClient()
-        {
-            return SelectedIndex == 0 ? _localProcessExecuter : SelectedIndex == 1 ? _windowsManagementInstrumentationClient : throw new NotImplementedException();
-        }
+        IsLoading = true;
 
-        [RelayCommand]
-        private void Execute()
+        Task.Factory.StartNew(() =>
         {
-            if(string.IsNullOrEmpty(FilePath))
+            string? arguments = null;
+            if (!string.IsNullOrEmpty(Arguments))
             {
-                return;
+                arguments = Arguments;
             }
 
-            IsLoading = true;
-
-            Task.Factory.StartNew(() =>
+            try
             {
-                string? arguments = null;
-                if (!string.IsNullOrEmpty(Arguments))
-                {
-                    arguments = Arguments;
-                }
-
-                try
-                {
-                    if (GetClient().TryExecute(FilePath, arguments, out var output))
-                    {
-                        App.Current.DispatcherQueue.TryEnqueue(() =>
-                        {
-                            Output = output;
-                            if (string.IsNullOrEmpty(Output))
-                            {
-                                Output = "Empty output";
-                            }
-                            IsLoading = false;
-                        });
-                        return;
-                    }
-                }
-                catch (Exception ex)
+                if (GetClient().TryExecute(FilePath, arguments, out var output))
                 {
                     App.Current.DispatcherQueue.TryEnqueue(() =>
                     {
-                        Output = ex.ToString();
+                        Output = output;
+                        if (string.IsNullOrEmpty(Output))
+                        {
+                            Output = "Empty output";
+                        }
+                        IsLoading = false;
                     });
+                    return;
                 }
-
+            }
+            catch (Exception ex)
+            {
                 App.Current.DispatcherQueue.TryEnqueue(() =>
                 {
-                    Output = "Failed to start process or wait for it to exit";
-                    IsLoading = false;
+                    Output = ex.ToString();
                 });
+            }
+
+            App.Current.DispatcherQueue.TryEnqueue(() =>
+            {
+                Output = "Failed to start process or wait for it to exit";
+                IsLoading = false;
             });
-        }
+        });
     }
 }

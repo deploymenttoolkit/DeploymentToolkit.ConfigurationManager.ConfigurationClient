@@ -76,9 +76,9 @@
                 <!-- Debug Pages -->
                 <NavigationViewItemSeparator Visibility="{x:Bind ViewModel.DebugVisibility}"/>
                 <NavigationViewItemHeader Content="Debug" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
-                <NavigationViewItem Icon="Globe" Tag="WinRMDebugPage" Content="WinRM Debug Client" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
-                <NavigationViewItem Icon="Globe" Tag="SMBDebugPage" Content="SMB Debug Client" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
-                <NavigationViewItem Icon="Globe" Tag="ProcessDebugPage" Content="Process Debug Client" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
+                <NavigationViewItem Icon="Repair" Tag="WinRMDebugPage" Content="WinRM Debug Client" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
+                <NavigationViewItem Icon="Repair" Tag="SMBDebugPage" Content="SMB Debug Client" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
+                <NavigationViewItem Icon="Repair" Tag="ProcessDebugPage" Content="Process Debug Client" Visibility="{x:Bind ViewModel.DebugVisibility}"/>
             </NavigationView.MenuItems>
 
             <ScrollViewer>

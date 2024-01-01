@@ -5,89 +5,96 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using System;
 using System.Collections.ObjectModel;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
+
+public partial class SMBDebugPageViewModel : ObservableObject
 {
-    public partial class SMBDebugPageViewModel : ObservableObject
+    [ObservableProperty]
+    private string _directoryPath;
+
+    [ObservableProperty]
+    private string _hostname;
+    [ObservableProperty]
+    private string _username = $"{Environment.GetEnvironmentVariable("Username")}@{Environment.GetEnvironmentVariable("USERDNSDOMAIN")}";
+    [ObservableProperty]
+    private string _password;
+
+    [ObservableProperty]
+    private int _selectedIndex;
+
+    [ObservableProperty]
+    private ObservableCollection<IFileDirectoryInformation> _files = new();
+
+    [ObservableProperty]
+    private string _fileContent;
+
+    private readonly LocalFileExplorer _localClient;
+    private readonly SMBClientFileExplorer _smbClient;
+    private readonly WindowsFileExplorer _windowsFileExplorer;
+
+    public SMBDebugPageViewModel(LocalFileExplorer localClient, SMBClientFileExplorer smbClient, WindowsFileExplorer windowsFileExplorer)
     {
-        [ObservableProperty]
-        private string _directoryPath;
+        _localClient = localClient;
+        _smbClient = smbClient;
+        _windowsFileExplorer = windowsFileExplorer;
+    }
 
-        [ObservableProperty]
-        private string _hostname;
-        [ObservableProperty]
-        private string _username = $"{Environment.GetEnvironmentVariable("Username")}@{Environment.GetEnvironmentVariable("USERDNSDOMAIN")}";
-        [ObservableProperty]
-        private string _password;
-
-        [ObservableProperty]
-        private int _selectedIndex;
-
-        [ObservableProperty]
-        private ObservableCollection<IFileDirectoryInformation> _files = new();
-
-        [ObservableProperty]
-        private string _fileContent;
-
-        private readonly LocalFileExplorer _localClient;
-        private readonly SMBClientFileExplorer _networkClient;
-
-        public SMBDebugPageViewModel(LocalFileExplorer localClient, SMBClientFileExplorer networkClient)
+    private IFileExplorer GetClient()
+    {
+        return SelectedIndex switch
         {
-            _localClient = localClient;
-            _networkClient = networkClient;
+            0 => _localClient,
+            1 => _smbClient,
+            2 => _windowsFileExplorer,
+            _ => throw new NotImplementedException()
+        };
+    }
+
+    [RelayCommand]
+    private void Connect()
+    {
+        try
+        {
+            GetClient().Connect(Hostname, Username, Password);
+        }
+        catch (NotImplementedException) { }
+    }
+
+    [RelayCommand]
+    private void Disconnect()
+    {
+        GetClient().Disconnect();
+    }
+
+    [RelayCommand]
+    private void ListFiles()
+    {
+        if(string.IsNullOrEmpty(DirectoryPath) || !GetClient().IsConnected)
+        {
+            return; 
         }
 
-        private IFileExplorer GetClient()
-        {
-            return SelectedIndex == 0 ? _localClient : _networkClient;
-        }
+        Files.Clear();
 
-        [RelayCommand]
-        private void Connect()
+        var files = GetClient().GetFilesAndFolderInDirectory(DirectoryPath);
+        if(files != null)
         {
-            try
+            foreach(var file in files)
             {
-                GetClient().Connect(Hostname, Username, Password);
-            }
-            catch (NotImplementedException) { }
-        }
-
-        [RelayCommand]
-        private void Disconnect()
-        {
-            GetClient().Disconnect();
-        }
-
-        [RelayCommand]
-        private void ListFiles()
-        {
-            if(string.IsNullOrEmpty(DirectoryPath) || !GetClient().IsConnected)
-            {
-                return; 
-            }
-
-            Files.Clear();
-
-            var files = GetClient().GetFilesAndFolderInDirectory(DirectoryPath);
-            if(files != null)
-            {
-                foreach(var file in files)
-                {
-                    Files.Add(file);
-                }
+                Files.Add(file);
             }
         }
+    }
 
-        [RelayCommand]
-        private void GetContent()
+    [RelayCommand]
+    private void GetContent()
+    {
+        if (string.IsNullOrEmpty(DirectoryPath) || !GetClient().IsConnected)
         {
-            if (string.IsNullOrEmpty(DirectoryPath) || !GetClient().IsConnected)
-            {
-                return;
-            }
-
-            var content = GetClient().GetFileContent(DirectoryPath).Result;
-            FileContent = content;
+            return;
         }
+
+        var content = GetClient().GetFileContent(DirectoryPath).Result;
+        FileContent = content;
     }
 }
