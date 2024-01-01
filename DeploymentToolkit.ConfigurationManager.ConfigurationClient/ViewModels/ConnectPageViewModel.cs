@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.Messages;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using FluentResults;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
@@ -157,11 +153,26 @@ public partial class ConnectPageViewModel : ObservableObject
 
         if (result.IsSuccess)
         {
-            WeakReferenceMessenger.Default.Send(new NotificationMessage(new InAppNotificationData($"Successfully connected to host {Host}", "")));
+            WeakReferenceMessenger.Default.Send(
+                new NotificationMessage(
+                    new InAppNotificationData(
+                        string.Format("Notifications/Connect_Success".GetLocalized(), Host),
+                        ""
+                    )
+                )
+            );
         }
         else
         {
-            WeakReferenceMessenger.Default.Send(new NotificationMessage(new InAppNotificationData($"Failed to connect to host {Host}", result.Errors[0].Message, InfoBarSeverity.Error)));
+            WeakReferenceMessenger.Default.Send(
+                new NotificationMessage(
+                    new InAppNotificationData(
+                        string.Format("Notifications/Connect_Failed".GetLocalized(), Host),
+                        result.Errors[0].Message,
+                        InfoBarSeverity.Error
+                    )
+                )
+            );
         }
     }
 
@@ -171,7 +182,7 @@ public partial class ConnectPageViewModel : ObservableObject
         _clientConnectionManager.Connection.Disconnect();
         IsConnected = _clientConnectionManager.Connection.IsConnected;
 
-        WeakReferenceMessenger.Default.Send(new NotificationMessage(new InAppNotificationData($"Successfully disconnected", "")));
+        WeakReferenceMessenger.Default.Send(new NotificationMessage(new InAppNotificationData("Notifications/Disconnect_Success".GetLocalized(), "")));
     }
 
     [RelayCommand]
@@ -212,11 +223,26 @@ public partial class ConnectPageViewModel : ObservableObject
 
         if (IsFileConnected)
         {
-            WeakReferenceMessenger.Default.Send(new NotificationMessage(new InAppNotificationData($"Successfully connected to host {Host}", "")));
+            WeakReferenceMessenger.Default.Send(
+                new NotificationMessage(
+                    new InAppNotificationData(
+                        string.Format("Notifications/Connect_Success".GetLocalized(), Host),
+                        ""
+                    )
+                )
+            );
         }
         else
         {
-            WeakReferenceMessenger.Default.Send(new NotificationMessage(new InAppNotificationData($"Failed to connect to host {Host}", "", InfoBarSeverity.Error)));
+            WeakReferenceMessenger.Default.Send(
+                new NotificationMessage(
+                    new InAppNotificationData(
+                        string.Format("Notifications/Connect_Failed".GetLocalized(), Host),
+                        "",
+                        InfoBarSeverity.Error
+                    )
+                )
+            );
         }
     }
 
@@ -226,6 +252,6 @@ public partial class ConnectPageViewModel : ObservableObject
         _clientConnectionManager.FileExplorerConnection.Disconnect();
         IsFileConnected = _clientConnectionManager.FileExplorerConnection.IsConnected;
 
-        WeakReferenceMessenger.Default.Send(new NotificationMessage(new InAppNotificationData($"Successfully disconnected", "")));
+        WeakReferenceMessenger.Default.Send(new NotificationMessage(new InAppNotificationData("Notifications/Disconnect_Success".GetLocalized(), "")));
     }
 }

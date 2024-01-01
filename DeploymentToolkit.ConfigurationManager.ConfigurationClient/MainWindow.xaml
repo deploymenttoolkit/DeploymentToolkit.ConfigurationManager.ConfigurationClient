@@ -57,33 +57,33 @@
             </NavigationView.Header>
 
             <NavigationView.MenuItems>
-                <NavigationViewItem Tag="ConnectPage" Content="Connect">
+                <NavigationViewItem x:Uid="MainWindow_Nav_Connect" Tag="ConnectPage">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE703;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                
-                <NavigationViewItemHeader Content="Troubleshooting"/>
-                
-                <NavigationViewItem Icon="Home" Tag="GeneralPage" Content="General" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
-                <NavigationViewItem Icon="Library" Tag="ComponentsPage" Content="Components" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
-                <NavigationViewItem Icon="Admin"  Tag="ActionsPage" Content="Actions" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
+
+                <NavigationViewItemHeader x:Uid="MainWindow_Nav_Troubleshooting" />
+
+                <NavigationViewItem x:Uid="MainWindow_Nav_General" Icon="Home" Tag="GeneralPage" Content="General" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_Components" Icon="Library" Tag="ComponentsPage" Content="Components" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_Actions" Icon="Admin"  Tag="ActionsPage" Content="Actions" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
                 <!--<NavigationViewItem Icon="Setting" Tag="SitePage" Content="Site" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>-->
-                <NavigationViewItem Icon="DisconnectDrive" Tag="CachePage" Content="Cache" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
-                <NavigationViewItem Icon="Setting" Tag="ConfigurationsPage" Content="Configurations" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_Cache" Icon="DisconnectDrive" Tag="CachePage" Content="Cache" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_Configurations" Icon="Setting" Tag="ConfigurationsPage" Content="Configurations" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
                 <!--<NavigationViewItem Icon="Sync" Tag="NetworkPage" Content="Network" IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}"/>-->
-                <NavigationViewItem Icon="Sync" Tag="BITSPage" Content="BITS" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
-                <NavigationViewItem Icon="ProtectedDocument" Tag="PolicyPage" Content="Policy" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
-                <NavigationViewItem Icon="Document" Tag="LogPage" Content="Logs" IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}"/>
-                <NavigationViewItem Icon="Remote" Tag="DeviceRegistrationPage" Content="Device Registration" IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}"/>
-                <NavigationViewItem Icon="OpenFile" Tag="ClientEventsPage" Content="Events" IsEnabled="{x:Bind ViewModel.IsEventsConnected, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_BITS" Icon="Sync" Tag="BITSPage" Content="BITS" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_Policy" Icon="ProtectedDocument" Tag="PolicyPage" Content="Policy" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_Log" Icon="Document" Tag="LogPage" Content="Logs" IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_DeviceRegistrtation" Icon="Remote" Tag="DeviceRegistrationPage" Content="Device Registration" IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_SoftwareUpdates" Icon="OpenFile" Tag="ClientEventsPage" IsEnabled="{x:Bind ViewModel.IsEventsConnected, Mode=OneWay}"/>
                 
                 <!-- Software Center Pages -->
                 <NavigationViewItemSeparator/>
-                <NavigationViewItemHeader Content="Software Center"/>
-                <NavigationViewItem Icon="AllApps" Tag="ApplicationsPage" Content="Applications" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
-                <NavigationViewItem Icon="AllApps" Tag="ProgramsPage" Content="Programs" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
-                <NavigationViewItem Icon="PostUpdate" Tag="SoftwareUpdatesPage" Content="Software Updates" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
+                <NavigationViewItemHeader x:Uid="MainWindow_Nav_SoftwareCenter" />
+                <NavigationViewItem x:Uid="MainWindow_Nav_Applications" Icon="AllApps" Tag="ApplicationsPage" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_Programs" Icon="AllApps" Tag="ProgramsPage" Content="Programs" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_SoftwareUpdates" Icon="PostUpdate" Tag="SoftwareUpdatesPage" Content="Software Updates" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
                 
                 <!-- Debug Pages -->
                 <NavigationViewItemSeparator Visibility="{x:Bind ViewModel.DebugVisibility}"/>
