@@ -26,7 +26,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(EnableContent))]
-        private bool _hasCache;
+        private bool _hasCache = true;
 
         public bool EnableContent => IsAdministrator && HasCache;
 
