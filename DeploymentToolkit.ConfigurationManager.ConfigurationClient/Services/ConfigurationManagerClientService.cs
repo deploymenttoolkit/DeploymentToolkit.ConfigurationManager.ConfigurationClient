@@ -53,6 +53,20 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
             _remoteManagementClient = clientConnectionManager.Connection;
         }
 
+        public bool IsClientInstalled()
+        {
+            try
+            {
+                GetClient();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogTrace(ex, "IsClientInstalled");
+                return false;
+            }
+        }
+
         public T UpdateInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new()
         {
             return _remoteManagementClient.UpdateInstance<T>(instance);

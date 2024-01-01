@@ -36,6 +36,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
         private const string _ccmLogPath = @"C:\Windows\CCM\Logs";
         private const string _registryInstallPath = @"SOFTWARE\Microsoft\SMS\Client\Configuration\Client Properties";
 
+        // TODO: This is not read from remote host
         private string _installPath;
         internal string InstallPath
         {

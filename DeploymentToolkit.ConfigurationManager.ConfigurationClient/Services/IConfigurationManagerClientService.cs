@@ -12,6 +12,8 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
 {
     public interface IConfigurationManagerClientService
     {
+        public bool IsClientInstalled();
+
         public T UpdateInstance<T>(IWindowsManagementInstrumentationInstance instance) where T : class, IWindowsManagementInstrumentationInstance, new();
         public T PutInstance<T>(IWindowsManagementInstrumentationInstance instance, params string[] updatedProperties) where T : class, IWindowsManagementInstrumentationInstance, new();
 

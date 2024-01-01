@@ -27,6 +27,9 @@ public partial class MainWindowViewModel : ObservableObject
     private bool _isEventsConnected;
 
     [ObservableProperty]
+    private bool _isConfigurationManagerClientInstalled;
+
+    [ObservableProperty]
     private NavigationViewItem _selectedItem;
 
     [ObservableProperty]
@@ -37,16 +40,18 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly ClientConnectionManager _connectionManager;
     private readonly ThemeSelectorService _themeSelectorService;
     private readonly ClientEventsService _clientEventsService;
+    private readonly IConfigurationManagerClientService _configurationManagerClientService;
 
     private readonly UISettings _uiSettings;
 
-    public MainWindowViewModel(LocalSettingsService settings, NavigationService navigationService, ClientConnectionManager connectionManager, ThemeSelectorService themeSelectorService, ClientEventsService clientEventsService)
+    public MainWindowViewModel(LocalSettingsService settings, NavigationService navigationService, ClientConnectionManager connectionManager, ThemeSelectorService themeSelectorService, ClientEventsService clientEventsService, IConfigurationManagerClientService configurationManagerClientService)
     {
         _settings = settings;
         _navigationService = navigationService;
         _connectionManager = connectionManager;
         _themeSelectorService = themeSelectorService;
         _clientEventsService = clientEventsService;
+        _configurationManagerClientService = configurationManagerClientService;
 
         _navigationService.Navigate("Settings");
 
@@ -73,6 +78,15 @@ public partial class MainWindowViewModel : ObservableObject
     {
         IsConnected = _connectionManager.Connection.IsConnected;
         IsEventsConnected = _clientEventsService.IsConnected;
+
+        if (IsConnected)
+        {
+            IsConfigurationManagerClientInstalled = _configurationManagerClientService.IsClientInstalled();
+        }
+        else
+        {
+            IsConfigurationManagerClientInstalled = false;
+        }
 
         if(e.PropertyName == nameof(_connectionManager.Connection))
         {
