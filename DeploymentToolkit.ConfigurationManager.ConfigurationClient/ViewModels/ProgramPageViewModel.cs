@@ -46,7 +46,6 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
             App.Current.DispatcherQueue.TryEnqueue(() =>
             {
                 IsLoading = false;
-                Programs.Clear();
             });
         }
     }
