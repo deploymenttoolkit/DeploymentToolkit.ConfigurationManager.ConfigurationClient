@@ -177,4 +177,7 @@
   <data name="MainWindow_Nav_Troubleshooting.Content" xml:space="preserve">
     <value>Troubleshooting</value>
   </data>
+  <data name="Text_Loading.Text" xml:space="preserve">
+    <value>Loading</value>
+  </data>
 </root>

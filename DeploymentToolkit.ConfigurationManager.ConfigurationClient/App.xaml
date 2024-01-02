@@ -16,7 +16,7 @@
             <DataTemplate x:Key="LoadingScreen">
                 <StackPanel>
                     <ProgressRing IsActive="True" Height="120" Width="120"/>
-                    <TextBlock Text="Loading" TextAlignment="Center" Padding="10" FontSize="32"/>
+                    <TextBlock x:Uid="Text_Loading" TextAlignment="Center" Padding="10" FontSize="32"/>
                 </StackPanel>
             </DataTemplate>
 
