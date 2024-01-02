@@ -22,13 +22,13 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.IsAdministrator, Mode=OneTime, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}">
-            <InfoBar IsOpen="True" Severity="Error" Title="Administrator rights required" Message="Please restart as Administrator to manage cache">
-                <Button Content="Restart as Administrator" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
+            <InfoBar x:Uid="InfoBar_AdminRequired" IsOpen="True" Severity="Error">
+                <Button x:Uid="InfoBar_AdminRequired_Restart" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
             </InfoBar>
         </Grid>
 
         <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.HasCache, Mode=OneTime, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}">
-            <InfoBar IsOpen="True" Severity="Error" Title="Failed to get Cache Contents" />
+            <InfoBar x:Uid="/CachePage/Error_Cache" IsOpen="True" Severity="Error" />
         </Grid>
 
         <Grid Grid.Row="1" Padding="10">
@@ -37,7 +37,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <NumberBox Grid.Row="0" IsEnabled="{x:Bind ViewModel.EnableContent}" Header="Cache Size:"
+            <NumberBox x:Uid="/CachePage/NumerBox_CacheSize" Grid.Row="0" IsEnabled="{x:Bind ViewModel.EnableContent}"
                        Value="{x:Bind ViewModel.CacheSize, Mode=TwoWay}"
                        SpinButtonPlacementMode="Inline" SmallChange="1024" LargeChange="10024"
                        Minimum="1024"/>
@@ -55,9 +55,9 @@
                     </Style>
                 </Grid.Resources>
 
-                <Button Grid.Column="0" Content="Apply Cache Size" Command="{x:Bind ViewModel.ApplyCacheSizeCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
-                <Button Grid.Column="1" Content="Change Location" Command="{x:Bind ViewModel.ChangeLocationCommand}" IsEnabled="False"/>
-                <Button Grid.Column="2" Content="Delete Files" Command="{x:Bind ViewModel.DeleteFilesCommand}" IsEnabled="False"/>
+                <Button x:Uid="/CachePage/Button_Apply" Grid.Column="0" Command="{x:Bind ViewModel.ApplyCacheSizeCommand}" IsEnabled="{x:Bind ViewModel.EnableContent}"/>
+                <Button x:Uid="/CachePage/Button_Location" Grid.Column="1" Command="{x:Bind ViewModel.ChangeLocationCommand}" IsEnabled="False"/>
+                <Button x:Uid="/CachePage/Button_Delete" Grid.Column="2" Command="{x:Bind ViewModel.DeleteFilesCommand}" IsEnabled="False"/>
             </Grid>
         </Grid>
 
@@ -69,12 +69,12 @@
                                IsReadOnly="True"
                                AutoGenerateColumns="False">
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Header="Location" Binding="{Binding Location}"/>
-                    <controls:DataGridTextColumn Header="ContentId" Binding="{Binding ContentId}"/>
-                    <controls:DataGridTextColumn Header="ContentVersion" Binding="{Binding ContentVer}"/>
-                    <controls:DataGridTextColumn Header="ContentSize" Binding="{Binding ContentSize}"/>
-                    <controls:DataGridTextColumn Header="LastReferenceTime" Binding="{Binding LastReferenced}"/>
-                    <controls:DataGridTextColumn Header="ReferenceCount" Binding="{Binding ReferenceCount}"/>
+                    <controls:DataGridTextColumn x:Uid="/CachePage/Header_Location" Binding="{Binding Location}"/>
+                    <controls:DataGridTextColumn x:Uid="/CachePage/Header_ContentId" Binding="{Binding ContentId}"/>
+                    <controls:DataGridTextColumn x:Uid="/CachePage/Header_ContentVersion" Binding="{Binding ContentVer}"/>
+                    <controls:DataGridTextColumn x:Uid="/CachePage/Header_ContentSize" Binding="{Binding ContentSize}"/>
+                    <controls:DataGridTextColumn x:Uid="/CachePage/Header_LastReferenceTime" Binding="{Binding LastReferenced}"/>
+                    <controls:DataGridTextColumn x:Uid="/CachePage/Header_ReferenceCount" Binding="{Binding ReferenceCount}"/>
                     <controls:DataGridTemplateColumn Header="">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
