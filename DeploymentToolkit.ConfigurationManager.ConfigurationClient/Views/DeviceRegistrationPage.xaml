@@ -30,7 +30,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <TextBlock TextAlignment="Right" Text="Last Updated" Padding="5"/>
+                    <TextBlock x:Uid="/DeviceRegistrationPage/Text_LastUpdated" TextAlignment="Right" Padding="5"/>
                     <TextBlock TextAlignment="Right" Text="{x:Bind ViewModel.LastUpdated, Mode=OneWay}" Padding="5"/>
                 </StackPanel>
 
