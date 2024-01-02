@@ -1,113 +1,106 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
+
+public partial class DeviceRegistrationViewModel : ObservableObject
 {
-    public partial class DeviceRegistrationViewModel : ObservableObject
+    private static readonly Regex _headerRegex = new(@"^\|\s(.*)\|$");
+    private static readonly Regex _propertyRegex = new(@"^\s*(.*)\s:\s(.*)$");
+
+    public ObservableCollection<ClientProperty> Properties { get; set; } = new();
+    public CollectionViewSource PropertiesViewSource { get; } = new CollectionViewSource()
     {
-        private static Regex _headerRegex = new Regex(@"^\|\s(.*)\|$");
-        private static Regex _propertyRegex = new Regex(@"^\s*(.*)\s:\s(.*)$");
+        IsSourceGrouped = true
+    };
 
-        public ObservableCollection<ClientProperty> Properties { get; set; } = new();
-        public CollectionViewSource PropertiesViewSource { get; } = new CollectionViewSource()
+    [ObservableProperty]
+    private string _processOutput;
+
+    [ObservableProperty]
+    private DateTime _lastUpdated;
+
+    [ObservableProperty]
+    private bool _isLoading = true;
+
+    [ObservableProperty]
+    private Visibility _contentVisibility = Visibility.Collapsed;
+
+    private readonly ClientConnectionManager _clientConnectionManager;
+
+    public DeviceRegistrationViewModel(ClientConnectionManager clientConnectionManager)
+    {
+        _clientConnectionManager = clientConnectionManager;
+
+        Task.Factory.StartNew(() => UpdateProperties());
+    }
+
+    [RelayCommand]
+    private void UpdateProperties()
+    {
+        App.Current.DispatcherQueue.TryEnqueue(() =>
         {
-            IsSourceGrouped = true
-        };
+            IsLoading = true;
+            ContentVisibility = Visibility.Collapsed;
+        });
 
-        [ObservableProperty]
-        private string _processOutput;
-
-        [ObservableProperty]
-        private DateTime _lastUpdated;
-
-        [ObservableProperty]
-        private bool _isLoading = true;
-
-        [ObservableProperty]
-        private Visibility _contentVisibility = Visibility.Collapsed;
-
-        public DeviceRegistrationViewModel()
+        if(!_clientConnectionManager.ProcessExecuter.TryExecute(@"C:\Windows\System32\dsregcmd.exe", "/status /verbose", out var output))
         {
-            UpdateProperties();
+            ProcessOutput = "DeviceRegistrationPage/Error_FailedToLaunchProcess".GetLocalized();
+            return;
         }
 
-        [RelayCommand]
-        private async void UpdateProperties()
+        var lines = output.Split(Environment.NewLine);
+
+        App.Current.DispatcherQueue.TryEnqueue(() =>
         {
-            App.Current.DispatcherQueue.TryEnqueue(() =>
+            ProcessOutput = string.Empty;
+            var currentGroup = string.Empty;
+            for(var i = 0; i < lines.Length; i++)
             {
-                IsLoading = true;
-                ContentVisibility = Visibility.Collapsed;
-            });
+                var line = lines[i];
+                ProcessOutput += line + Environment.NewLine;
 
-            var process = new Process()
-            {
-                StartInfo = new ProcessStartInfo()
+                var headerMatch = _headerRegex.Match(line);
+                if (headerMatch.Success)
                 {
-                    FileName = "dsregcmd.exe",
-                    Arguments = "/status /verbose",
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true
+                    currentGroup = headerMatch.Groups[1].Value.Trim();
+                    continue;
                 }
-            };
 
-            process.Start();
-            await process.WaitForExitAsync();
-
-            App.Current.DispatcherQueue.TryEnqueue(() =>
-            {
-                ProcessOutput = string.Empty;
-                var currentGroup = string.Empty;
-                var line = process.StandardOutput.ReadLine();
-                do
+                var propertyMatch = _propertyRegex.Match(line);
+                if (propertyMatch.Success)
                 {
-                    ProcessOutput += line + "\r\n";
-
-                    var headerMatch = _headerRegex.Match(line);
-                    if (headerMatch.Success)
+                    var name = propertyMatch.Groups[1].Value.Trim();
+                    var property = Properties.FirstOrDefault(p => p.Name == name);
+                    if (property == null)
                     {
-                        currentGroup = headerMatch.Groups[1].Value.Trim();
-                        line = process.StandardOutput.ReadLine();
+                        Properties.Add(new ClientProperty()
+                        {
+                            Group = currentGroup,
+                            Name = name,
+                            Value = propertyMatch.Groups[2].Value.Trim()
+                        });
                         continue;
                     }
-
-                    var propertyMatch = _propertyRegex.Match(line);
-                    if (propertyMatch.Success)
-                    {
-                        var name = propertyMatch.Groups[1].Value.Trim();
-                        var property = Properties.FirstOrDefault(p => p.Name == name);
-                        if (property == null)
-                        {
-                            Properties.Add(new ClientProperty()
-                            {
-                                Group = currentGroup,
-                                Name = name,
-                                Value = propertyMatch.Groups[2].Value.Trim()
-                            });
-                            line = process.StandardOutput.ReadLine();
-                            continue;
-                        }
-                        property.Value = propertyMatch.Groups[2].Value.Trim();
-                    }
-
-                    line = process.StandardOutput.ReadLine();
+                    property.Value = propertyMatch.Groups[2].Value.Trim();
                 }
-                while (line != null);
+            }
 
-                PropertiesViewSource.Source = Properties.GroupBy(p => p.Group);
-                LastUpdated = DateTime.Now;
-                IsLoading = false;
-                ContentVisibility = Visibility.Visible;
-            });
-        }
+            PropertiesViewSource.Source = Properties.GroupBy(p => p.Group);
+            LastUpdated = DateTime.Now;
+            IsLoading = false;
+            ContentVisibility = Visibility.Visible;
+        });
     }
 }

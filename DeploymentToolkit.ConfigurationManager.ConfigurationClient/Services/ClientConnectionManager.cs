@@ -17,6 +17,9 @@ public partial class ClientConnectionManager : ObservableObject
     [ObservableProperty]
     private IFileExplorer _fileExplorerConnection;
 
+    [ObservableProperty]
+    private IProcessExecuter _processExecuter;
+
     private readonly ILogger<ClientConnectionManager> _logger;
 
     private readonly WindowsRemoteManagementClient _windowsRemoteManagementClient;
@@ -35,9 +38,9 @@ public partial class ClientConnectionManager : ObservableObject
         _smbFileExplorer = networkClient;
         _windowsFileExplorer = windowsFileExplorer;
 
-        FileExplorerConnection = _windowsFileExplorer;
-
         Connection = windowsRemoteManagementClient;
+        FileExplorerConnection = _windowsFileExplorer;
+        ProcessExecuter = windowsManagementInstrumentationClient;
     }
 
     public void SetConnectionMethod(ConnectionMethod connectionMethod)
