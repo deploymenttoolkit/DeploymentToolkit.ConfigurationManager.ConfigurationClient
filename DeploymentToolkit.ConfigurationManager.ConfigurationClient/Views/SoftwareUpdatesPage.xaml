@@ -40,57 +40,57 @@
             </controls:DataGrid.RowDetailsTemplate>
 
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="Publisher" Binding="{Binding Publisher}"/>
-                <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <controls:DataGridTextColumn Header="ComplianceState" Binding="{Binding ComplianceState}"/>
-                <controls:DataGridTextColumn Header="EvaluationState" Binding="{Binding EvaluationStateText}"/>
-                <controls:DataGridTextColumn Header="StartTime" Binding="{Binding StartTime}"/>
-                <controls:DataGridTextColumn Header="Deadline" Binding="{Binding Deadline}"/>
-                <controls:DataGridTextColumn Header="RestartDeadline" Binding="{Binding RestartDeadline}"/>
+                <controls:DataGridTextColumn x:Uid="/SoftwareUpdatesPage/Header_Publisher" Binding="{Binding Publisher}"/>
+                <controls:DataGridTextColumn x:Uid="/SoftwareUpdatesPage/Header_Name" Binding="{Binding Name}"/>
+                <controls:DataGridTextColumn x:Uid="/SoftwareUpdatesPage/Header_ComplianceState" Binding="{Binding ComplianceState}"/>
+                <controls:DataGridTextColumn x:Uid="/SoftwareUpdatesPage/Header_EvaluationState" Binding="{Binding EvaluationStateText}"/>
+                <controls:DataGridTextColumn x:Uid="/SoftwareUpdatesPage/Header_StartTime" Binding="{Binding StartTime}"/>
+                <controls:DataGridTextColumn x:Uid="/SoftwareUpdatesPage/Header_Deadline" Binding="{Binding Deadline}"/>
+                <controls:DataGridTextColumn x:Uid="/SoftwareUpdatesPage/Header_RestartDeadline" Binding="{Binding RestartDeadline}"/>
 
-                <controls:DataGridTemplateColumn Header="ExclusiveUpdate">
+                <controls:DataGridTemplateColumn x:Uid="/SoftwareUpdatesPage/Header_ExclusiveUpdate">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding ExclusiveUpdate}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="UserUIExperience">
+                <controls:DataGridTemplateColumn x:Uid="/SoftwareUpdatesPage/Header_UserUIExperience">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding UserUIExperience}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="NotifyUser">
+                <controls:DataGridTemplateColumn x:Uid="/SoftwareUpdatesPage/Header_NotifyUser">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding NotifyUser}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="OverrideServiceWindows">
+                <controls:DataGridTemplateColumn x:Uid="/SoftwareUpdatesPage/Header_OverrideServiceWindows">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding OverrideServiceWindows}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="RebootOutsideServiceWindows">
+                <controls:DataGridTemplateColumn x:Uid="/SoftwareUpdatesPage/Header_RebootOutsideServiceWindows">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding RebootOutsideServiceWindows}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="IsUpgrade">
+                <controls:DataGridTemplateColumn x:Uid="/SoftwareUpdatesPage/Header_IsUpgrade">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsUpgrade}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="IsO365Update">
+                <controls:DataGridTemplateColumn x:Uid="/SoftwareUpdatesPage/Header_IsO365Update">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsO365Update}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
