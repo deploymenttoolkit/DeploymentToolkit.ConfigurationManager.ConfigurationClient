@@ -16,11 +16,11 @@
                                IsReadOnly="True"
                                AutoGenerateColumns="False">
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="DisplayName" Binding="{Binding DisplayName}"/>
-                <controls:DataGridTextColumn Header="Version" Binding="{Binding Version}"/>
-                <controls:DataGridTextColumn Header="LastEvaluation" Binding="{Binding LastEvalTime}"/>
-                <controls:DataGridTextColumn Header="LastComplianceStatus" Binding="{Binding LastComplianceStatus}"/>
-                <controls:DataGridTextColumn Header="Status" Binding="{Binding Status}"/>
+                <controls:DataGridTextColumn x:Uid="/ConfigurationsPage/Header_DisplayName" Binding="{Binding DisplayName}"/>
+                <controls:DataGridTextColumn x:Uid="/ConfigurationsPage/Header_Version" Binding="{Binding Version}"/>
+                <controls:DataGridTextColumn x:Uid="/ConfigurationsPage/Header_LastEvaluation" Binding="{Binding LastEvalTime}"/>
+                <controls:DataGridTextColumn x:Uid="/ConfigurationsPage/Header_LastComplianceStatus" Binding="{Binding LastComplianceStatus}"/>
+                <controls:DataGridTextColumn x:Uid="/ConfigurationsPage/Header_Status" Binding="{Binding Status}"/>
                 <controls:DataGridTemplateColumn Header="">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -28,7 +28,7 @@
                                         Foreground="{StaticResource SystemFillColorSuccess}"
                                         Command="{Binding ViewModel.EvaluateCommand}"
                                         CommandParameter="{Binding Name}">
-                                <SymbolIcon Symbol="Accept" ToolTipService.ToolTip="Evaluate" ToolTipService.Placement="Top"/>
+                                <SymbolIcon x:Uid="/ConfigurationsPage/Tooltip_Evaluate" Symbol="Accept" ToolTipService.Placement="Top"/>
                             </Button>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
