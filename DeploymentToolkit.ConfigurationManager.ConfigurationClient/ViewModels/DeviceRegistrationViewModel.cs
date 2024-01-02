@@ -71,6 +71,11 @@ public partial class DeviceRegistrationViewModel : ObservableObject
                 var line = lines[i];
                 ProcessOutput += line + Environment.NewLine;
 
+                if (line.Contains('\r'))
+                {
+                    line = line.Split('\r').Last();
+                }
+
                 var headerMatch = _headerRegex.Match(line);
                 if (headerMatch.Success)
                 {

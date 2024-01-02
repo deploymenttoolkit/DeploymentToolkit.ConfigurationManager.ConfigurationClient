@@ -32,11 +32,13 @@ public partial class ProcessDebugPageViewModel : ObservableObject
 
     private readonly LocalProcessExecuter _localProcessExecuter;
     private readonly WindowsManagementInstrumentationClient _windowsManagementInstrumentationClient;
+    private readonly WindowsRemoteManagementClient _windowsRemoteManagementClient;
 
-    public ProcessDebugPageViewModel(LocalProcessExecuter localProcessExecuter, WindowsManagementInstrumentationClient windowsManagementInstrumentationClient)
+    public ProcessDebugPageViewModel(LocalProcessExecuter localProcessExecuter, WindowsManagementInstrumentationClient windowsManagementInstrumentationClient, WindowsRemoteManagementClient windowsRemoteManagementClient)
     {
         _localProcessExecuter = localProcessExecuter;
         _windowsManagementInstrumentationClient = windowsManagementInstrumentationClient;
+        _windowsRemoteManagementClient = windowsRemoteManagementClient;
     }
 
     private IProcessExecuter GetClient()
@@ -45,6 +47,7 @@ public partial class ProcessDebugPageViewModel : ObservableObject
         {
             0 => _localProcessExecuter,
             1 => _windowsManagementInstrumentationClient,
+            2 => _windowsRemoteManagementClient,
             _ => throw new NotImplementedException()
         };
     }

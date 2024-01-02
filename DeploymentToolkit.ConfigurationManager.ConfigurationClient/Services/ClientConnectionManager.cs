@@ -40,12 +40,19 @@ public partial class ClientConnectionManager : ObservableObject
 
         Connection = windowsRemoteManagementClient;
         FileExplorerConnection = _windowsFileExplorer;
-        ProcessExecuter = windowsManagementInstrumentationClient;
+        ProcessExecuter = windowsRemoteManagementClient;
     }
 
     public void SetConnectionMethod(ConnectionMethod connectionMethod)
     {
         Connection = connectionMethod switch
+        {
+            ConnectionMethod.Auto => _windowsRemoteManagementClient,
+            ConnectionMethod.WMI => _windowsManagementInstrumentationClient,
+            ConnectionMethod.WinRM => _windowsRemoteManagementClient,
+            _ => throw new ArgumentException(null, nameof(connectionMethod)),
+        };
+        ProcessExecuter = connectionMethod switch
         {
             ConnectionMethod.Auto => _windowsRemoteManagementClient,
             ConnectionMethod.WMI => _windowsManagementInstrumentationClient,
