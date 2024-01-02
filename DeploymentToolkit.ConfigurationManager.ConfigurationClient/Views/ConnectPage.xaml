@@ -46,6 +46,25 @@
     <Grid Margin="10">
         <StackPanel HorizontalAlignment="Stretch" Spacing="{StaticResource SettingsCardSpacing}">
 
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_Host">
+                <labs:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xe7ef;" />
+                </labs:SettingsCard.HeaderIcon>
+
+                <TextBox Text="{x:Bind ViewModel.Host, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
+            </labs:SettingsCard>
+
+            <labs:SettingsCard x:Uid="/ConnectPage/Setting_TestConnect">
+                <labs:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xe703;" />
+                </labs:SettingsCard.HeaderIcon>
+
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Uid="/ConnectPage/Button_TestConnect" Margin="10,0" IsEnabled="{x:Bind ViewModel.BothTestConnectEnabled, Mode=OneWay}" Command="{x:Bind ViewModel.ConnectBothCommand}"/>
+                    <Button x:Uid="/ConnectPage/Button_Disconnect" IsEnabled="{x:Bind ViewModel.IsEitherConnected, Mode=OneWay}" Command="{x:Bind ViewModel.DisconnectBothCommand}" Foreground="{StaticResource SystemFillColorCritical}" Background="{StaticResource SystemFillColorCriticalBackground}"/>
+                </StackPanel>
+            </labs:SettingsCard>
+
             <!-- Remote Settings -->
             <TextBlock x:Uid="/ConnectPage/Header_Connect" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
@@ -61,14 +80,6 @@
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </ComboBox>
-            </labs:SettingsCard>
-
-            <labs:SettingsCard x:Uid="/ConnectPage/Setting_Host">
-                <labs:SettingsCard.HeaderIcon>
-                    <FontIcon Glyph="&#xe7ef;" />
-                </labs:SettingsCard.HeaderIcon>
-
-                <TextBox Text="{x:Bind ViewModel.Host, Mode=TwoWay}" MinWidth="{StaticResource TextBoxMinWidth}" />
             </labs:SettingsCard>
 
             <labs:SettingsCard x:Uid="/ConnectPage/Setting_Encryption" IsEnabled="{x:Bind ViewModel.IsEncryptionSupported, Mode=OneWay}">

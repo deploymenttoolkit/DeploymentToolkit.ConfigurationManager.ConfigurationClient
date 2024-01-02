@@ -15,19 +15,24 @@ public partial class ConnectPageViewModel : ObservableObject
 {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TestConnectEnabled))]
+    [NotifyPropertyChangedFor(nameof(BothTestConnectEnabled))]
     private string _username;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TestConnectEnabled))]
+    [NotifyPropertyChangedFor(nameof(BothTestConnectEnabled))]
     private string _password;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TestConnectEnabled))]
+    [NotifyPropertyChangedFor(nameof(BothTestConnectEnabled))]
     private string _host = "127.0.0.1";
     [ObservableProperty]
     private bool _allowUnencryptedConnections;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsEitherConnected))]
     private bool _isConnected;
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsEitherConnected))]
     private bool _isFileConnected;
     [ObservableProperty]
     private bool _isEncryptionSupported;
@@ -59,15 +64,18 @@ public partial class ConnectPageViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FileTestConnectEnabled))]
+    [NotifyPropertyChangedFor(nameof(BothTestConnectEnabled))]
     private bool _fileCredentialsEnabled;
 
     public bool IsFileCredentialSupported => SelectedFileConnectionMethod == "SMBClient";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FileTestConnectEnabled))]
+    [NotifyPropertyChangedFor(nameof(BothTestConnectEnabled))]
     private string _fileUsername;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(FileTestConnectEnabled))]
+    [NotifyPropertyChangedFor(nameof(BothTestConnectEnabled))]
     private string _filePassword;
 
     [ObservableProperty]
@@ -78,6 +86,9 @@ public partial class ConnectPageViewModel : ObservableObject
         "Windows",
         "SMBClient"
     };
+
+    public bool BothTestConnectEnabled => TestConnectEnabled && FileTestConnectEnabled;
+    public bool IsEitherConnected => IsConnected || IsFileConnected;
 
     public bool FileTestConnectEnabled
     {
@@ -258,5 +269,33 @@ public partial class ConnectPageViewModel : ObservableObject
         IsFileConnected = _clientConnectionManager.FileExplorerConnection.IsConnected;
 
         WeakReferenceMessenger.Default.Send(new NotificationMessage(new InAppNotificationData("Notifications/Disconnect_Success".GetLocalized(), "")));
+    }
+
+    [RelayCommand]
+    private void ConnectBoth()
+    {
+        if(!IsConnected)
+        {
+            TestConnect();
+        }
+
+        if(!IsFileConnected)
+        {
+            FileTestConnect();
+        }
+    }
+
+    [RelayCommand]
+    private void DisconnectBoth()
+    {
+        if(IsConnected)
+        {
+            Disconnect();
+        }
+        
+        if(IsFileConnected)
+        {
+            FileDisconnect();
+        }
     }
 }
