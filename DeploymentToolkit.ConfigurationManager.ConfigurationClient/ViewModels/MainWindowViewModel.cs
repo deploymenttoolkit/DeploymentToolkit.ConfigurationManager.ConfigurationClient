@@ -25,7 +25,14 @@ public partial class MainWindowViewModel : ObservableObject
     private bool _isBackButtonEnabled;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFilesAndWMIConnected))]
     private bool _isConnected;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsFilesAndWMIConnected))]
+    private bool _isFilesConnected;
+
+    public bool IsFilesAndWMIConnected => IsConnected && IsFilesConnected;
 
     [ObservableProperty]
     private bool _isEventsConnected;
@@ -61,6 +68,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         _connectionManager.PropertyChanged += ConnectionPropertyChanged;
         _connectionManager.Connection.PropertyChanged += ConnectionPropertyChanged;
+        _connectionManager.FileExplorerConnection.PropertyChanged += ConnectionPropertyChanged;
         _clientEventsService.PropertyChanged += ConnectionPropertyChanged;
 
         _uiSettings = new UISettings();
@@ -91,6 +99,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void ConnectionPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         IsConnected = _connectionManager.Connection.IsConnected;
+        IsFilesConnected = _connectionManager.FileExplorerConnection.IsConnected;
         IsEventsConnected = _clientEventsService.IsConnected;
 
         if (IsConnected)

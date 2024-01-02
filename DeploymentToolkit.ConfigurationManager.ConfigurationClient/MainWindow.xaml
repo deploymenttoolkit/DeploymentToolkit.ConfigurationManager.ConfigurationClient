@@ -74,8 +74,8 @@
                 <!--<NavigationViewItem Icon="Sync" Tag="NetworkPage" Content="Network" IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}"/>-->
                 <NavigationViewItem x:Uid="MainWindow_Nav_BITS" Icon="Sync" Tag="BITSPage" Content="BITS" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
                 <NavigationViewItem x:Uid="MainWindow_Nav_Policy" Icon="ProtectedDocument" Tag="PolicyPage" Content="Policy" IsEnabled="{x:Bind ViewModel.IsConfigurationManagerClientInstalled, Mode=OneWay}"/>
-                <NavigationViewItem x:Uid="MainWindow_Nav_Log" Icon="Document" Tag="LogPage" Content="Logs" IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}"/>
-                <NavigationViewItem x:Uid="MainWindow_Nav_DeviceRegistrtation" Icon="Remote" Tag="DeviceRegistrationPage" Content="Device Registration" IsEnabled="{x:Bind ViewModel.IsConnected, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_Log" Icon="Document" Tag="LogPage" Content="Logs" IsEnabled="{x:Bind ViewModel.IsFilesConnected, Mode=OneWay}"/>
+                <NavigationViewItem x:Uid="MainWindow_Nav_DeviceRegistrtation" Icon="Remote" Tag="DeviceRegistrationPage" Content="Device Registration" IsEnabled="{x:Bind ViewModel.IsFilesAndWMIConnected, Mode=OneWay}"/>
                 <NavigationViewItem x:Uid="MainWindow_Nav_Events" Icon="OpenFile" Tag="ClientEventsPage" IsEnabled="{x:Bind ViewModel.IsEventsConnected, Mode=OneWay}"/>
                 
                 <!-- Software Center Pages -->
