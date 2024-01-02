@@ -19,8 +19,8 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.ErrorMessageVisibility}">
-            <InfoBar IsOpen="True" Severity="Error" Title="Administrator rights required" Message="Please restart as Administrator to show policies">
-                <Button Content="Restart as Administrator" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
+            <InfoBar x:Uid="InfoBar_AdminRequired" IsOpen="True" Severity="Error">
+                <Button x:Uid="InfoBar_AdminRequired_Restart" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
             </InfoBar>
         </Grid>
 
@@ -95,8 +95,8 @@
 							   AutoGenerateColumns="False"
 							   Grid.Column="3">
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                        <controls:DataGridTemplateColumn Header="Value">
+                        <controls:DataGridTextColumn x:Uid="/PolicyPage/Header_Name" Binding="{Binding Name}"/>
+                        <controls:DataGridTemplateColumn x:Uid="/PolicyPage/Header_Value">
                             <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Value}" TextWrapping="Wrap" MaxWidth="2000" />
