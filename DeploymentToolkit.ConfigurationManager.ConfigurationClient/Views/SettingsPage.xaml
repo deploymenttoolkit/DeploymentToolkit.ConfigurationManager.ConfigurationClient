@@ -50,6 +50,36 @@
                 </ComboBox>
             </labs:SettingsCard>
 
+            <TextBlock x:Uid="/SettingsPage/Text_DefaultSettings" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
+
+            <labs:SettingsCard x:Uid="/SettingsPage/Setting_ConnectionMethod">
+                <labs:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xe703;" />
+                </labs:SettingsCard.HeaderIcon>
+
+                <ComboBox MinWidth="{StaticResource TextBoxMinWidth}" ItemsSource="{x:Bind ViewModel.ConnectionMethods}" SelectedItem="{x:Bind ViewModel.DefaultConnectionMethod, Mode=TwoWay}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="SelectionChanged">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.ConnectionMethodChangedCommand}"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </ComboBox>
+            </labs:SettingsCard>
+
+            <labs:SettingsCard x:Uid="/SettingsPage/Setting_FileConnectionMethod">
+                <labs:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xe703;" />
+                </labs:SettingsCard.HeaderIcon>
+
+                <ComboBox MinWidth="{StaticResource TextBoxMinWidth}" ItemsSource="{x:Bind ViewModel.FileConnectionMethods}" SelectedItem="{x:Bind ViewModel.DefaultFileConnectionMethod, Mode=TwoWay}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="SelectionChanged">
+                            <core:InvokeCommandAction Command="{x:Bind ViewModel.FileConnectionMethodChangedCommand}"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </ComboBox>
+            </labs:SettingsCard>
+
             <!-- About Section -->
             <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Text="About" />

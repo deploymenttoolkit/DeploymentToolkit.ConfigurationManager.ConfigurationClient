@@ -91,14 +91,19 @@ public partial class ConnectPageViewModel : ObservableObject
         }
     }
 
+    private readonly LocalSettingsService _localSettingsService;
     private readonly ClientConnectionManager _clientConnectionManager;
 
-    public ConnectPageViewModel(ClientConnectionManager clientConnectionManager)
+    public ConnectPageViewModel(ClientConnectionManager clientConnectionManager, LocalSettingsService localSettingsService)
     {
         _clientConnectionManager = clientConnectionManager;
+        _localSettingsService = localSettingsService;
 
         IsConnected = _clientConnectionManager.Connection.IsConnected;
         IsFileConnected = _clientConnectionManager.FileExplorerConnection.IsConnected;
+
+        SelectedConnectionMethod = _localSettingsService.UserSettings.DefaultConnectionMethod.ToString();
+        SelectedFileConnectionMethod = _localSettingsService.UserSettings.DefaultFileConnectionMethod.ToString();
     }
 
     [RelayCommand]

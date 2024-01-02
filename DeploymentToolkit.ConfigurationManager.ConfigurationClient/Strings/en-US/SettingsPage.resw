@@ -126,6 +126,12 @@
   <data name="Copyright_Text.Text" xml:space="preserve">
     <value>Made by Gérald Döserich</value>
   </data>
+  <data name="Setting_ConnectionMethod.Header" xml:space="preserve">
+    <value>Default WMI Connection Method</value>
+  </data>
+  <data name="Setting_FileConnectionMethod.Header" xml:space="preserve">
+    <value>Default SMB Connection Method</value>
+  </data>
   <data name="Setting_Theme.Description" xml:space="preserve">
     <value>Application Theme</value>
   </data>
@@ -134,5 +140,8 @@
   </data>
   <data name="Text_ApplicationSettings.Text" xml:space="preserve">
     <value>Application Settings</value>
+  </data>
+  <data name="Text_DefaultSettings.Text" xml:space="preserve">
+    <value>Default Connection Settings</value>
   </data>
 </root>
