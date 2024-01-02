@@ -18,7 +18,9 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
     public class ConfigurationManagerClientService : IConfigurationManagerClientService
     {
         private readonly ILogger<ConfigurationManagerClientService> _logger;
-        private readonly IWindowsManagementInstrumentationConnection _remoteManagementClient;
+        private readonly ClientConnectionManager _clientConnectionManager;
+
+        private IWindowsManagementInstrumentationConnection _remoteManagementClient => _clientConnectionManager.Connection;
 
         private static readonly Lazy<CCM_ClientAction> _defaultClientAction = new(() => new CCM_ClientAction(false, PolicyTarget.Machine, ConfigState.Actual));
 
@@ -51,7 +53,7 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services
         public ConfigurationManagerClientService(ILogger<ConfigurationManagerClientService> logger, ClientConnectionManager clientConnectionManager)
         {
             _logger = logger;
-            _remoteManagementClient = clientConnectionManager.Connection;
+            _clientConnectionManager = clientConnectionManager;
         }
 
         public bool IsClientInstalled()
