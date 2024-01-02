@@ -42,25 +42,25 @@
             </controls:DataGrid.RowDetailsTemplate>
 
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn Header="PackageID" Binding="{Binding PackageID}"/>
-                <controls:DataGridTextColumn Header="ProgramID" Binding="{Binding ProgramID}"/>
-                <controls:DataGridTextColumn Header="Name" Binding="{Binding PackageName}"/>
+                <controls:DataGridTextColumn x:Uid="/ProgramsPage/Header_PackageID" Binding="{Binding PackageID}"/>
+                <controls:DataGridTextColumn x:Uid="/ProgramsPage/Header_ProgramID" Binding="{Binding ProgramID}"/>
+                <controls:DataGridTextColumn x:Uid="/ProgramsPage/Header_Name" Binding="{Binding PackageName}"/>
 
-                <controls:DataGridTemplateColumn Header="Requires User Input">
+                <controls:DataGridTemplateColumn x:Uid="/ProgramsPage/Header_UserInput">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding RequiresUserInput}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="Restart">
+                <controls:DataGridTemplateColumn x:Uid="/ProgramsPage/Header_Restart">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding RestartRequired}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="Run at Logoff">
+                <controls:DataGridTemplateColumn x:Uid="/ProgramsPage/Header_Logoff">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding RunAtLogoff}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
@@ -68,14 +68,14 @@
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
 
-                <controls:DataGridTemplateColumn Header="Run at Logon">
+                <controls:DataGridTemplateColumn x:Uid="/ProgramsPage/Header_Logon">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding RunAtLogon}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="Task Sequence">
+                <controls:DataGridTemplateColumn x:Uid="/ProgramsPage/Header_TaskSequence">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding TaskSequence}" IsEnabled="False" MinWidth="0" HorizontalAlignment="Center"/>
@@ -83,10 +83,10 @@
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
 
-                <controls:DataGridTextColumn Header="ActivationTime" Binding="{Binding ActivationTime}"/>
-                <controls:DataGridTextColumn Header="Deadline" Binding="{Binding Deadline}"/>
-                <controls:DataGridTextColumn Header="ExpirationTime" Binding="{Binding ExpirationTime}"/>
-                <controls:DataGridTextColumn Header="NextUserScheduledTime" Binding="{Binding NextUserScheduledTime}"/>
+                <controls:DataGridTextColumn x:Uid="/ProgramsPage/Header_ActivationTime" Binding="{Binding ActivationTime}"/>
+                <controls:DataGridTextColumn x:Uid="/ProgramsPage/Header_Deadline" Binding="{Binding Deadline}"/>
+                <controls:DataGridTextColumn x:Uid="/ProgramsPage/Header_ExpirationTime" Binding="{Binding ExpirationTime}"/>
+                <controls:DataGridTextColumn x:Uid="/ProgramsPage/Header_NextUserScheduledTime" Binding="{Binding NextUserScheduledTime}"/>
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
