@@ -19,8 +19,8 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.ErrorMessageVisibility}">
-            <InfoBar IsOpen="True" Severity="Error" Title="Administrator rights required" Message="Please restart as Administrator to manage cache">
-                <Button Content="Restart as Administrator" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
+            <InfoBar x:Uid="InfoBar_AdminRequired" IsOpen="True" Severity="Error">
+                <Button x:Uid="InfoBar_AdminRequired_Restart" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
             </InfoBar>
         </Grid>
 
@@ -52,12 +52,12 @@
                     </DataTemplate>
                 </controls:DataGrid.RowDetailsTemplate>
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn Header="Recevied" Binding="{Binding Received}"/>
-                    <controls:DataGridTextColumn Header="Severity" Binding="{Binding Severity}"/>
-                    <controls:DataGridTextColumn Header="Event" Binding="{Binding ClassName}"/>
-                    <controls:DataGridTextColumn Header="ClientId" Binding="{Binding ClientId}"/>
-                    <controls:DataGridTextColumn Header="ProcessId" Binding="{Binding ProcessId}"/>
-                    <controls:DataGridTextColumn Header="ThreadId" Binding="{Binding ThreadId}"/>
+                    <controls:DataGridTextColumn x:Uid="/ClientEventsPage/Header_Received" Binding="{Binding Received}"/>
+                    <controls:DataGridTextColumn x:Uid="/ClientEventsPage/Header_Severity" Binding="{Binding Severity}"/>
+                    <controls:DataGridTextColumn x:Uid="/ClientEventsPage/Header_Event" Binding="{Binding ClassName}"/>
+                    <controls:DataGridTextColumn x:Uid="/ClientEventsPage/Header_ClientId" Binding="{Binding ClientId}"/>
+                    <controls:DataGridTextColumn x:Uid="/ClientEventsPage/Header_ProcessId" Binding="{Binding ProcessId}"/>
+                    <controls:DataGridTextColumn x:Uid="/ClientEventsPage/Header_ThreadId" Binding="{Binding ThreadId}"/>
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
         </Grid>
