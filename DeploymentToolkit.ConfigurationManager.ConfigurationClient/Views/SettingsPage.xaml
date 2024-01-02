@@ -34,9 +34,9 @@
         <StackPanel HorizontalAlignment="Stretch"
                     Spacing="{StaticResource SettingsCardSpacing}">
 
-            <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" Text="Application Settings" />
+            <TextBlock x:Uid="/SettingsPage/Text_ApplicationSettings" Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" />
 
-            <labs:SettingsCard Description="Theme" Header="Host">
+            <labs:SettingsCard x:Uid="/SettingsPage/Setting_Theme">
                 <labs:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xe703;" />
                 </labs:SettingsCard.HeaderIcon>
@@ -54,24 +54,19 @@
             <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Text="About" />
 
-            <labs:SettingsExpander Description="© 2023. All rights reserved."
-                                       Header="Deployment Toolkit">
+            <labs:SettingsExpander x:Uid="/SettingsPage/Copyright">
                 <labs:SettingsExpander.HeaderIcon>
-                    <BitmapIcon ShowAsMonochrome="False"
-                                    UriSource="ms-appx:///Assets/AppTitleBar.scale-200.png" />
+                    <BitmapIcon ShowAsMonochrome="False" UriSource="ms-appx:///Assets/AppTitleBar.scale-200.png" />
                 </labs:SettingsExpander.HeaderIcon>
                 <TextBlock win:IsTextSelectionEnabled="True"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Style="{StaticResource CaptionTextBlockStyle}"
                                Text="Version 0.0.1.0" />
                 <labs:SettingsExpander.Items>
-                    <labs:SettingsCard HorizontalContentAlignment="Left"
-                                           ContentAlignment="Left">
-                        <StackPanel Margin="-12,0,0,0"
-                                        Orientation="Vertical">
-                            <!--<HyperlinkButton Content="Link 1" />
-                            <HyperlinkButton Content="Link 2" />
-                            <HyperlinkButton Content="Link 3" />-->
+                    <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
+                        <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
+                            <TextBlock x:Uid="/SettingsPage/Copyright_Text" />
+                            <HyperlinkButton Content="https://github.com/deploymenttoolkit/DeploymentToolkit.ConfigurationManager.ConfigurationClient" />
                         </StackPanel>
                     </labs:SettingsCard>
                 </labs:SettingsExpander.Items>
