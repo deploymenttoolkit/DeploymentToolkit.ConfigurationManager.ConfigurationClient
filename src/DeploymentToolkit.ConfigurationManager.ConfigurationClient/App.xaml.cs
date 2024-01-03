@@ -95,6 +95,8 @@ public partial class App : Application
                     .AddDebug()
 #if DEBUG
                     .SetMinimumLevel(LogLevel.Trace);
+#else
+                    ;
 #endif
             })
             .Build();

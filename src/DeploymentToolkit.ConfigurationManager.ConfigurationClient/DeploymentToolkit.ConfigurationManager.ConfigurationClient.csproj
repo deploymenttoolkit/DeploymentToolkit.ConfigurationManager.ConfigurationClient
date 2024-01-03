@@ -255,6 +255,7 @@
     <EditorConfigFiles Remove="C:\Users\admincm\source\repos\DeploymentToolkit\DeploymentToolkit.ConfigurationManager.ConfigurationClient\.editorconfig" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="Views\Debug\" />
   </ItemGroup>
   <ItemGroup>
