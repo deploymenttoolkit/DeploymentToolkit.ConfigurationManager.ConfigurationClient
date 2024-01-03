@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views.WinRMDebugPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DeploymentToolkit.ConfigurationManager.ConfigurationClient.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+            
+                <TextBox Grid.Row="0" Grid.Column="0" Text="{x:Bind ViewModel.DebugQuery, Mode=TwoWay}" Header="Uri" />
+                <TextBox Grid.Row="1" Grid.Column="0" Text="{x:Bind ViewModel.MethodName, Mode=TwoWay}" Header="Method" />
+                <TextBox Grid.Row="2" Grid.Column="0" Text="{x:Bind ViewModel.Parameters, Mode=TwoWay}" Header="Parameters"/>
+
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <Button Command="{x:Bind ViewModel.ExecuteQueryCommand}" Content="Execute Query" Margin="10,0,5,0" />
+                    <ComboBox SelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}" Margin="5,0">
+                        <x:String>GET</x:String>
+                        <x:String>ENUMERATE</x:String>
+                        <x:String>INVOKE</x:String>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+
+            <StackPanel Grid.Row="1" Margin="0,10">
+                <RichTextBlock>
+                    <Paragraph FontSize="20" FontWeight="Bold" Margin="0,10,0,5">GET</Paragraph>
+                    <Paragraph>http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_Service?Name=WinRM</Paragraph>
+                    <Paragraph FontSize="20" FontWeight="Bold" Margin="0,10,0,5">ENUMERATE</Paragraph>
+                    <Paragraph>http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_Service</Paragraph>
+                    <Paragraph>http://schemas.microsoft.com/wbem/wsman/1/wmi/root/ccm/CCM_Client</Paragraph>
+                    <Paragraph>http://schemas.microsoft.com/wbem/wsman/1/wmi/root/ccm/ClientSDK/CCM_Application</Paragraph>
+                    <Paragraph>http://schemas.microsoft.com/wbem/wsman/1/wmi/root/ccm/Policy/__NAMESPACE</Paragraph>
+                    <Paragraph FontSize="20" FontWeight="Bold" Margin="0,10,0,5">INVOKE</Paragraph>
+                    <Paragraph>http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_Process</Paragraph>
+                    <Paragraph>Create</Paragraph>
+                    <Paragraph>CommandLine=calc.exe</Paragraph>
+                </RichTextBlock>
+            </StackPanel>
+
+            <Border Grid.Row="2" BorderBrush="Black" BorderThickness="1" Margin="0,10" Padding="5">
+                <TextBlock Text="{x:Bind ViewModel.DebugResponse, Mode=OneWay}" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Command="{x:Bind ViewModel.ExecuteInstanceCommand}" Content="Get Instance" Margin="10,0,5,0" />
+                    <ComboBox SelectedIndex="{x:Bind ViewModel.InstanceSelectedIndex, Mode=TwoWay}" Margin="5,0" ItemsSource="{x:Bind ViewModel.StaticInstancesView.View, Mode=OneWay}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <ComboBox SelectedIndex="{x:Bind ViewModel.InstancesSelectedIndex, Mode=TwoWay}" Margin="5,0" ItemsSource="{x:Bind ViewModel.InstancesView.View}"/>
+                    <Button Command="{x:Bind ViewModel.ExecuteInstancesCommand}" Content="Get Instance" Margin="10,0,5,0" />
+                </StackPanel>
+            </Grid>
+
+            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Margin="0,10" Padding="5">
+                <TextBlock Text="{x:Bind ViewModel.InstanceDebugResponse, Mode=OneWay}" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>
