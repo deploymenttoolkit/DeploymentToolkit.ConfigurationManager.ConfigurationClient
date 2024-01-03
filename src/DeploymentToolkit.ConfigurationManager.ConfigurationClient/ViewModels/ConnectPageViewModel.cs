@@ -226,13 +226,13 @@ public partial class ConnectPageViewModel : ObservableObject
     [RelayCommand]
     private void FileTestConnect()
     {
-        if (CredentialsEnabled)
+        if (FileCredentialsEnabled)
         {
             _clientConnectionManager.FileExplorerConnection.Connect(Host, FileUsername, FilePassword);
         }
         else
         {
-            _clientConnectionManager.FileExplorerConnection.Connect(null, null, null);
+            _clientConnectionManager.FileExplorerConnection.Connect(Host, null, null);
         }
 
         IsFileConnected = _clientConnectionManager.FileExplorerConnection.IsConnected;
