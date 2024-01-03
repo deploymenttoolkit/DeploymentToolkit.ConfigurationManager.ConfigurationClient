@@ -56,10 +56,11 @@ public Visibility DebugVisibility { get; set; } = Visibility.Collapsed;
 
         if(!IsAdministrator)
         {
+            IsLoading = false;
             return;
         }
 
-        Task.Factory.StartNew(() => RefreshCache());
+        Task.Factory.StartNew(RefreshCache);
     }
 
     private void RefreshCache()

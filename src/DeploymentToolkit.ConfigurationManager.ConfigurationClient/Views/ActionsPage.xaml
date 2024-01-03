@@ -7,16 +7,31 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Page.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition>Auto</RowDefinition>
+            <RowDefinition>*</RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.IsAdministrator, Mode=OneTime, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=True}">
+            <InfoBar x:Uid="InfoBar_AdminRequired" IsOpen="True" Severity="Error">
+                <Button x:Uid="InfoBar_AdminRequired_Restart" Margin="0, 0, 0, 10" Command="{x:Bind ViewModel.RestartButtonCommand}"/>
+            </InfoBar>
+        </Grid>
+        
         <controls:DataGrid SelectionMode="Single"
                            ItemsSource="{x:Bind ViewModel.Actions}"
                            GridLinesVisibility="Horizontal"
                            AutoGenerateColumns="False"
                            x:DefaultBindMode="OneWay"
-                           IsReadOnly="True">
+                           IsReadOnly="True"
+                           Grid.Row="1">
             <controls:DataGrid.Columns>
                 <controls:DataGridTextColumn x:Uid="/ActionsPage/Header_ActionID" Binding="{Binding ActionID}"/>
                 <controls:DataGridTextColumn x:Uid="/ActionsPage/Header_Name" Binding="{Binding Name}"/>
@@ -35,6 +50,6 @@
             </controls:DataGrid.Columns>
         </controls:DataGrid>
 
-        <controls:Loading IsLoading="{x:Bind ViewModel.IsLoading, Mode=OneWay}" ContentTemplate="{StaticResource LoadingScreen}" />
+        <controls:Loading IsLoading="{x:Bind ViewModel.IsLoading, Mode=OneWay}" ContentTemplate="{StaticResource LoadingScreen}" Grid.Row="0" Grid.RowSpan="2" />
     </Grid>
 </Page>

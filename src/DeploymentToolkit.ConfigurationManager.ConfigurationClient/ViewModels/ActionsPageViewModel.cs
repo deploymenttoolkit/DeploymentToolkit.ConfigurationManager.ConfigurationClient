@@ -2,66 +2,82 @@
 using CommunityToolkit.Mvvm.Input;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.Policy;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
-using Microsoft.UI.Dispatching;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels
+namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
+
+public partial class ActionsPageViewModel : ObservableObject
 {
-    public partial class ActionsPageViewModel : ObservableObject
+    [ObservableProperty]
+    private ObservableCollection<CCM_ClientAction> _actions = new();
+    [ObservableProperty]
+    private bool _isLoading = true;
+
+    [ObservableProperty]
+    private bool _isAdministrator;
+
+    private readonly IConfigurationManagerClientService _clientService;
+    private readonly UACService _uacService;
+
+    public ActionsPageViewModel(IConfigurationManagerClientService clientService, UACService uacService)
     {
-        [ObservableProperty]
-        private ObservableCollection<CCM_ClientAction> _actions = new();
-        [ObservableProperty]
-        private bool _isLoading = true;
+        _clientService = clientService;
+        _uacService = uacService;
 
-        private readonly IConfigurationManagerClientService _clientService;
-
-        public ActionsPageViewModel(IConfigurationManagerClientService clientService)
+        IsAdministrator = _uacService.IsElevated;
+        if(!IsAdministrator)
         {
-            _clientService = clientService;
-
-            Task.Factory.StartNew(() => UpdateActions());
+            IsLoading = false;
+            return;
         }
 
-        private void UpdateActions()
-        {
-            App.Current.DispatcherQueue.TryEnqueue(() =>
-            {
-                Actions.Clear();
-                IsLoading = true;
-            });
-            
+        Task.Factory.StartNew(() => UpdateActions());
+    }
 
-            var actions = _clientService.GetClientActions();
-            if(actions == null)
+    private void UpdateActions()
+    {
+        App.Current.DispatcherQueue.TryEnqueue(() =>
+        {
+            Actions.Clear();
+            IsLoading = true;
+        });
+        
+
+        var actions = _clientService.GetClientActions();
+        if(actions == null)
+        {
+            return;
+        }
+
+        App.Current.DispatcherQueue.TryEnqueue(() =>
+        {
+            foreach (var action in actions.OrderBy(a => a.ActionID))
             {
-                return;
+                action.ViewModel = this;
+                Actions.Add(action);
             }
 
-            App.Current.DispatcherQueue.TryEnqueue(() =>
-            {
-                foreach (var action in actions.OrderBy(a => a.ActionID))
-                {
-                    action.ViewModel = this;
-                    Actions.Add(action);
-                }
+            IsLoading = false;
+        });
+    }
 
-                IsLoading = false;
-            });
-        }
-
-        [RelayCommand]
-        public void RunAction(string id)
+    [RelayCommand]
+    public void RunAction(string id)
+    {
+        var action = Actions.FirstOrDefault(a => a.ActionID == id);
+        if(action == null)
         {
-            var action = Actions.FirstOrDefault(a => a.ActionID == id);
-            if(action == null)
-            {
-                return;
-            }
-
-            _clientService.PerformClientAction(action);
+            return;
         }
+
+        _clientService.PerformClientAction(action);
+    }
+
+    [RelayCommand]
+    private void RestartButton()
+    {
+        _uacService.RestartAsAdmin();
     }
 }
