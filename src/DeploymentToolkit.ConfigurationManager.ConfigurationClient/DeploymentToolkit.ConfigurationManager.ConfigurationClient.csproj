@@ -12,6 +12,7 @@
     <EnableMsixTooling>true</EnableMsixTooling>
 	<WindowsPackageType>None</WindowsPackageType>
 	<Nullable>enable</Nullable>
+	<UseRidGraph>true</UseRidGraph>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="SplashScreen.xaml" />
