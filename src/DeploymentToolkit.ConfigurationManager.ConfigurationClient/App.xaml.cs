@@ -60,7 +60,7 @@ public partial class App : Application
 
                 services.AddSingleton<MainWindowViewModel>();
 
-                services.AddTransient<ConnectPageViewModel>();
+                services.AddSingleton<ConnectPageViewModel>();
                 services.AddTransient<SettingsPageViewModel>();
 
                 services.AddTransient<ClientEventsPageViewModel>();
