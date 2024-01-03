@@ -32,6 +32,9 @@ public partial class MainWindowViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsFilesAndWMIConnected))]
     private bool _isFilesConnected;
 
+    [ObservableProperty]
+    private bool _isLocalConnection;
+
     public bool IsFilesAndWMIConnected => IsConnected && IsFilesConnected;
 
     [ObservableProperty]
@@ -99,6 +102,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void ConnectionPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         IsConnected = _connectionManager.Connection.IsConnected;
+        IsLocalConnection = _connectionManager.Connection.IsLocalConnection;
         IsFilesConnected = _connectionManager.FileExplorerConnection.IsConnected;
         IsEventsConnected = _clientEventsService.IsConnected;
 

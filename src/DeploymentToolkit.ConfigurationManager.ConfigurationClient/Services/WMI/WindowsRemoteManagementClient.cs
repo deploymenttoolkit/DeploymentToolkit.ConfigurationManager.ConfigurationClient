@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -24,7 +23,9 @@ public partial class WindowsRemoteManagementClient : ObservableObject, IDisposab
 {
     [ObservableProperty]
     private bool _isConnected;
-    
+    [ObservableProperty]
+    private bool _isLocalConnection;
+
     private readonly WSMan _instance;
     private IWSManSession? _session;
 
@@ -55,6 +56,15 @@ public partial class WindowsRemoteManagementClient : ObservableObject, IDisposab
 
     public Result Connect(string host, string? username = null, string? password = null, bool encrypted = true)
     {
+        if (host == "127.0.0.1" || host == "::1" || host.Equals("localhost", StringComparison.CurrentCultureIgnoreCase) || host.Equals(Environment.GetEnvironmentVariable("ComputerName"), StringComparison.CurrentCultureIgnoreCase))
+        {
+            IsLocalConnection = true;
+        }
+        else
+        {
+            IsLocalConnection = false;
+        }
+
         host = $"http://{host}:5985";
 
         if(_session != null)
@@ -122,8 +132,11 @@ public partial class WindowsRemoteManagementClient : ObservableObject, IDisposab
 
     public Result Disconnect()
     {
+        IsLocalConnection = false;
+
         if(_session == null)
         {
+            IsConnected = false;
             return Result.Ok();
         }
 
