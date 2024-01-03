@@ -57,10 +57,11 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly ThemeSelectorService _themeSelectorService;
     private readonly ClientEventsService _clientEventsService;
     private readonly IConfigurationManagerClientService _configurationManagerClientService;
+    private readonly UACService _uacService;
 
     private readonly UISettings _uiSettings;
 
-    public MainWindowViewModel(LocalSettingsService settings, NavigationService navigationService, ClientConnectionManager connectionManager, ThemeSelectorService themeSelectorService, ClientEventsService clientEventsService, IConfigurationManagerClientService configurationManagerClientService)
+    public MainWindowViewModel(LocalSettingsService settings, NavigationService navigationService, ClientConnectionManager connectionManager, ThemeSelectorService themeSelectorService, ClientEventsService clientEventsService, IConfigurationManagerClientService configurationManagerClientService, UACService uacService)
     {
         _settings = settings;
         _navigationService = navigationService;
@@ -68,6 +69,7 @@ public partial class MainWindowViewModel : ObservableObject
         _themeSelectorService = themeSelectorService;
         _clientEventsService = clientEventsService;
         _configurationManagerClientService = configurationManagerClientService;
+        _uacService = uacService;
 
         _connectionManager.PropertyChanged += ConnectionPropertyChanged;
         _connectionManager.Connection.PropertyChanged += ConnectionPropertyChanged;
@@ -105,6 +107,8 @@ public partial class MainWindowViewModel : ObservableObject
         IsLocalConnection = _connectionManager.Connection.IsLocalConnection;
         IsFilesConnected = _connectionManager.FileExplorerConnection.IsConnected;
         IsEventsConnected = _clientEventsService.IsConnected;
+
+        _uacService.UpdateAdminStatus(_connectionManager.Connection.IsLocalConnection ? null : _connectionManager.Connection);
 
         if (IsConnected)
         {
