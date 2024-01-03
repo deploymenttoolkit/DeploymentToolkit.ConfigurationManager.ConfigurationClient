@@ -9,7 +9,7 @@
   <Identity
     Name="bb218b1a-dcce-4ef4-8dde-747cb3212b12"
     Publisher="CN=DeploymentToolkit"
-    Version="1.0.0.0" />
+    Version="0.1.0.0" />
 
   <Properties>
     <DisplayName>Configuration Manager Client</DisplayName>

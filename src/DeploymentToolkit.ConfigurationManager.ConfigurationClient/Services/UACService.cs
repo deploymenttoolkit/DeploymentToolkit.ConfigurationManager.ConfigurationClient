@@ -1,5 +1,4 @@
-﻿using CCMEXEC;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
+﻿using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;

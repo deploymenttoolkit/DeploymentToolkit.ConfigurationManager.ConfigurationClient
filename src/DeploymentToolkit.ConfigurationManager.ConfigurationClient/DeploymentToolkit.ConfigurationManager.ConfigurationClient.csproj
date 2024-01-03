@@ -14,6 +14,7 @@
 	<Nullable>enable</Nullable>
 	<UseRidGraph>true</UseRidGraph>
 	<ApplicationIcon>Icon.ico</ApplicationIcon>
+	<Version>0.1.0.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="SplashScreen.xaml" />
@@ -41,42 +42,6 @@
     <None Remove="Views\WinRMDebugPage.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="UIRESOURCELib">
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>8525c38e-31b3-4a08-b3e8-ad67d00bbc8f</Guid>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="SmsClientLib">
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>2c505d98-35c3-47b7-bfd9-47a09c878385</Guid>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="CPAPPLETLib">
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>bc41a016-5066-4457-b46a-a9bc2c2c6ab1</Guid>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="CCMEXEC">
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>7eebbe45-e2c8-4888-b3fb-735577f0cb63</Guid>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-    </COMReference>
     <COMReference Include="WSManAutomation">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
