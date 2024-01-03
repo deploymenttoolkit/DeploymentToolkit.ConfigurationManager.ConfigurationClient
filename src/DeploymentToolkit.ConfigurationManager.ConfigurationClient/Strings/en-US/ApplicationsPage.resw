@@ -171,6 +171,9 @@
   <data name="Text_ApplicationGroup.Text" xml:space="preserve">
     <value>Applications in this Group</value>
   </data>
+  <data name="Text_ApplicationGroupSubtitle.Text" xml:space="preserve">
+    <value>May be empty for Available Application Groups since Application Policy is only downloaded upon installation</value>
+  </data>
   <data name="Text_LastUpdated.Text" xml:space="preserve">
     <value>Last Updated</value>
   </data>

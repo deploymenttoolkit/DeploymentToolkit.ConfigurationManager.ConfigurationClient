@@ -7,6 +7,11 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using Microsoft.UI.Xaml.Media;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.IO;
+using Windows.Graphics.Imaging;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.ClientSDK
 {
@@ -107,6 +112,28 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
 
         public ApplicationsPageViewModel ViewModel { get; set; }
 
+        private ImageSource? _iconSource;
+        public ImageSource? IconSource
+        {
+            get
+            {
+                if(_iconSource == null && !string.IsNullOrEmpty(Icon))
+                {
+                    var bytes = Convert.FromBase64String(Icon);
+                    var buffer = bytes.AsBuffer();
+                    using var stream = buffer.AsStream();
+                    using var image = stream.AsRandomAccessStream();
+                    var decoder = BitmapDecoder.CreateAsync(image).GetAwaiter().GetResult();
+                    image.Seek(0);
+
+                    var output = new WriteableBitmap((int)decoder.PixelHeight, (int)decoder.PixelWidth);
+                    output.SetSource(image);
+                    _iconSource = output;
+                }
+                return _iconSource;
+            }
+        }
+
         public ObservableCollection<ReferenceProperty> Properties { get; private set; } = new();
 
         [ObservableProperty]
@@ -197,17 +224,24 @@ namespace DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.CCM.
             }
         }
 
-        private static readonly List<PropertyInfo> _properties = new();
-        private static readonly List<string> _propertiesToSkip = new()
-        {
+        private static readonly List<PropertyInfo> _properties = [];
+        private static readonly List<string> _propertiesToSkip =
+        [
+            nameof(Namespace),
+            nameof(Class),
+            nameof(Key),
+            nameof(QueryByFilter),
+
             nameof(Properties),
             nameof(ViewModel),
             nameof(AppDTs),
             nameof(EvaluationStateText),
             nameof(Installable),
             nameof(Uninstallable),
-            nameof(Repairable)
-        };
+            nameof(Repairable),
+            nameof(IconSource),
+            nameof(Icon)
+        ];
 
         static CCM_Application()
         {

@@ -75,6 +75,7 @@
 
                             <StackPanel Visibility="{Binding ApplicationType, Converter={StaticResource ApplicationGroupVisibilityConverter}}">
                                 <TextBlock Style="{StaticResource SubheaderTextBlockStyle}" x:Uid="/ApplicationsPage/Text_ApplicationGroup"/>
+                                <TextBlock x:Uid="/ApplicationsPage/Text_ApplicationGroupSubtitle" />
                                 <ListView ItemsSource="{x:Bind AppDTs}" Margin="0, 5" Padding="0, 0, 0, 10">
                                     <ListView.ItemTemplate>
                                         <DataTemplate x:DataType="clientsdk:CCM_Application">
@@ -102,6 +103,14 @@
                 </controls:DataGrid.RowDetailsTemplate>
             
                 <controls:DataGrid.Columns>
+                    <controls:DataGridTemplateColumn>
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding IconSource}" MaxHeight="30" MaxWidth="30" />
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+                    
                     <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_ApplicationType" Binding="{Binding ApplicationType}"/>
                     <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_Name" Binding="{Binding Name}"/>
                     <controls:DataGridTextColumn x:Uid="/ApplicationsPage/Header_Revision" Binding="{Binding Revision}"/>
