@@ -13,10 +13,11 @@
         <MicaBackdrop />
     </winuiex:SplashScreen.SystemBackdrop>
     <Grid>
-        <Image Source="ms-appx:///Assets/StoreLogo.png" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="1" Width="200" />
+        <Image Source="ms-appx:///Assets/SplashScreen.png" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="1" />
+        
         <StackPanel VerticalAlignment="Bottom">
             <TextBlock Text="Configuration Manager Client" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,25"
-                       Foreground="#215A9D" FontWeight="Black"
+                       Foreground="#D73964" FontWeight="Black"
                        Style="{StaticResource TitleTextBlockStyle}"  />
             <TextBlock x:Name="status" Text="Loading..." HorizontalAlignment="Center" />
         </StackPanel>
