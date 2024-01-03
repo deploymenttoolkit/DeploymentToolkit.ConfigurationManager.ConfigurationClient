@@ -31,7 +31,7 @@
             <InfoBar x:Uid="/CachePage/Error_Cache" IsOpen="True" Severity="Error" />
         </Grid>
 
-        <Grid Grid.Row="1" Padding="10">
+        <Grid Grid.Row="1" Padding="10" Visibility="{x:Bind ViewModel.DebugVisibility, Mode=OneTime}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -75,7 +75,7 @@
                     <controls:DataGridTextColumn x:Uid="/CachePage/Header_ContentSize" Binding="{Binding ContentSize}"/>
                     <controls:DataGridTextColumn x:Uid="/CachePage/Header_LastReferenceTime" Binding="{Binding LastReferenced}"/>
                     <controls:DataGridTextColumn x:Uid="/CachePage/Header_ReferenceCount" Binding="{Binding ReferenceCount}"/>
-                    <controls:DataGridTemplateColumn Header="">
+                    <controls:DataGridTemplateColumn Header="" Visibility="{x:Bind ViewModel.DebugVisibility, Mode=OneTime}">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Grid.Column="6"
