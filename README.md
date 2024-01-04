@@ -1,6 +1,6 @@
 <p align="center">
 <a href="https://github.com/deploymenttoolkit/DeploymentToolkit.ConfigurationManager.ConfigurationClient">
-  <img src="img/main-logo-transparent.png" alt="Logo" width="80" height="80">
+  <img src="img/main-logo-transparent.png" alt="Logo" width="200">
 </a>
 
 <h3 align="center">Configuration Manager Client</h3>
