@@ -6,6 +6,7 @@ using DeploymentToolkit.ConfigurationManager.ConfigurationClient.HostedServices;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Services.ProcessExecuter;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels.SoftwareCenter;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

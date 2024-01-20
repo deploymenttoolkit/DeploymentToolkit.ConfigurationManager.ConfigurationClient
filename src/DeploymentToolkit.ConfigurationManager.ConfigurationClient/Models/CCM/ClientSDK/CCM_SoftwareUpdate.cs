@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels.SoftwareCenter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +17,7 @@ public partial class CCM_SoftwareUpdate : CCM_SoftwareBase, IWindowsManagementIn
     public bool QueryByFilter => false;
 
     internal SoftwareUpdatesPageViewModel ViewModel { get; set; }
-    internal ObservableCollection<ReferenceProperty> Properties { get; private set; } = new();
+    internal ObservableCollection<ReferenceProperty> Properties { get; private set; } = [];
 
     [ObservableProperty]
     string _updateID;

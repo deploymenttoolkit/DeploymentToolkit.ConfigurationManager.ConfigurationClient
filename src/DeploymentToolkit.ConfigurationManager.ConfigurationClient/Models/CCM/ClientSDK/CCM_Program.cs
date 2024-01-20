@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DeploymentToolkit.ConfigurationManager.ConfigurationClient.Models.WMI;
-using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels;
+using DeploymentToolkit.ConfigurationManager.ConfigurationClient.ViewModels.SoftwareCenter;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
