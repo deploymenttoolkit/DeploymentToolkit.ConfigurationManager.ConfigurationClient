@@ -222,6 +222,7 @@
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="Views\Debug\" />
+    <Folder Include="Views\SoftwareCenter\" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\ConnectPage.xaml">
